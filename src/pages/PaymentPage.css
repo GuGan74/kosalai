@@ -1,0 +1,185 @@
+.pay-wrap {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 20px 40px;
+}
+
+.pay-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.pay-header div {
+    margin-bottom: 8px;
+}
+
+.pay-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #1f2937;
+    margin: 0 0 6px;
+}
+
+.pay-sub {
+    font-size: 15px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Simplified Pricing Card */
+.pay-pricing-card {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 3px solid #4caf50;
+    border-radius: 20px;
+    padding: 32px 28px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.pay-pricing-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+}
+
+.pay-amount-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    gap: 4px;
+}
+
+.pay-currency {
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #4caf50;
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.pay-big-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: #2e7d32;
+    line-height: 1;
+}
+
+.pay-per {
+    font-size: 16px;
+    color: #6b7280;
+    align-self: flex-end;
+    margin-bottom: 12px;
+    margin-left: 4px;
+}
+
+.pay-features {
+    margin-bottom: 28px;
+    text-align: left;
+}
+
+.pay-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 15px;
+    color: #1f2937;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.pay-feature:last-child {
+    border-bottom: none;
+}
+
+.pay-feature-icon {
+    width: 24px;
+    height: 24px;
+    background: #4caf50;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.btn-pay-now {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(76, 175, 80, 0.35);
+    font-family: 'Nunito', sans-serif;
+}
+
+.btn-pay-now:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.45);
+}
+
+.btn-pay-now:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Amount card (kept for success screen) */
+.pay-amount-card {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.pay-big {
+    font-family: 'Poppins', sans-serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: #1a7a3c;
+}
+
+.pay-total-lbl {
+    font-size: 14px;
+    color: #555;
+    margin-top: 4px;
+}
+
+.pay-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 16px;
+}
+
+@media (max-width: 480px) {
+    .pay-pricing-card {
+        padding: 24px 18px;
+    }
+
+    .pay-big-num {
+        font-size: 56px;
+    }
+
+    .btn-pay-now {
+        font-size: 15px;
+        padding: 14px;
+    }
+}

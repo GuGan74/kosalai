@@ -1,0 +1,22 @@
+{
+    "name": "Kosalai",
+    "short_name": "Kosalai",
+    "description": "Buy & Sell Animals with Full Trust",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a7a3c",
+    "theme_color": "#1a7a3c",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/kosalai-logo.png",
+            "sizes": "640x640",
+            "type": "image/png"
+        },
+        {
+            "src": "/kosalai-logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

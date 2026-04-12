@@ -1,0 +1,248 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
+import { useFavorites } from '../hooks/useFavorites';
+import { useTranslation } from 'react-i18next';
+import ListingCard from '../components/ListingCard';
+import SkeletonCard from '../components/SkeletonCard';
+import SEOHead from '../components/SEOHead';
+import './HomePage.css';
+
+const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
+const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry'];
+
+const INDIAN_STATES = [
+    'Tamil Nadu', 'Karnataka', 'Kerala', 'Andhra Pradesh', 'Telangana',
+    'Maharashtra', 'Gujarat', 'Rajasthan', 'Punjab', 'Haryana',
+    'Uttar Pradesh', 'Bihar', 'West Bengal', 'Odisha', 'Madhya Pradesh',
+    'Assam', 'Jharkhand', 'Uttarakhand', 'Himachal Pradesh', 'Chhattisgarh',
+    'Goa', 'Tripura', 'Meghalaya', 'Manipur', 'Arunachal Pradesh',
+    'Delhi', 'Jammu & Kashmir', 'Puducherry',
+];
+
+const DEMO_LISTINGS = import.meta.env.VITE_SHOW_DEMO_DATA === 'true' ? [
+    { id: 'd1', title: 'HF Cow — High Milk Yield', category: 'cow', breed: 'HF Holstein', age_years: 4, price: 65000, location: 'Coimbatore', state: 'Tamil Nadu', milk_yield_liters: 18, is_vaccinated: true, is_verified: true, is_pregnant: true, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'female', created_at: new Date().toISOString() },
+    { id: 'd2', title: 'Murrah Buffalo — Milk Breed', category: 'buffalo', breed: 'Murrah', age_years: 5, price: 85000, location: 'Amreli', state: 'Gujarat', milk_yield_liters: 14, is_vaccinated: true, is_verified: true, is_pregnant: false, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'female', created_at: new Date().toISOString() },
+    { id: 'd3', title: 'Boer Goat — Meat Breed', category: 'goat', breed: 'Boer', age_years: 2, price: 12000, location: 'Pune', state: 'Maharashtra', milk_yield_liters: null, is_vaccinated: false, is_verified: false, is_pregnant: false, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'male', created_at: new Date().toISOString() },
+    { id: 'd4', title: 'Gir Cow — A2 Milk', category: 'cow', breed: 'Gir', age_years: 3, price: 48000, location: 'Junagadh', state: 'Gujarat', milk_yield_liters: 12, is_vaccinated: true, is_verified: true, is_pregnant: true, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'female', created_at: new Date().toISOString() },
+    { id: 'd5', title: 'Labrador Retriever Puppy', category: 'dog', breed: 'Labrador', age_years: 0.3, price: 15000, location: 'Chennai', state: 'Tamil Nadu', is_vaccinated: true, is_verified: true, is_pregnant: false, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'male', created_at: new Date().toISOString() },
+    { id: 'd6', title: 'Persian Cat — Ready for Adoption', category: 'cat', breed: 'Persian', age_years: 1, price: 8000, location: 'Bengaluru', state: 'Karnataka', is_vaccinated: true, is_verified: false, is_pregnant: false, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'female', created_at: new Date().toISOString() },
+] : [];
+
+export default function HomePage() {
+    const { t } = useTranslation();
+    const { currentUser, listingType } = useAuth();
+    const navigate = useNavigate();
+
+    const [listings, setListings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('all');
+    const [selectedState, setSelectedState] = useState('all');
+    const [sortBy, setSortBy] = useState('recent');
+    const [filterBy, setFilterBy] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const listingIds = listings.map(l => l.id);
+    const { likedIds, toggleFavorite } = useFavorites(currentUser?.id, listingIds);
+
+    // Build category tabs dynamically with translations
+    const LIVESTOCK_CATEGORIES = [
+        { id: 'all', emoji: '🎯', label: t('homePage.all') },
+        { id: 'cow', emoji: '🐄', label: t('homePage.cows') },
+        { id: 'buffalo', emoji: '🦬', label: t('homePage.buffalos') },
+        { id: 'goat', emoji: '🐐', label: t('homePage.goats') },
+        { id: 'horse', emoji: '🐎', label: t('homePage.horses') },
+        { id: 'poultry', emoji: '🐓', label: t('homePage.poultry') },
+        { id: 'sheep', emoji: '🐑', label: t('homePage.sheep') },
+    ];
+
+    const PET_CATEGORIES = [
+        { id: 'all', emoji: '🎯', label: t('homePage.all') },
+        { id: 'dog', emoji: '🐕', label: t('homePage.dogs') },
+        { id: 'cat', emoji: '🐈', label: t('homePage.cats') },
+        { id: 'bird', emoji: '🐦', label: t('homePage.birds') },
+        { id: 'fish', emoji: '🐟', label: t('homePage.fish') },
+        { id: 'rabbit', emoji: '🐰', label: t('homePage.rabbits') },
+        { id: 'other-pet', emoji: '🐾', label: t('homePage.other') },
+    ];
+
+    const categories = listingType === 'livestock' ? LIVESTOCK_CATEGORIES : PET_CATEGORIES;
+
+    const fetchListings = useCallback(async () => {
+        setLoading(true);
+        try {
+            let query = supabase.from('listings').select('*').eq('status', 'active');
+            if (listingType === 'livestock') {
+                query = query.in('category', LIVESTOCK_IDS);
+            } else {
+                query = query.in('category', PET_IDS);
+            }
+            if (selectedState !== 'all') query = query.eq('state', selectedState);
+            if (sortBy === 'recent') query = query.order('created_at', { ascending: false });
+            else if (sortBy === 'price_low') query = query.order('price', { ascending: true });
+            else if (sortBy === 'price_high') query = query.order('price', { ascending: false });
+            const { data, error } = await query.limit(60);
+            if (error) throw error;
+            const fetched = data || [];
+            if (fetched.length === 0) {
+                setListings(listingType === 'livestock'
+                    ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
+                    : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category)));
+            } else {
+                setListings(fetched);
+            }
+        } catch (err) {
+            console.error('Fetch error:', err);
+            setListings(listingType === 'livestock'
+                ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
+                : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category)));
+        } finally { setLoading(false); }
+    }, [listingType, selectedState, sortBy]);
+
+    useEffect(() => {
+        setActiveTab('all');
+        setFilterBy('all');
+        fetchListings();
+    }, [fetchListings]);
+
+    const filteredListings = React.useMemo(() => {
+        let result = [...listings];
+        if (activeTab !== 'all') result = result.filter(l => l.category === activeTab);
+        if (filterBy === 'verified') result = result.filter(l => l.is_verified);
+        else if (filterBy === 'with_images') result = result.filter(l => l.image_url);
+        else if (filterBy === 'high_yield') result = result.filter(l => l.milk_yield_liters > 10);
+        else if (filterBy === 'pregnant') result = result.filter(l => l.is_pregnant);
+        else if (filterBy === 'vaccinated') result = result.filter(l => l.is_vaccinated);
+        else if (filterBy === 'young') result = result.filter(l => l.age_years && l.age_years <= 1);
+        else if (filterBy === 'male') result = result.filter(l => l.gender && l.gender.toLowerCase() === 'male');
+        else if (filterBy === 'female') result = result.filter(l => l.gender && l.gender.toLowerCase() === 'female');
+        if (searchQuery.trim()) {
+            const q = searchQuery.toLowerCase();
+            result = result.filter(l =>
+                (l.title || '').toLowerCase().includes(q) ||
+                (l.breed || '').toLowerCase().includes(q) ||
+                (l.location || '').toLowerCase().includes(q)
+            );
+        }
+        return result;
+    }, [listings, activeTab, filterBy, searchQuery]);
+
+    function handleSearchKeyDown(e) {
+        if (e.key === 'Enter' && searchQuery.trim())
+            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+
+    return (
+        <div className="home-layout">
+            <SEOHead
+                title="Buy & Sell Cattle in India | Kosalai"
+                description="India's trusted marketplace for cows, buffaloes, goats, horses and pets."
+            />
+            <div className="home-container">
+                {/* SEARCH + STATE FILTER ROW */}
+                <div className="hp-top-row">
+                    <div className="hp-search-box">
+                        <select
+                            value={selectedState}
+                            onChange={e => setSelectedState(e.target.value)}
+                            className="hp-state-select-inline"
+                        >
+                            <option value="all">{t('homePage.allStates')}</option>
+                            {INDIAN_STATES.map(s => (
+                                <option key={s} value={s}>{s}</option>
+                            ))}
+                        </select>
+                        <div className="hp-search-divider"></div>
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>🔍</span>
+                        <input
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            onKeyDown={handleSearchKeyDown}
+                            placeholder={listingType === 'livestock'
+                                ? t('homePage.searchCowPlaceholder')
+                                : t('homePage.searchPetPlaceholder')}
+                            className="hp-search-input"
+                        />
+                        {searchQuery && (
+                            <button onClick={() => setSearchQuery('')} className="hp-search-clear">✕</button>
+                        )}
+                    </div>
+                </div>
+
+                {/* CATEGORY TABS */}
+                <div className="hp-category-tabs">
+                    {categories.map(cat => (
+                        <button
+                            key={cat.id}
+                            className={`hp-cat-tab${activeTab === cat.id ? ' active' : ''}`}
+                            onClick={() => setActiveTab(cat.id)}
+                        >
+                            <span>{cat.emoji}</span>
+                            <span>{cat.label}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* SORT / FILTER CONTROL BAR */}
+                <div className="hp-controls-bar">
+                    <div className="hp-sort-group">
+                        <span className="hp-sort-label">{t('homePage.filterLabel')}</span>
+                        <select value={filterBy} onChange={e => setFilterBy(e.target.value)} className="hp-sort-select">
+                            <option value="all">{t('homePage.allListings')}</option>
+                            <option value="verified">{t('homePage.verifiedOnly')}</option>
+                            <option value="with_images">{t('homePage.withPhotos')}</option>
+                            <option value="male">{t('homePage.male')}</option>
+                            <option value="female">{t('homePage.female')}</option>
+                            {listingType === 'livestock' ? (
+                                <>
+                                    <option value="high_yield">{t('homePage.highMilkYield')}</option>
+                                    <option value="pregnant">{t('homePage.pregnantOnly')}</option>
+                                </>
+                            ) : (
+                                <>
+                                    <option value="vaccinated">{t('homePage.vaccinatedOnly')}</option>
+                                    <option value="young">{t('homePage.youngPets')}</option>
+                                </>
+                            )}
+                        </select>
+                    </div>
+                    <div className="hp-sort-group">
+                        <span className="hp-sort-label">{t('homePage.sortLabel')}</span>
+                        <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="hp-sort-select">
+                            <option value="recent">{t('homePage.recentlyAdded')}</option>
+                            <option value="price_low">{t('homePage.priceLow')}</option>
+                            <option value="price_high">{t('homePage.priceHigh')}</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* LISTINGS GRID */}
+                {loading ? (
+                    <div className="hp-grid">
+                        {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+                    </div>
+                ) : filteredListings.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '60px 20px', color: '#9CA3AF' }}>
+                        <div style={{ fontSize: 60, marginBottom: 16 }}>
+                            {listingType === 'livestock' ? '🐄' : '🐾'}
+                        </div>
+                        <h3 style={{ color: '#374151' }}>{t('homePage.noListingsFound')}</h3>
+                        <p style={{ fontSize: 14 }}>{t('homePage.tryDifferent')}</p>
+                    </div>
+                ) : (
+                    <div className="hp-grid">
+                        {filteredListings.map(listing => (
+                            <ListingCard
+                                key={listing.id}
+                                listing={listing}
+                                isLiked={likedIds.has(listing.id)}
+                                onToggleFavorite={toggleFavorite}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
