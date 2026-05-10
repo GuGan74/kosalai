@@ -114,7 +114,7 @@ export default function ProfilePage() {
                     <div className="p-nm">{p.full_name || t('profilePage.myAccount')}</div>
                     <div className="p-meta">{p.location ? `📍 ${p.location} · ` : ''}{t('profilePage.memberSince', { year: yr })}</div>
                     <div className="p-badges">
-                        <span className="p-bdg">✓ OTP Verified</span>
+
                     </div>
                 </div>
 

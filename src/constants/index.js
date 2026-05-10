@@ -17,6 +17,7 @@ export const LIVESTOCK_CATS = [
     { id: 'cow', label: '🐄', name: 'Cow' },
     { id: 'buffalo', label: '🦬', name: 'Buffalo' },
     { id: 'goat', label: '🐐', name: 'Goat' },
+    { id: 'sheep', label: '🐑', name: 'Sheep' },
     { id: 'horse', label: '🐎', name: 'Horse' },
     { id: 'poultry', label: '🐓', name: 'Poultry' },
     { id: 'other', label: '🐾', name: 'Other' },

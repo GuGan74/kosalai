@@ -26,7 +26,7 @@
 }
 
 .adl-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 24px;
     font-weight: 900;
     color: white;
@@ -68,7 +68,7 @@
     font-size: 14px;
     font-weight: 600;
     color: white;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     outline: none;
     transition: 0.2s;
 }
@@ -102,7 +102,7 @@
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     box-shadow: 0 4px 20px rgba(26, 122, 60, .4);
     transition: 0.15s;
     display: flex;
@@ -127,7 +127,7 @@
     color: rgba(255, 255, 255, .35);
     font-size: 12px;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-weight: 700;
 }
 
@@ -216,7 +216,7 @@
 }
 
 .adm-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 20px;
     font-weight: 900;
     color: white;
@@ -259,7 +259,7 @@
     border: 1.5px solid rgba(255, 255, 255, .12);
     color: rgba(255, 255, 255, .45);
     background: transparent;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     transition: 0.15s;
 }
 
@@ -307,7 +307,7 @@
 }
 
 .adm-stat-val {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 24px;
     font-weight: 900;
     color: white;
@@ -329,7 +329,7 @@
 }
 
 .adm-sec-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 16px;
     font-weight: 800;
     color: white;
@@ -429,7 +429,7 @@
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .adm-act-btn {
@@ -442,7 +442,7 @@
     font-weight: 700;
     cursor: pointer;
     margin-right: 5px;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     transition: 0.15s;
 }
 

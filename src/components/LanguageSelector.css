@@ -5,14 +5,14 @@
 .lang-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 12px;
   background: white;
-  border: 2px solid #e5e7eb;
+  border: 1.5px solid #e5e7eb;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #1f2937;
 }
@@ -124,8 +124,15 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .lang-button {
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+  .lang-icon { font-size: 14px; }
+  .lang-text { font-size: 12px; }
   .lang-dropdown {
     right: 0;
-    min-width: 200px;
+    min-width: 180px;
   }
 }

@@ -10,7 +10,7 @@ import SEOHead from '../components/SEOHead';
 import './HomePage.css';
 
 const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
-const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry'];
+const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
 
 const INDIAN_STATES = [
     'Tamil Nadu', 'Karnataka', 'Kerala', 'Andhra Pradesh', 'Telangana',
@@ -69,8 +69,29 @@ export default function HomePage() {
 
     const categories = listingType === 'livestock' ? LIVESTOCK_CATEGORIES : PET_CATEGORIES;
 
-    const fetchListings = useCallback(async () => {
-        setLoading(true);
+    const fetchListings = useCallback(async (signal) => {
+        const cacheKey = `ks_home_${listingType}_${selectedState}_${sortBy}`;
+        
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                    setListings(parsed);
+                    setLoading(false);
+                } else {
+                    setLoading(true);
+                    setListings([]);
+                }
+            } else {
+                setLoading(true);
+                setListings([]);
+            }
+        } catch(e) {
+            setLoading(true);
+            setListings([]);
+        }
+
         try {
             let query = supabase.from('listings').select('*').eq('status', 'active');
             if (listingType === 'livestock') {
@@ -83,27 +104,43 @@ export default function HomePage() {
             else if (sortBy === 'price_low') query = query.order('price', { ascending: true });
             else if (sortBy === 'price_high') query = query.order('price', { ascending: false });
             const { data, error } = await query.limit(60);
+
+            // If the request was cancelled (mode changed again), don't update state
+            if (signal?.aborted) return;
+
             if (error) throw error;
             const fetched = data || [];
             if (fetched.length === 0) {
-                setListings(listingType === 'livestock'
+                const fallback = listingType === 'livestock'
                     ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
-                    : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category)));
+                    : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category));
+                setListings(fallback);
+                try { sessionStorage.setItem(cacheKey, JSON.stringify(fallback)); } catch(e){}
             } else {
                 setListings(fetched);
+                try { sessionStorage.setItem(cacheKey, JSON.stringify(fetched)); } catch(e){}
             }
         } catch (err) {
+            if (signal?.aborted) return;
             console.error('Fetch error:', err);
-            setListings(listingType === 'livestock'
+            const fallback = listingType === 'livestock'
                 ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
-                : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category)));
-        } finally { setLoading(false); }
+                : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category));
+            setListings(fallback);
+        } finally {
+            if (!signal?.aborted) {
+                setLoading(false);
+            }
+        }
     }, [listingType, selectedState, sortBy]);
 
     useEffect(() => {
         setActiveTab('all');
         setFilterBy('all');
-        fetchListings();
+        // Use AbortController to cancel in-flight requests when deps change
+        const controller = new AbortController();
+        fetchListings(controller.signal);
+        return () => controller.abort();
     }, [fetchListings]);
 
     const filteredListings = React.useMemo(() => {

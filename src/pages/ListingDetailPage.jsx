@@ -144,7 +144,7 @@ export default function ListingDetailPage() {
             "priceCurrency": "INR",
             "price": listing.for_adoption ? 0 : listing.price,
             "availability": "https://schema.org/InStock",
-            "url": `https://model-mauve.vercel.app/listing/${listing.id}`
+            "url": `https://kosalai.in/listing/${listing.id}`
         }
     };
 
@@ -154,7 +154,7 @@ export default function ListingDetailPage() {
                 title={`${listing.title} for sale in ${listing.location} | Kosalai`}
                 description={`${listing.breed || ''}, ${listing.age_years ? listing.age_years + ' years old' : ''}. Price: ${listing.for_adoption ? 'Free' : '₹' + Number(listing.price).toLocaleString('en-IN')}. Located in ${listing.location}${listing.state ? ', ' + listing.state : ''}.`}
                 imageUrl={listing.image_url}
-                url={`https://model-mauve.vercel.app/listing/${listing.id}`}
+                url={`https://kosalai.in/listing/${listing.id}`}
             />
             <script
                 type="application/ld+json"
@@ -217,7 +217,12 @@ export default function ListingDetailPage() {
                         {t('listingDetail.listedBy')} {sellerName || t('listingDetail.verifiedSeller')}
                         · {t('listingDetail.memberSince', { year: new Date(sellerJoinDate || Date.now()).getFullYear() })}
                     </div>
-                    <div className="det-loc">📍 <TranslatedText>{listing.location}</TranslatedText>{listing.state ? `, ` : ''}{listing.state && <TranslatedText>{listing.state}</TranslatedText>}</div>
+                    <div className="det-loc">
+                        📍 {listing.village && <><TranslatedText>{listing.village}</TranslatedText>, </>}
+                        {listing.taluk && <><TranslatedText>{listing.taluk}</TranslatedText>, </>}
+                        <TranslatedText>{listing.location}</TranslatedText>
+                        {listing.state ? `, ` : ''}{listing.state && <TranslatedText>{listing.state}</TranslatedText>}
+                    </div>
 
                     <div className="stats-grid">
                         {listing.age_years != null && <div className="sg"><div className="lb">{t('listingDetail.age')}</div><div className="vl">{listing.age_years} {t('listingDetail.years')}</div></div>}
@@ -226,7 +231,10 @@ export default function ListingDetailPage() {
                         {listing.gender && <div className="sg"><div className="lb">{t('listingDetail.gender')}</div><div className="vl" style={{ textTransform: 'capitalize' }}>{t('listing.' + listing.gender.toLowerCase(), { defaultValue: listing.gender })}</div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.category')}</div><div className="vl" style={{ textTransform: 'capitalize' }}><TranslatedText>{listing.category}</TranslatedText></div></div>
                         {listing.breed && <div className="sg"><div className="lb">{t('listingDetail.breed')}</div><div className="vl"><TranslatedText>{listing.breed}</TranslatedText></div></div>}
+                        {listing.village && <div className="sg"><div className="lb">{t('listingDetail.village')}</div><div className="vl"><TranslatedText>{listing.village}</TranslatedText></div></div>}
+                        {listing.taluk && <div className="sg"><div className="lb">{t('listingDetail.taluk')}</div><div className="vl"><TranslatedText>{listing.taluk}</TranslatedText></div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.location')}</div><div className="vl"><TranslatedText>{listing.location}</TranslatedText></div></div>
+                        {listing.landmark && <div className="sg"><div className="lb">{t('listingDetail.landmark')}</div><div className="vl"><TranslatedText>{listing.landmark}</TranslatedText></div></div>}
                     </div>
 
                     {listing.description && (
@@ -258,19 +266,11 @@ export default function ListingDetailPage() {
                     <div className="w-btns">
                         <button
                             className={`btn-wcall${isPet ? ' p' : ''}`}
-                            onClick={async () => {
-                                if (!currentUser) { toast.error('Please log in to contact seller'); return; }
-                                toast('Connecting to seller… (demo mode)');
-                                if (listing.user_id && listing.user_id !== currentUser.id) {
-                                    await supabase.from('notifications').insert({
-                                        user_id: listing.user_id,
-                                        actor_id: currentUser.id,
-                                        type: 'inquiry',
-                                        icon: '📞',
-                                        title: 'New call inquiry!',
-                                        message: `${currentProfile?.full_name || 'A buyer'} clicked call for ${listing.title}.`,
-                                        metadata: { listing_id: listing.id }
-                                    });
+                            onClick={() => {
+                                if (listing.user_id) {
+                                    navigate(`/seller/${listing.user_id}`);
+                                } else {
+                                    toast.error('Seller profile not available');
                                 }
                             }}
                         >

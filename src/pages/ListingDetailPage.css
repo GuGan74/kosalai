@@ -115,7 +115,7 @@
 }
 
 .det-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 26px;
     font-weight: 900;
     color: var(--g1);
@@ -245,7 +245,7 @@
 }
 
 .price-big {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 36px;
     font-weight: 900;
     color: var(--green);
@@ -278,7 +278,7 @@
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .btn-wcall.p {
@@ -295,7 +295,7 @@
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .w-safety {

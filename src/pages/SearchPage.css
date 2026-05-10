@@ -32,7 +32,7 @@
     font-size: 14px;
     font-weight: 700;
     color: var(--g1);
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     width: 100%;
 }
 
@@ -62,7 +62,7 @@
     cursor: pointer;
     white-space: nowrap;
     background: white;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     transition: 0.15s;
 }
 

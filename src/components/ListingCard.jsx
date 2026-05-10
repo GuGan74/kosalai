@@ -37,10 +37,11 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
 
     const emoji = {
         cow: '🐄', buffalo: '🦬', goat: '🐐', horse: '🐎',
-        poultry: '🐓', dog: '🐕', cat: '🐈', bird: '🦜',
+        poultry: '🐓', sheep: '🐑', other: '🐾',
+        dog: '🐕', cat: '🐈', bird: '🦜', fish: '🐠', rabbit: '🐇', 'other-pet': '🐾',
     }[category] || '🐾';
 
-    const isPet = ['dog', 'cat', 'bird', 'fish', 'rabbit'].includes(category);
+    const isPet = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'].includes(category);
 
     async function handleLike(e) {
         e.stopPropagation();
@@ -143,7 +144,13 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                             {['cow', 'buffalo', 'goat', 'sheep'].includes(category) && (
                                 <div className="stat-col">
                                     <div className="stat-lbl">{t('listingCard.milkYield')}</div>
-                                    <div className="stat-val">{milk_yield_liters ? `${milk_yield_liters}L/day` : 'N/A'}</div>
+                                    <div className="stat-val">
+                                        {milk_yield_liters 
+                                            ? (String(milk_yield_liters).length > 6 
+                                                ? `${String(milk_yield_liters).substring(0, 6)}...` 
+                                                : `${milk_yield_liters}L/day`)
+                                            : 'N/A'}
+                                    </div>
                                 </div>
                             )}
                             <div className="stat-col">
@@ -178,15 +185,14 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                             setTimeout(() => navigate('/login'), 800);
                             return;
                         }
-                        navigate(`/seller/${owner_id || 'demo-seller'}`);
                     }}>
-                        {t('listingCard.viewSeller')}
+                        <TranslatedText>View Seller</TranslatedText>
                     </button>
                     <button className="lc-btn-call" onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/listing/${id}`);
                     }}>
-                        {t('listingCard.details')}
+                        <TranslatedText>Details</TranslatedText>
                     </button>
                 </div>
             </div>

@@ -18,8 +18,10 @@ const TranslatedText = ({ children, className = '', style = {} }) => {
         let isMounted = true;
         const currentLang = i18n.language;
 
-        // Don't translate if language is English or if it's already translated
-        if (!children || currentLang === 'en' || currentLang === 'en-US') {
+        // Don't translate if language is English or if text already contains Tamil characters
+        const containsTamil = (text) => /[\u0B80-\u0BFF]/.test(text);
+        
+        if (!children || currentLang === 'en' || currentLang === 'en-US' || (currentLang === 'ta' && containsTamil(children))) {
             setTranslated(children);
             return;
         }

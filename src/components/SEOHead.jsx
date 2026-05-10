@@ -1,14 +1,14 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const DEFAULT_IMAGE = 'https://model-mauve.vercel.app/kosalai-logo.png';
+const DEFAULT_IMAGE = 'https://kosalai.in/kosalai-logo.png';
 const SITE_NAME = 'Kosalai';
 
 export default function SEOHead({ title, description, imageUrl, url }) {
     const fullTitle = title || 'Buy & Sell Cattle in India | Kosalai';
     const fullDesc = description || "India's trusted marketplace for cows, buffaloes, goats, horses and pets. Verified listings from farmers across India.";
     const image = imageUrl || DEFAULT_IMAGE;
-    const canonical = url || 'https://model-mauve.vercel.app/';
+    const canonical = url || 'https://kosalai.in/';
 
     return (
         <Helmet>

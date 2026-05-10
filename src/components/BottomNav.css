@@ -27,7 +27,7 @@
     border: none;
     background: transparent;
     color: var(--g4);
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     cursor: pointer;
     transition: 0.15s;
     position: relative;

@@ -7,7 +7,7 @@
     color: var(--green, #1a7a3c);
     font-size: 15px;
     font-weight: 700;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     cursor: pointer;
     padding: 8px 0;
     margin-bottom: 12px;

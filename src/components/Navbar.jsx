@@ -84,7 +84,9 @@ export default function Navbar() {
                             <span>{toggleIcon}</span>
                             <span>{toggleLabel}</span>
                         </button>
-                        <LanguageSelector />
+                        <span className="hide-mobile">
+                          <LanguageSelector />
+                        </span>
                         {/* Show avatar for logged-in, Sign In button for guests */}
                         {isLoggedIn ? (
                             <div className="nav-avatar" onClick={() => navigate('/profile')} title={t('navbar.myProfile')}>
@@ -157,6 +159,10 @@ export default function Navbar() {
                     ) : (
                         <button className="mob-dl" onClick={() => { navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>{t('navbar.signInRegister')}</button>
                     )}
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
+                    <div style={{ padding: '8px 4px' }}>
+                        <LanguageSelector />
+                    </div>
                 </div>
             </div>
         </>

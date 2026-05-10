@@ -3,18 +3,12 @@ import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
-const isDemoMode = () => true;
-
 export function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState(null);
     const [currentProfile, setCurrentProfile] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true);
     const [userRole, setUserRole] = useState('user');
-    const [demoMode] = useState(isDemoMode());
-    const [regData, setRegData] = useState({
-        name: '', district: '', phone: '', email: ''
-    });
 
     // ── Guest mode ──────────────────────────────────────────
     const [isGuest, setIsGuest] = useState(() => {
@@ -33,6 +27,7 @@ export function AuthProvider({ children }) {
         try { return localStorage.getItem('ks_listing_type') || 'livestock'; }
         catch { return 'livestock'; }
     });
+
     function setListingType(type) {
         setListingTypeState(type);
         try { localStorage.setItem('ks_listing_type', type); } catch (err) { console.error('LocalStorage error:', err); }
@@ -51,9 +46,6 @@ export function AuthProvider({ children }) {
 
     function clearGuestMode() {
         setIsGuest(false);
-        // DO NOT clear guestPrefs or pb_guest_prefs on login.
-        // Keep the category preference (livestock/pets) so the
-        // logged-in user still sees only their chosen category.
         try {
             localStorage.removeItem('pb_guest');
             // pb_guest_prefs intentionally kept — used post-login
@@ -72,137 +64,71 @@ export function AuthProvider({ children }) {
         }
     }, []);
 
-    const ensureProfile = React.useCallback(async (user) => {
-        const { data: existing } = await supabase
-            .from('profiles').select('id').eq('id', user.id).single();
-        if (!existing) {
-            const profileData = {
-                id: user.id,
-                phone: user.phone || regData.phone,
-                email: user.email || regData.email || null,
-                full_name: regData.name || 'User',
-                location: regData.district || '',
-                role: userRole || 'user',
-                language: 'English',
-                created_at: new Date().toISOString(),
-            };
-            await supabase.from('profiles').insert(profileData);
-            setCurrentProfile(profileData);
-        } else {
-            await loadProfile(user.id);
-        }
-    }, [loadProfile, regData, userRole]);
-
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                setCurrentUser(session.user);
-                loadProfile(session.user.id);
-                clearGuestMode();
-                setIsLoggedIn(true);
-            } else {
-                try {
-                    const demo = JSON.parse(
-                        localStorage.getItem('pb_demo') || 'null'
-                    );
-                    if (demo) {
-                        setCurrentProfile(demo);
-                        setCurrentUser({ id: demo.id, phone: demo.phone });
-                        setUserRole(demo.role || 'user');
-                        clearGuestMode();
-                        setIsLoggedIn(true);
-                    }
-                } catch { /* ignore */ }
+        let mounted = true;
+
+        // Fallback: Force loading false after 6s if Supabase hangs
+        const fallbackTimer = setTimeout(() => {
+            if (mounted) {
+                console.warn("Auth session fetch timed out after 6s. Proceeding...");
+                setLoading(false);
             }
-            setLoading(false);
+        }, 6000);
+
+        supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+            if (error) console.error("Session error:", error);
+            if (session) {
+                if (mounted) {
+                    setCurrentUser(session.user);
+                    setIsLoggedIn(true); // Set immediately to avoid redirect
+                    clearGuestMode();
+                }
+                try {
+                    await loadProfile(session.user.id);
+                } catch (e) {
+                    console.error("Profile load err:", e);
+                }
+            }
+            if (mounted) {
+                setLoading(false);
+                clearTimeout(fallbackTimer);
+            }
+        }).catch((err) => {
+            console.error("Session fetch rejected:", err);
+            if (mounted) {
+                setLoading(false);
+                clearTimeout(fallbackTimer);
+            }
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                if (event === 'SIGNED_IN' && session?.user) {
-                    setCurrentUser(session.user);
-                    await ensureProfile(session.user);
-                    clearGuestMode();
-                    setIsLoggedIn(true);
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                    if (session?.user) {
+                        setCurrentUser(session.user);
+                        if (event === 'SIGNED_IN') {
+                            await loadProfile(session.user.id);
+                            clearGuestMode();
+                            setIsLoggedIn(true);
+                        }
+                    }
                 } else if (event === 'SIGNED_OUT') {
                     setCurrentUser(null);
                     setCurrentProfile(null);
                     setIsLoggedIn(false);
+                    setUserRole('user');
                 }
             }
         );
 
-        return () => subscription.unsubscribe();
-    }, [loadProfile, ensureProfile]);
-
-    async function sendOTP(phone, name, district, role, email) {
-        setRegData({ name, district, phone, email });
-        setUserRole(role || 'user');
-        return { error: null, demo: true };
-    }
-
-    async function verifyOTP(phone, token) {
-        if (demoMode) {
-            if (token === '123456') {
-                const uid = 'a0000000-0000-0000-0000-' +
-                    phone.replace(/\D/g, '').padStart(12, '0').slice(-12);
-                const profile = {
-                    id: uid,
-                    full_name: regData.name || 'Demo User',
-                    phone,
-                    email: regData.email || '',
-                    location: regData.district || 'Coimbatore, Tamil Nadu',
-                    role: userRole || 'user',
-                    language: 'English',
-                    created_at: new Date().toISOString(),
-                };
-                try {
-                    await supabase.from('profiles')
-                        .upsert(profile, { onConflict: 'id' });
-                } catch { /* ignore */ }
-                try {
-                    localStorage.setItem('pb_demo', JSON.stringify(profile));
-                } catch { /* ignore */ }
-                setCurrentUser({ id: uid, phone });
-                setCurrentProfile(profile);
-                clearGuestMode();
-                setIsLoggedIn(true);
-                return { error: null };
-            } else {
-                return { error: { message: 'Wrong demo OTP — use 1 2 3 4 5 6' } };
-            }
-        }
-        const fullPhone = phone.startsWith('+91')
-            ? phone : '+91' + phone.replace(/^91/, '');
-        const { error } = await supabase.auth.verifyOtp({
-            phone: fullPhone, token, type: 'sms'
-        });
-        return { error };
-    }
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+            clearTimeout(fallbackTimer);
+        };
+    }, [loadProfile]);
 
     async function signInWithGoogle() {
-        if (demoMode) {
-            const uid = 'd0000000-0000-0000-0000-' +
-                Date.now().toString().slice(-12);
-            const profile = {
-                id: uid,
-                full_name: 'Demo Google User',
-                phone: '',
-                email: 'demo@example.com',
-                location: 'Coimbatore, Tamil Nadu',
-                role: userRole || 'user',
-                language: 'English',
-                created_at: new Date().toISOString(),
-            };
-            try {
-                localStorage.setItem('pb_demo', JSON.stringify(profile));
-            } catch { /* ignore */ }
-            setCurrentUser({ id: uid });
-            setCurrentProfile(profile);
-            clearGuestMode();
-            setIsLoggedIn(true);
-            return { error: null };
-        }
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: { redirectTo: window.location.origin + '/' },
@@ -211,16 +137,12 @@ export function AuthProvider({ children }) {
     }
 
     async function signOut() {
-        // Clear React state FIRST — pages immediately see no user and stop fetching
         setCurrentUser(null);
         setCurrentProfile(null);
         setIsLoggedIn(false);
         setUserRole('user');
-        if (!demoMode) {
-            try { await supabase.auth.signOut(); } catch { /* ignore */ }
-        }
+        try { await supabase.auth.signOut(); } catch { /* ignore */ }
         try {
-            localStorage.removeItem('pb_demo');
             localStorage.removeItem('pb_sess');
             localStorage.removeItem('pb_guest');
             localStorage.removeItem('pb_guest_prefs');
@@ -230,7 +152,6 @@ export function AuthProvider({ children }) {
 
     async function saveInterest(listingId, listingTitle) {
         if (!currentUser) return { error: { message: 'Not logged in' } };
-        if (demoMode) return { error: null };
         return await supabase.from('interests').insert({
             user_id: currentUser.id,
             listing_id: listingId,
@@ -246,19 +167,18 @@ export function AuthProvider({ children }) {
         loading,
         userRole,
         setUserRole,
-        regData,
-        demoMode,
         isGuest,
         guestPrefs,
         listingType,
         setListingType,
         enterGuestMode,
-        sendOTP,
-        verifyOTP,
         signInWithGoogle,
         signOut,
         saveInterest,
         loadProfile,
+        needsProfileSetup: isLoggedIn &&
+            currentProfile !== null &&
+            !currentProfile?.is_profile_complete,
     };
 
     return (

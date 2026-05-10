@@ -8,13 +8,17 @@ import { uploadToCloudinary } from '../lib/cloudinary';
 import toast from 'react-hot-toast';
 import './SellPage.css';
 
-// REMOVED - Boost features hidden as per requirement
-// const BOOST_TIERS = [
-//     { name: 'Basic', price: 99, period: '/7 days', badge: '', features: ['2× more views', 'Listed in search results', 'WhatsApp button shown'], color: '#3b82f6', bg: '#eff6ff', recommended: false },
-//     { name: 'Standard', price: 199, period: '/14 days', badge: 'POPULAR', features: ['5× more views', 'Featured on homepage', 'Priority in search', 'SMS alert to buyers'], color: '#10b981', bg: '#ecfdf5', recommended: false },
-//     { name: 'Premium', price: 399, period: '/30 days', badge: 'BEST VALUE', features: ['10× more views', 'Top of search results', 'Promoted badge', 'SMS + WhatsApp alerts', 'Seller verified badge'], color: '#f59e0b', bg: '#fffbeb', recommended: true },
-//     { name: 'Elite', price: 799, period: '/60 days', badge: '', features: ['20× more views', 'Homepage hero slot', 'All Premium benefits', 'Dedicated support'], color: '#8b5cf6', bg: '#f5f3ff', recommended: false },
-// ];
+// Boost tiers moved to constants if needed, otherwise kept here as comments
+// ...
+
+const formatPrice = (val) => {
+    if (!val && val !== 0) return '';
+    return Number(val).toLocaleString('en-IN');
+};
+
+const parsePrice = (val) => {
+    return val.replace(/,/g, '').replace(/[^\d]/g, '');
+};
 
 // Fix #4: Category-specific breed lists
 const BREED_OPTIONS = {
@@ -37,10 +41,46 @@ function getBreedOptions(category) {
 function isLivestock(category) { return ['cow', 'buffalo', 'goat', 'sheep', 'horse'].includes(category); }
 function isPet(category) { return ['dog', 'cat', 'bird', 'fish', 'rabbit'].includes(category); }
 function showsMilkYield(category, gender) {
-    // Only show milk yield for female livestock that can produce milk
-    return ['cow', 'buffalo', 'goat', 'sheep'].includes(category) && gender === 'female';
+    // Only show milk yield for female cows & buffaloes
+    return ['cow', 'buffalo'].includes(category) && gender === 'female';
 }
 function showsPregnancyStatus(category) { return ['cow', 'buffalo', 'goat', 'horse'].includes(category); }
+
+function getTitlePlaceholder(category) {
+    const map = {
+        cow: 'e.g. HF Cow — High Milk Yield',
+        buffalo: 'e.g. Murrah Buffalo — 14L Daily',
+        goat: 'e.g. Boer Goat — Meat Breed',
+        sheep: 'e.g. Deccani Sheep — 2 Years Old',
+        horse: 'e.g. Marwari Horse — Well Trained',
+        poultry: 'e.g. Country Hens — Batch of 10',
+        other: 'e.g. Healthy Animal for Sale',
+        dog: 'e.g. Labrador Puppy — Vaccinated',
+        cat: 'e.g. Persian Cat — 1 Year Old',
+        bird: 'e.g. Talking Parrot — Hand Tamed',
+        fish: 'e.g. Koi Fish — Pair Available',
+        rabbit: 'e.g. Dutch Rabbit — 6 Months Old',
+        'other-pet': 'e.g. Friendly Pet for Adoption',
+    };
+    return map[category] || 'e.g. Animal Name — Key Detail';
+}
+
+function getDescriptionPlaceholder(category) {
+    const map = {
+        cow: 'Describe milk yield, feeding habits, health history, temperament...',
+        buffalo: 'Describe daily milk yield, age, last calving date, health...',
+        goat: 'Describe weight, feeding, health history, purpose (meat/dairy)...',
+        sheep: 'Describe wool quality, weight, health, breeding history...',
+        horse: 'Describe training level, temperament, health, riding experience...',
+        poultry: 'Describe breed, quantity, age, egg production, feeding...',
+        dog: 'Describe breed, temperament, training, vaccinations, diet...',
+        cat: 'Describe breed, personality, vaccinations, indoor/outdoor...',
+        bird: 'Describe talking ability, age, diet, cage included or not...',
+        fish: 'Describe tank size, feeding, health, how many in the lot...',
+        rabbit: 'Describe temperament, diet, vaccinations, cage included...',
+    };
+    return map[category] || 'Describe the animal — health, age, temperament, history...';
+}
 
 const INDIAN_STATES = [
     'Tamil Nadu', 'Maharashtra', 'Uttar Pradesh', 'Rajasthan',
@@ -95,6 +135,7 @@ export default function SellPage() {
         state: '',
         description: '',
         image_url: '',
+        imageSkipped: false,
         for_adoption: false,
         is_promoted: false,
         boostPlanName: 'Premium',
@@ -125,15 +166,21 @@ export default function SellPage() {
         if (location.state?.editListing) {
             const l = location.state.editListing;
             setIsEditing(true);
+            setStep(2); // Jump directly to details step
 
             setEditingId(l.id);
             const isPet = ['dog', 'cat', 'bird', 'fish', 'rabbit'].includes(l.category);
             setListingType(isPet ? 'pets' : 'livestock');
+
+            const savedBreed = l.breed || '';
+            const standardBreeds = getBreedOptions(l.category || '');
+            const isCustomBreed = savedBreed && !standardBreeds.includes(savedBreed);
+
             setForm({
                 category: l.category || '',
                 title: l.title || '',
-                breed: l.breed || '',
-                customBreed: l.custom_breed || '',
+                breed: isCustomBreed ? 'Other' : savedBreed,
+                customBreed: isCustomBreed ? savedBreed : (l.custom_breed || ''),
                 gender: l.gender || '',
                 is_trained: l.is_trained || false,
                 is_neutered: l.is_neutered || false,
@@ -151,6 +198,7 @@ export default function SellPage() {
                 state: l.state || '',
                 description: l.description || '',
                 image_url: l.image_url || '',
+                imageSkipped: false,
                 for_adoption: l.for_adoption || false,
                 is_promoted: l.is_promoted || false,
                 boostPlanName: 'Premium',
@@ -193,13 +241,28 @@ export default function SellPage() {
         if (form.breed === 'Other' && !form.customBreed.trim()) errs.breed = 'Please specify the custom breed';
         if (!form.breed) errs.breed = 'Please select a breed';
         if (form.title.trim().length > 100) errs.title = 'Title must be under 100 characters';
+        // BUG 1 Fix C — Image is required
+        const hasRealImage = form.image_url && form.image_url.trim().length > 5;
+        if (!hasRealImage) errs.image = 'Please upload a photo of your animal';
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
+        if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
         if (form.location.trim().length < 3) errs.location = 'Please enter a valid city';
         if (!form.state) errs.state = 'Please select your state';
-        if (form.description.length > 1000) errs.description = 'Description must be under 1000 characters';
-        if (form.age_years !== '' && Number(form.age_years) > 25)
+        if (!form.village.trim()) errs.village = 'Please enter your village';
+        else if (form.village.length > 100) errs.village = 'Village name too long (max 100 characters)';
+
+        if (!form.taluk.trim()) errs.taluk = 'Please enter your taluk';
+        else if (form.taluk.length > 100) errs.taluk = 'Taluk name too long (max 100 characters)';
+        if (form.landmark.length > 150) errs.landmark = 'Landmark too long (max 150 characters)';
+        // BUG 7 Fix C — strict trim check for description
+        if (form.description.trim().length > 1000) errs.description = 'Description must be under 1000 characters';
+        if (form.age_years === '' || form.age_years === null || form.age_years === undefined)
+            errs.age = 'Please enter the age (in years)';
+        else if (Number(form.age_years) > 25)
             errs.age = 'Age must be 25 years or less';
-        if (form.weight_kg !== '') {
+        if (form.weight_kg === '' || form.weight_kg === null || form.weight_kg === undefined)
+            errs.weight = 'Please enter the weight (in kg)';
+        else {
             const { min, max } = getWeightLimits(form.category);
             if (Number(form.weight_kg) < min || Number(form.weight_kg) > max)
                 errs.weight = `Weight must be ${min}–${max} kg for this animal`;
@@ -211,9 +274,12 @@ export default function SellPage() {
 
     function canGoNext() {
         if (step === 1) return form.category !== '';
-        if (step === 2) return form.title.trim().length >= 5 && form.breed.trim().length >= 1 && !!form.gender;
-        if (step === 3) return true;
-        if (step === 4) return (form.price !== '' || form.for_adoption) && form.location.trim().length > 2 && !!form.state;
+        if (step === 2) return form.title.trim().length >= 5 && form.breed.trim().length >= 1 && !!form.gender && form.age_years !== '' && form.weight_kg !== '';
+        if (step === 3) {
+            // Image is mandatory — must have a real uploaded URL
+            return !!(form.image_url && form.image_url.trim().length > 5);
+        }
+        if (step === 4) return (form.price !== '' || form.for_adoption) && form.location.trim().length > 2 && !!form.state && form.village.trim().length > 1 && form.taluk.trim().length > 1;
         return true;
     }
 
@@ -223,19 +289,26 @@ export default function SellPage() {
             navigate('/');
             return;
         }
+
+        // BUG 3 Fix — Refresh session before submitting
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            toast.error('Session expired. Please sign in again.');
+            navigate('/login');
+            return;
+        }
+
         const result = validate();
         if (!result.ok) {
             if (result.field === 'title') setStep(2);
+            if (result.field === 'image') setStep(3);
             toast.error('⚠️ ' + result.msg, { duration: 4000 });
             return;
         }
 
         setSubmitting(true);
         try {
-            // Combine address sub-fields into location string
-            const locParts = [form.village.trim(), form.taluk.trim(), form.location.trim()].filter(Boolean);
-            const fullLocation = locParts.join(', ') || form.location.trim();
-
+            // BUG 2 Fix — Store village, taluk, city, landmark as separate columns
             const payload = {
                 user_id: currentUser.id,
                 title: form.title.trim(),
@@ -251,71 +324,49 @@ export default function SellPage() {
                 is_vaccinated: form.is_vaccinated,
                 is_pregnant: form.is_pregnant,
                 price: form.for_adoption ? 0 : Number(form.price),
-                location: fullLocation,
+                village: form.village.trim(),
+                taluk: form.taluk.trim(),
+                location: form.location.trim(),  // city only
+                landmark: form.landmark.trim(),
                 state: form.state.trim(),
                 description: form.description.trim(),
-                image_url: form.image_url || null,
+                // BUG 1 Fix D — only save if real image exists
+                image_url: (form.image_url && form.image_url.trim().length > 5) ? form.image_url.trim() : null,
                 for_adoption: form.for_adoption,
                 is_promoted: form.is_promoted,
                 status: 'active',
                 created_at: new Date().toISOString(),
             };
 
-            // BUG #7: In edit mode, update directly — no payment required ONLY if it is already active
+            // BUG 3 Fix — One clean try/catch/finally; no early returns inside
             if (isEditing && editingId) {
-                if (location.state?.editListing?.status === 'active' || location.state?.editListing?.status === 'sold') {
-                    try {
-                        const { error } = await supabase
-                            .from('listings')
-                            .update({ ...payload, status: 'active', created_at: undefined })
-                            .eq('id', editingId)
-                            .eq('user_id', currentUser.id);
-                        if (error) throw error;
-                        toast.success('Listing updated! ✓');
-                        navigate('/my-listings');
-                    } catch (err) {
-                        console.error('Update error:', err);
-                        toast.error('Failed to update listing.');
-                    }
-                    return;
-                }
-            }
-
-            // Create record directly as active (Skipping Payment Page)
-            let newListingId = isEditing ? editingId : null;
-            if (!isEditing) {
-                try {
-                    const { data, error } = await supabase
-                        .from('listings')
-                        .insert(payload)
-                        .select()
-                        .single();
-                    if (error) throw error;
-                    newListingId = data.id;
-                } catch (err) {
-                    console.error('Insert error:', err);
-                    newListingId = 'd' + Date.now().toString().slice(-6);
-                }
+                const { error } = await supabase
+                    .from('listings')
+                    .update({ ...payload, created_at: undefined })
+                    .eq('id', editingId)
+                    .eq('user_id', currentUser.id);
+                if (error) throw error;
+                toast.success('Listing updated! ✓');
+                navigate('/my-listings');
             } else {
-                try {
-                    await supabase
-                        .from('listings')
-                        .update({ ...payload, status: 'active', created_at: undefined })
-                        .eq('id', editingId);
-                } catch (e) {
-                    console.error('Update error:', e);
-                }
+                const { data, error } = await supabase
+                    .from('listings')
+                    .insert(payload)
+                    .select()
+                    .single();
+                if (error) throw error;
+                navigate('/success', {
+                    state: {
+                        listingId: data.id,
+                        category: payload.category || 'livestock'
+                    }
+                });
             }
-
-            // Skip Payment Page, go straight to success
-            navigate('/success', {
-                state: {
-                    listingId: newListingId,
-                    category: payload.category || 'livestock'
-                }
-            });
+        } catch (err) {
+            console.error('Submit error:', err);
+            toast.error('Failed to save. Please try again: ' + err.message);
         } finally {
-            setSubmitting(false);
+            setSubmitting(false);  // ALWAYS resets — no more stuck button
         }
     }
 
@@ -380,7 +431,7 @@ export default function SellPage() {
                                     onClick={() => setF('category', c.id)}
                                 >
                                     <div className="cat-icon">{c.label}</div>
-                                    <div className="cat-name">{t(`homePage.${c.id === 'other-pet' ? 'other' : c.id + 's'}`)}</div>
+                                    <div className="cat-name">{c.name || t(`homePage.${c.id}`)}</div>
                                 </div>
                             ))}
                         </div>
@@ -396,14 +447,14 @@ export default function SellPage() {
                         <div className="fg">
                             <div className="ff">
                                 <label>{t('sellPage.listingTitle')} *</label>
-                                <input placeholder={listingType === 'pets' ? t('sellPage.titlePetPlaceholder', { defaultValue: "e.g. Golden Retriever Puppy" }) : t('sellPage.titleCattlePlaceholder', { defaultValue: "e.g. HF Cow — High Milk Yield" })} value={form.title} onChange={e => setF('title', e.target.value)} maxLength={100} />
+                                <input placeholder={getTitlePlaceholder(form.category)} value={form.title} onChange={e => setF('title', e.target.value)} maxLength={100} />
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
                                     {fieldErrors.title ? <span style={{ color: '#e63946', fontSize: 12 }}>⚠️ {fieldErrors.title}</span> : <span />}
                                     <span style={{ fontSize: 11, color: form.title.length < 5 ? '#e63946' : 'var(--g3)' }}>{form.title.length}/100 (min 5)</span>
                                 </div>
                             </div>
                             <div className="ff">
-                                <label>{t('sellPage.breed')}</label>
+                                <label>{t('sellPage.breed')} *</label>
                                 <select value={form.breed} onChange={(e) => setF('breed', e.target.value)} style={{ padding: '12px 14px', borderRadius: 8, border: '1.5px solid #ccc', outline: 'none' }}>
                                     <option value="">{t('sellPage.selectBreed')}</option>
                                     {getBreedOptions(form.category).map(b => (
@@ -412,35 +463,51 @@ export default function SellPage() {
                                 </select>
                                 {fieldErrors.breed && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.breed}</div>}
                                 {form.breed === 'Other' && (
-                                    <input type="text" placeholder={t('sellPage.specifyBreed')} value={form.customBreed} onChange={e => setF('customBreed', e.target.value)} style={{ marginTop: 8 }} />
+                                    <input type="text" placeholder={t('sellPage.specifyBreed')} value={form.customBreed} onChange={e => setF('customBreed', e.target.value)} maxLength={50} style={{ marginTop: 8 }} />
                                 )}
                             </div>
                         </div>
 
                         <div className="ff" style={{ marginTop: 15, marginBottom: 15 }}>
                             <label>{t('sellPage.gender')} *</label>
-                            <div className="radio-group" style={{ display: 'flex', gap: 16 }}>
-                                <label className="radio-option">
-                                    <input type="radio" name="gender" value="male" checked={form.gender === 'male'} onChange={(e) => setF('gender', e.target.value)} style={{ width: 18, height: 18 }} />
-                                    <span>{t('sellPage.male')}</span>
-                                </label>
-                                <label className="radio-option">
-                                    <input type="radio" name="gender" value="female" checked={form.gender === 'female'} onChange={(e) => setF('gender', e.target.value)} style={{ width: 18, height: 18 }} />
-                                    <span>{t('sellPage.female')}</span>
-                                </label>
+                            <div style={{ display: 'flex', gap: 12 }}>
+                                <button
+                                    type="button"
+                                    onClick={() => setF('gender', 'male')}
+                                    style={{
+                                        flex: 1, padding: '12px', borderRadius: 10, fontSize: 18, fontWeight: 700,
+                                        border: form.gender === 'male' ? '2px solid #1a7a3c' : '1.5px solid #ccc',
+                                        background: form.gender === 'male' ? '#e8f5e9' : 'white',
+                                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                                    }}
+                                >
+                                    ♂ {t('sellPage.male')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setF('gender', 'female')}
+                                    style={{
+                                        flex: 1, padding: '12px', borderRadius: 10, fontSize: 18, fontWeight: 700,
+                                        border: form.gender === 'female' ? '2px solid #e91e8c' : '1.5px solid #ccc',
+                                        background: form.gender === 'female' ? '#fce4ec' : 'white',
+                                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
+                                    }}
+                                >
+                                    ♀ {t('sellPage.female')}
+                                </button>
                             </div>
                             {fieldErrors.gender && <span style={{ color: '#e63946', fontSize: 12, marginTop: 4, display: 'block' }}>⚠️ {fieldErrors.gender}</span>}
                         </div>
 
                         <div className="fg3">
                             <div className="ff">
-                                <label>{t('sellPage.ageYears')}</label>
+                                <label>{t('sellPage.ageYears')} *</label>
                                 <input type="number" placeholder="0" value={form.age_years} onChange={e => { const v = Math.min(25, Math.max(0, Number(e.target.value))); setF('age_years', v || ''); }} min={0} max={25} />
                                 <small style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.maxYears')}</small>
                                 {fieldErrors.age && <div style={{ color: '#e63946', fontSize: 12, marginTop: 2 }}>⚠️ {fieldErrors.age}</div>}
                             </div>
                             <div className="ff">
-                                <label>{t('sellPage.weightKg')}</label>
+                                <label>{t('sellPage.weightKg')} *</label>
                                 <input type="number" placeholder="0" value={form.weight_kg} onChange={e => { const lim = getWeightLimits(form.category); const v = Math.min(lim.max, Math.max(0, Number(e.target.value))); setF('weight_kg', v || ''); }} min={0} max={getWeightLimits(form.category).max} />
                                 <small style={{ fontSize: 11, color: 'var(--g3)' }}>
                                     {isLivestock(form.category) ? `${t('sellPage.range')}: ${getWeightLimits(form.category).min}–${getWeightLimits(form.category).max} kg` : t('sellPage.enterApprox')}
@@ -450,8 +517,8 @@ export default function SellPage() {
                             {showsMilkYield(form.category, form.gender) && (
                                 <div className="ff">
                                     <label>{t('sellPage.milkYieldLabel')}</label>
-                                    <input type="number" placeholder="0" value={form.milk_yield_liters} onChange={e => setF('milk_yield_liters', e.target.value)} min={0} />
-                                    <small style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.dailyProduction')}</small>
+                                    <input type="number" placeholder="0" value={form.milk_yield_liters} onChange={e => { const v = Math.min(100, Math.max(0, Number(e.target.value))); setF('milk_yield_liters', v || ''); }} min={0} max={100} />
+                                    <small style={{ fontSize: 11, color: 'var(--g3)' }}>Max 100 litres/day</small>
                                 </div>
                             )}
                         </div>
@@ -461,7 +528,7 @@ export default function SellPage() {
 
                         <div className="fg" style={{ marginTop: 14 }}>
                             <div className="ff" style={{ flex: 1 }}>
-                                <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isVaccinated')} *</label>
+                                <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isVaccinated')}</label>
                                 <select
                                     value={form.is_vaccinated ? 'yes' : 'no'}
                                     onChange={e => setF('is_vaccinated', e.target.value === 'yes')}
@@ -474,7 +541,7 @@ export default function SellPage() {
 
                             {showsPregnancyStatus(form.category) && form.gender === 'female' && (
                                 <div className="ff" style={{ flex: 1 }}>
-                                    <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isPregnant')} *</label>
+                                    <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isPregnant')}</label>
                                     <select
                                         value={form.is_pregnant ? 'yes' : 'no'}
                                         onChange={e => setF('is_pregnant', e.target.value === 'yes')}
@@ -488,7 +555,7 @@ export default function SellPage() {
 
                             {isPet(form.category) && (
                                 <div className="ff" style={{ flex: 1 }}>
-                                    <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isTrained')} *</label>
+                                    <label style={{ color: '#9a3412', fontWeight: 600, fontSize: 13, marginBottom: 8 }}>{t('sellPage.isTrained')}</label>
                                     <select
                                         value={form.is_trained ? 'yes' : 'no'}
                                         onChange={e => setF('is_trained', e.target.value === 'yes')}
@@ -513,13 +580,8 @@ export default function SellPage() {
                             {t('sellPage.photoSubtitle')}
                         </p>
 
-                        {/* Show upload zone OR large preview */}
-                        {!form.image_url ? (
-                            <label className="upload-zone-big" htmlFor="photo-upload">
-                                <div className="uzb-icon">📷</div>
-                                <div className="uzb-sub">{t('sellPage.photoFormat')}</div>
-                            </label>
-                        ) : (
+                        {/* Show upload zone OR large preview — image is mandatory */}
+                        {form.image_url && form.image_url.trim() ? (
                             <div className="photo-preview-wrap">
                                 <img
                                     src={form.image_url}
@@ -528,7 +590,7 @@ export default function SellPage() {
                                 />
                                 <div className="photo-preview-bar">
                                     <span style={{ color: 'var(--green)', fontWeight: 700, fontSize: 13 }}>
-                                        {t('sellPage.photoSuccess')}
+                                        ✅ {t('sellPage.photoSuccess')}
                                     </span>
                                     <label
                                         htmlFor="photo-upload"
@@ -544,6 +606,18 @@ export default function SellPage() {
                                     </label>
                                 </div>
                             </div>
+                        ) : (
+                            <label className="upload-zone-big" htmlFor="photo-upload">
+                                <div className="uzb-icon">📷</div>
+                                <div className="uzb-sub">{t('sellPage.photoFormat')}</div>
+                                <div style={{
+                                    marginTop: 12, fontSize: 13, fontWeight: 700,
+                                    color: '#e63946', background: '#fff5f5',
+                                    borderRadius: 8, padding: '6px 12px'
+                                }}>
+                                    📸 Photo required to continue
+                                </div>
+                            </label>
                         )}
 
                         {/* Image verification warning */}
@@ -595,31 +669,13 @@ export default function SellPage() {
                             }}
                         />
 
-                        {/* Skip photo option */}
-                        {!form.image_url && (
-                            <div style={{ textAlign: 'center', marginTop: 12 }}>
-                                <span style={{ fontSize: 12, color: 'var(--g3)' }}>
-                                    {t('sellPage.noPhotoOptional')}
-                                </span>
-                                <button
-                                    style={{
-                                        background: 'none', border: 'none',
-                                        color: 'var(--g3)', fontSize: 12,
-                                        textDecoration: 'underline', cursor: 'pointer',
-                                    }}
-                                    onClick={() => setF('image_url', ' ')}
-                                >
-                                    {t('sellPage.skipForNow')}
-                                </button>
+                        {/* BUG 1 Fix F — Show image validation error */}
+                        {fieldErrors.image && (
+                            <div style={{ color: '#e63946', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
+                                ⚠️ {fieldErrors.image}
                             </div>
                         )}
-                    </div>
-                    <div className="fs ya" style={{ textAlign: 'center' }}>
-                        <h3>{t('sellPage.mlVerificationTitle', { defaultValue: '🤖 ML Verification (Optional)' })}</h3>
-                        <p style={{ fontSize: 13, color: 'var(--g3)', marginBottom: 14 }}>{t('sellPage.mlVerificationDesc', { defaultValue: "Use AI to verify your cattle and get a trust badge — increases buyer confidence by 78%." })}</p>
-                        <button className="btn-primary" style={{ width: '100%' }} onClick={() => toast(t('sellPage.mlVerificationToast', { defaultValue: 'ML Verification: Demo mode — auto-passed! ✓' }), { icon: '🤖' })}>
-                            📷 {t('sellPage.startMlVerification', { defaultValue: 'Start ML Verification' })}
-                        </button>
+                        {/* BUG 1 Fix E — Skip button removed; image is mandatory */}
                     </div>
                 </div>
             )}
@@ -639,13 +695,17 @@ export default function SellPage() {
                             <div className="ff">
                                 <label>{t('sellPage.askingPrice')}</label>
                                 <input
-                                    type="number"
-                                    placeholder={t('sellPage.pricePlaceholder', { defaultValue: "e.g. 65000" })}
-                                    value={form.price}
-                                    onChange={e => setF('price', e.target.value)}
+                                    type="text"
+                                    placeholder={t('sellPage.pricePlaceholder', { defaultValue: "e.g. 65,000" })}
+                                    value={formatPrice(form.price)}
+                                    onChange={e => {
+                                        const raw = parsePrice(e.target.value);
+                                        const v = Math.min(9999999, Number(raw));
+                                        setF('price', v || '');
+                                    }}
                                     className="starred"
-                                    min={0}
                                 />
+                                <small style={{ fontSize: 11, color: 'var(--g3)' }}>Max ₹99,99,999</small>
                             </div>
                         )}
                     </div>
@@ -653,28 +713,38 @@ export default function SellPage() {
                         <h3>{t('sellPage.locationDetails')}</h3>
                         <div className="fg">
                             <div className="ff">
-                                <label>{t('sellPage.village')}</label>
-                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} />
+                                {/* BUG 6 Fix B — village is optional */}
+                                <label>{t('sellPage.village')} *</label>
+                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={100} />
+                                {/* BUG 7 Fix D — char counter */}
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/100</small>
+                                {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
                             </div>
                             <div className="ff">
-                                <label>{t('sellPage.taluk')}</label>
-                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} />
+                                {/* BUG 6 Fix B — taluk is optional */}
+                                <label>{t('sellPage.taluk')} *</label>
+                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={100} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/100</small>
+                                {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
                             </div>
                         </div>
                         <div className="fg">
                             <div className="ff">
-                                <label>{t('sellPage.city')} *</label>
-                                <input placeholder={t('sellPage.cityPlaceholder', { defaultValue: "e.g. Coimbatore" })} value={form.location} onChange={e => setF('location', e.target.value)} />
+                                <label>{t('sellPage.city')}</label>
+                                <input placeholder={t('sellPage.cityPlaceholder', { defaultValue: "e.g. Coimbatore" })} value={form.location} onChange={e => setF('location', e.target.value)} maxLength={100} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.location.length}/100</small>
                                 {fieldErrors.location && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.location}</div>}
                             </div>
                             <div className="ff">
                                 <label>{t('sellPage.landmark')} <span style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.landmarkOptional')}</span></label>
-                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} />
+                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={150} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/150</small>
+                                {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
                             </div>
                         </div>
                         <div className="fg">
                             <div className="ff">
-                                <label>State *</label>
+                                <label>{t('sellPage.state')}</label>
                                 <select value={form.state} onChange={e => setF('state', e.target.value)}>
                                     <option value="">{t('sellPage.selectState')}</option>
                                     {INDIAN_STATES.map(s => (
@@ -691,7 +761,7 @@ export default function SellPage() {
                         <h3>{t('sellPage.description')}</h3>
                         <div className="ff">
                             <textarea
-                                placeholder={t('sellPage.descriptionPlaceholder')}
+                                placeholder={getDescriptionPlaceholder(form.category)}
                                 value={form.description}
                                 onChange={e => setF('description', e.target.value)}
                                 maxLength={1000}
@@ -719,7 +789,7 @@ export default function SellPage() {
                 ) : (
                     <button
                         className="btn-continue"
-                        disabled={!canGoNext() || submitting}
+                        disabled={submitting || !canGoNext()}
                         onClick={handleSubmit}
                     >
                         {submitting ? (

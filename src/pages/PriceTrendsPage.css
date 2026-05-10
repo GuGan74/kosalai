@@ -11,7 +11,7 @@
 }
 
 .pt-empty h3 {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 22px;
     font-weight: 900;
     color: var(--g1);
@@ -46,7 +46,7 @@
 }
 
 .pt-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 24px;
     font-weight: 900;
     color: var(--g1);
@@ -99,7 +99,7 @@
     font-size: 20px;
     font-weight: 900;
     margin-bottom: 10px;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .pt-trend.up {
@@ -135,7 +135,7 @@
 }
 
 .pt-table-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 18px;
     font-weight: 800;
     margin-bottom: 18px;

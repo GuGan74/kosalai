@@ -19,7 +19,7 @@
 }
 
 .suc-ttl {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 28px;
     font-weight: 900;
     color: var(--g1);
@@ -52,7 +52,7 @@
     font-size: 18px;
     font-weight: 900;
     color: var(--g1);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .suc-id .meta {
@@ -92,7 +92,7 @@
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .suc-btns {
@@ -109,7 +109,7 @@
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     color: var(--g2);
 }
 
@@ -122,6 +122,6 @@
     font-size: 13px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     color: white;
 }

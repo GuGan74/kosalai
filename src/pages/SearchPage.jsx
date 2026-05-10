@@ -76,7 +76,7 @@ export default function SearchPage() {
             <SEOHead
                 title={query ? t('searchPage.seoTitleQuery', { query }) : t('searchPage.seoTitle')}
                 description={t('searchPage.seoDescription')}
-                url="https://model-mauve.vercel.app/search"
+                url="https://kosalai.in/search"
             />
             <div className="search-bar-top">
                 <BackButton fallbackPath="/" className="" />

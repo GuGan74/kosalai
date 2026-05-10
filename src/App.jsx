@@ -19,6 +19,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import PaymentPage from './pages/PaymentPage';
 import SuccessPage from './pages/SuccessPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProfileSetupPage from './pages/ProfileSetupPage';
 
 const AdminPage = React.lazy(() => import('./pages/AdminPage'));
 import SellerProfilePage from './pages/SellerProfilePage';
@@ -40,6 +41,15 @@ function LazyFallback() {
   );
 }
 
+// Redirects already-logged-in users away from login page
+function AuthGuard({ children }) {
+  const { isLoggedIn } = useAuth();
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
 // Saves the URL the user wanted, then sends them to login
 function LoginGuard({ children }) {
   const { isLoggedIn } = useAuth();
@@ -55,7 +65,8 @@ function LoginGuard({ children }) {
 }
 
 function AppRoutes() {
-  const { isLoggedIn, isGuest, loading } = useAuth();
+  const location = useLocation();
+  const { isLoggedIn, isGuest, loading, needsProfileSetup } = useAuth();
   // Sync fallback: read localStorage directly to avoid
   // the React async state update race condition
   const isGuestNow = isGuest ||
@@ -94,19 +105,37 @@ function AppRoutes() {
       <>
         <Toaster position="top-center" />
         <Routes>
-          <Route path="/login" element={<SplashPage />} />
+          <Route path="/login" element={
+            <AuthGuard>
+              <SplashPage />
+            </AuthGuard>
+          } />
           <Route path="*" element={<OnboardingPage />} />
         </Routes>
       </>
     );
   }
 
+  // New Google users must complete profile before accessing the app
+  if (needsProfileSetup) {
+    return (
+      <>
+        <Toaster position="top-center" />
+        <Routes>
+          <Route path="*" element={<ProfileSetupPage />} />
+        </Routes>
+      </>
+    );
+  }
+
+  const hideNav = location.pathname === '/login';
+
   // ── Guest OR logged-in → full app ─────────────────────
   return (
     <>
       <Toaster position="top-center" />
-      <Navbar />
-      <div style={{ paddingBottom: 'var(--bottom-nav-h)' }}>
+      {!hideNav && <Navbar />}
+      <div style={{ paddingBottom: hideNav ? 0 : 'var(--bottom-nav-h)' }}>
         <Suspense fallback={<LazyFallback />}>
           <Routes>
             {/* FREE — guests browse without login */}
@@ -115,7 +144,11 @@ function AppRoutes() {
             <Route path="/search"
               element={<SearchPage />} />
             <Route path="/login"
-              element={<SplashPage />} />
+              element={
+                <AuthGuard>
+                  <SplashPage />
+                </AuthGuard>
+              } />
 
             {/* PROTECTED — login required */}
             <Route path="/listing/:id"
@@ -173,7 +206,7 @@ function AppRoutes() {
           </Routes>
         </Suspense>
       </div>
-      <BottomNav />
+      {!hideNav && <BottomNav />}
     </>
   );
 }

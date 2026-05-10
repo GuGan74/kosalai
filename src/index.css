@@ -45,7 +45,7 @@ html {
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
   background: var(--bg);
   color: var(--g1);
   min-height: 100vh;
@@ -61,6 +61,7 @@ a {
   color: inherit;
 }
 
+button,
 input,
 select,
 textarea {
@@ -193,7 +194,7 @@ textarea {
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
   transition: 0.15s;
   box-shadow: 0 3px 12px rgba(26, 122, 60, 0.3);
 }
@@ -216,7 +217,7 @@ textarea {
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
   transition: 0.15s;
 }
 
@@ -274,7 +275,7 @@ textarea {
   border: 2px solid var(--g5);
   border-radius: 9px;
   font-size: 13px;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
   font-weight: 600;
   outline: none;
   transition: 0.15s;
@@ -344,7 +345,7 @@ textarea {
   border-radius: 11px;
   outline: none;
   transition: 0.15s;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
 }
 
 .otp-box:focus {

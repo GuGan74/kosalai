@@ -27,7 +27,7 @@
 }
 
 .sell-ttl {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-size: 20px;
     font-weight: 900;
     color: var(--g1);
@@ -252,7 +252,7 @@
     border: 2px solid var(--g5);
     border-radius: 9px;
     font-size: 13px;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Nunito', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     font-weight: 600;
     outline: none;
     transition: 0.15s;
@@ -345,7 +345,7 @@
     font-size: 16px;
     font-weight: 800;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', 'Latha', 'Arial Unicode MS', 'Vijaya', sans-serif;
     box-shadow: 0 4px 16px rgba(26, 122, 60, .3);
     display: flex;
     align-items: center;

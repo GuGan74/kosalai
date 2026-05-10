@@ -80,19 +80,13 @@ export default function OnboardingPage() {
                 'linear-gradient(160deg,#0f5228 0%,#1a7a3c 55%,#0d3d1e 100%)',
         }}>
 
-
-            {/* Logo */}
+            {/* Header with Language Selector (Title removed per user request) */}
             <div style={{
-                display: 'flex', alignItems: 'center',
-                gap: 10, marginBottom: 24,
+                width: '100%', maxWidth: 460,
+                display: 'flex', justifyContent: 'flex-end', alignItems: 'center',
+                marginBottom: 24, padding: '0 10px', zIndex: 10
             }}>
-                {/* Removed cow emoji here per rebrand */}
-                <span style={{
-                    fontFamily: 'Poppins,sans-serif',
-                    fontSize: 24, fontWeight: 900, color: 'white',
-                }}>
-                    Kosalai
-                </span>
+                <LanguageSelector />
             </div>
 
             {/* Card */}
@@ -175,24 +169,6 @@ export default function OnboardingPage() {
                 </p>
             </div>
 
-            {/* Footer */}
-            <div style={{
-                marginTop: 18, fontSize: 13,
-                color: 'rgba(255,255,255,0.75)',
-            }}>
-                {t('onboardingPage.alreadyHaveAccount')}{' '}
-                <button
-                    onClick={() => navigate('/login')}
-                    style={{
-                        background: 'none', border: 'none',
-                        color: '#F9E04B', fontWeight: 800,
-                        fontSize: 13, cursor: 'pointer',
-                        textDecoration: 'underline',
-                    }}
-                >
-                    {t('onboardingPage.signIn')}
-                </button>
-            </div>
         </div>
     );
 }
