@@ -11,7 +11,7 @@ export default defineConfig({
       ext: '.gz',
     }),
     visualizer({
-      open: true,
+      open: false,
       gzipSize: true,
       brotliSize: true,
     })
