@@ -106,7 +106,7 @@ function AppRoutes() {
   // ── Neither logged in NOR guest → Onboarding ──────────
   if (!isLoggedIn && !isGuestNow) {
     return (
-      <>
+      <Suspense fallback={<LazyFallback />}>
         <Toaster position="top-center" />
         <Routes>
           <Route path="/login" element={
@@ -116,19 +116,19 @@ function AppRoutes() {
           } />
           <Route path="*" element={<OnboardingPage />} />
         </Routes>
-      </>
+      </Suspense>
     );
   }
 
   // New Google users must complete profile before accessing the app
   if (needsProfileSetup) {
     return (
-      <>
+      <Suspense fallback={<LazyFallback />}>
         <Toaster position="top-center" />
         <Routes>
           <Route path="*" element={<ProfileSetupPage />} />
         </Routes>
-      </>
+      </Suspense>
     );
   }
 
