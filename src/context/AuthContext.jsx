@@ -4,11 +4,21 @@ import { supabase } from '../lib/supabase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const FALLBACK_MS = 10000; // 10 seconds max wait for auth session
+    const FALLBACK_MS = 10000;
+    // Supabase stores the token under this key — check it synchronously
+    const SB_KEY = `sb-ulbrlhcelwoojwnvznrd-auth-token`;
+
+    // Synchronous check: if we have a token, assume logged in immediately
+    // This eliminates the green splash screen on refresh
+    const hasStoredToken = (() => {
+        try { return !!localStorage.getItem(SB_KEY); }
+        catch { return false; }
+    })();
+
     const [currentUser, setCurrentUser] = useState(null);
     const [currentProfile, setCurrentProfile] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [isLoggedIn, setIsLoggedIn] = useState(hasStoredToken); // instant guess
+    const [loading, setLoading] = useState(!hasStoredToken); // skip splash if token exists
     const [userRole, setUserRole] = useState('user');
 
     // ── Guest mode ──────────────────────────────────────────

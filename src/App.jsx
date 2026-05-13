@@ -105,7 +105,12 @@ function AppRoutes() {
   }
 
   // ── Neither logged in NOR guest → Onboarding ──────────
+  // Save current deep link so we can return here after login
   if (!isLoggedIn && !isGuestNow) {
+    const currentPath = location.pathname + location.search;
+    if (currentPath !== '/' && currentPath !== '/login') {
+      sessionStorage.setItem('pb_redirect_after_login', currentPath);
+    }
     return (
       <Suspense fallback={<LazyFallback />}>
         <Toaster position="top-center" />
