@@ -226,7 +226,7 @@ export default function ListingDetailPage() {
 
                     <div className="stats-grid">
                         {listing.age_years != null && <div className="sg"><div className="lb">{t('listingDetail.age')}</div><div className="vl">{listing.age_years} {t('listingDetail.years')}</div></div>}
-                        {['cow', 'buffalo', 'goat', 'sheep'].includes(listing.category) && listing.milk_yield_liters && <div className="sg"><div className="lb">{t('listingDetail.milkYield')}</div><div className="vl">{listing.milk_yield_liters}{t('listingDetail.perDay')}</div></div>}
+                        {['cow', 'buffalo', 'goat', 'sheep'].includes(listing.category) && listing.gender?.toLowerCase() !== 'male' && listing.milk_yield_liters && <div className="sg"><div className="lb">{t('listingDetail.milkYield')}</div><div className="vl">{listing.milk_yield_liters}{t('listingDetail.perDay')}</div></div>}
                         {listing.weight_kg && <div className="sg"><div className="lb">{t('listingDetail.weight')}</div><div className="vl">{listing.weight_kg} {t('listingDetail.kg')}</div></div>}
                         {listing.gender && <div className="sg"><div className="lb">{t('listingDetail.gender')}</div><div className="vl" style={{ textTransform: 'capitalize' }}>{t('listing.' + listing.gender.toLowerCase(), { defaultValue: listing.gender })}</div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.category')}</div><div className="vl" style={{ textTransform: 'capitalize' }}><TranslatedText>{listing.category}</TranslatedText></div></div>

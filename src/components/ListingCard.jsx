@@ -141,7 +141,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 <div className="lc-stats-grid">
                     {!isPet ? (
                         <>
-                            {['cow', 'buffalo', 'goat', 'sheep'].includes(category) && (
+                            {['cow', 'buffalo', 'goat', 'sheep'].includes(category) && listing.gender?.toLowerCase() !== 'male' && (
                                 <div className="stat-col">
                                     <div className="stat-lbl">{t('listingCard.milkYield')}</div>
                                     <div className="stat-val">
