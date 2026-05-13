@@ -284,13 +284,20 @@ export default function SellPage() {
     }
 
     async function handleSubmit() {
-        if (!currentUser) {
+        // If currentUser is null (async session not yet resolved), wait up to 5s
+        let user = currentUser;
+        if (!user) {
+            const { data: { session } } = await supabase.auth.getSession();
+            user = session?.user || null;
+        }
+
+        if (!user) {
             toast.error('Please log in first');
             navigate('/');
             return;
         }
 
-        // BUG 3 Fix — Refresh session before submitting
+        // Verify session is still valid
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             toast.error('Session expired. Please sign in again.');
@@ -310,7 +317,7 @@ export default function SellPage() {
         try {
             // BUG 2 Fix — Store village, taluk, city, landmark as separate columns
             const payload = {
-                user_id: currentUser.id,
+                user_id: user.id,
                 title: form.title.trim(),
                 category: form.category,
                 breed: form.breed === 'Other' ? (form.customBreed?.trim() || 'Other') : form.breed,
@@ -330,7 +337,6 @@ export default function SellPage() {
                 landmark: form.landmark.trim(),
                 state: form.state.trim(),
                 description: form.description.trim(),
-                // BUG 1 Fix D — only save if real image exists
                 image_url: (form.image_url && form.image_url.trim().length > 5) ? form.image_url.trim() : null,
                 for_adoption: form.for_adoption,
                 is_promoted: form.is_promoted,
@@ -338,13 +344,12 @@ export default function SellPage() {
                 created_at: new Date().toISOString(),
             };
 
-            // BUG 3 Fix — One clean try/catch/finally; no early returns inside
             if (isEditing && editingId) {
                 const { error } = await supabase
                     .from('listings')
                     .update({ ...payload, created_at: undefined })
                     .eq('id', editingId)
-                    .eq('user_id', currentUser.id);
+                    .eq('user_id', user.id);
                 if (error) throw error;
                 toast.success('Listing updated! ✓');
                 navigate('/my-listings');
@@ -379,7 +384,7 @@ export default function SellPage() {
                     <div className="sell-ttl">
                         {isEditing ? t('sellPage.editListing') : (listingType === 'livestock' ? t('sellPage.sellCattle') : t('sellPage.sellPet'))}
                     </div>
-                    <div className="sell-sub">{t('sellPage.stepOf', { step, total: STEPS.length })}: {t(`sellPage.${STEPS[step - 1].toLowerCase().replace(' ', '')}`)}</div>
+                    <div className="sell-sub">{t('sellPage.stepOf', { step, total: STEPS.length })}: {t(`sellPage.${STEPS[step - 1]}`)}</div>
                 </div>
             </div>
 
