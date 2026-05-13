@@ -143,10 +143,11 @@ export default function SellPage() {
 
     function getWeightLimits(cat) {
         if (['cow', 'buffalo'].includes(cat)) return { min: 50, max: 1500 };
-        if (['goat', 'sheep'].includes(cat)) return { min: 5, max: 150 };
-        if (cat === 'dog') return { min: 2, max: 100 };
-        if (cat === 'cat') return { min: 1, max: 15 };
-        return { min: 1, max: 1500 };
+        if (['goat', 'sheep'].includes(cat)) return { min: 1, max: 150 };  // min 1kg (young kids)
+        if (cat === 'horse') return { min: 100, max: 1000 };
+        if (cat === 'dog') return { min: 1, max: 100 };
+        if (cat === 'cat') return { min: 0.5, max: 15 };
+        return { min: 0.1, max: 1500 };
     }
 
     useEffect(() => {
@@ -307,9 +308,12 @@ export default function SellPage() {
 
         const result = validate();
         if (!result.ok) {
-            if (result.field === 'title') setStep(2);
-            if (result.field === 'image') setStep(3);
-            toast.error('⚠️ ' + result.msg, { duration: 4000 });
+            // Show a clear, long-lasting error toast
+            toast.error(`⚠️ ${result.msg}`, { duration: 6000 });
+            // Navigate to the step containing the error
+            if (['title', 'breed', 'gender', 'age', 'weight'].includes(result.field)) setStep(2);
+            else if (result.field === 'image') setStep(3);
+            else setStep(4); // price, location, state, village, taluk errors stay on step 4
             return;
         }
 
@@ -513,7 +517,7 @@ export default function SellPage() {
                             </div>
                             <div className="ff">
                                 <label>{t('sellPage.weightKg')} *</label>
-                                <input type="number" placeholder="0" value={form.weight_kg} onChange={e => { const lim = getWeightLimits(form.category); const v = Math.min(lim.max, Math.max(0, Number(e.target.value))); setF('weight_kg', v || ''); }} min={0} max={getWeightLimits(form.category).max} />
+                                <input type="number" placeholder="0" step="0.1" value={form.weight_kg} onChange={e => { const lim = getWeightLimits(form.category); const v = Math.min(lim.max, Math.max(0, parseFloat(e.target.value) || 0)); setF('weight_kg', v || ''); }} min={0} max={getWeightLimits(form.category).max} />
                                 <small style={{ fontSize: 11, color: 'var(--g3)' }}>
                                     {isLivestock(form.category) ? `${t('sellPage.range')}: ${getWeightLimits(form.category).min}–${getWeightLimits(form.category).max} kg` : t('sellPage.enterApprox')}
                                 </small>
