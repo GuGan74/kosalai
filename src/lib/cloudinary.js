@@ -59,7 +59,7 @@ export async function uploadToCloudinary(file, { folder = 'listing-images', onPr
                 if (xhr.status === 200) {
                     const response = JSON.parse(xhr.responseText);
                     const secureUrl = response.secure_url;
-                    const optimizedUrl = secureUrl.replace('/upload/', '/upload/f_auto,q_auto,w_800/');
+                    const optimizedUrl = secureUrl.replace('/upload/', '/upload/f_auto,q_auto,w_600/');
                     resolve(optimizedUrl);
                 } else {
                     reject(new Error(`Upload failed: ${xhr.statusText} - ${xhr.responseText}`));
