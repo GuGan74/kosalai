@@ -77,18 +77,15 @@ export function AuthProvider({ children }) {
 
         supabase.auth.getSession().then(async ({ data: { session }, error }) => {
             if (error) console.error("Session error:", error);
-            if (session) {
-                if (mounted) {
-                    setCurrentUser(session.user);
-                    setIsLoggedIn(true); // Set immediately to avoid redirect
-                    clearGuestMode();
-                }
-                try {
-                    await loadProfile(session.user.id);
-                } catch (e) {
-                    console.error("Profile load err:", e);
-                }
+            
+            if (session && mounted) {
+                setCurrentUser(session.user);
+                setIsLoggedIn(true);
+                clearGuestMode();
+                // Start profile fetch in background without blocking the UI
+                loadProfile(session.user.id);
             }
+
             if (mounted) {
                 setLoading(false);
                 clearTimeout(fallbackTimer);
