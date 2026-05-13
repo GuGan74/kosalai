@@ -185,6 +185,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                             setTimeout(() => navigate('/login'), 800);
                             return;
                         }
+                        navigate(`/seller/${owner_id}`);
                     }}>
                         <TranslatedText>View Seller</TranslatedText>
                     </button>
