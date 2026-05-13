@@ -276,10 +276,8 @@ export default function SellPage() {
     function canGoNext() {
         if (step === 1) return form.category !== '';
         if (step === 2) return form.title.trim().length >= 5 && form.breed.trim().length >= 1 && !!form.gender && form.age_years !== '' && form.weight_kg !== '';
-        if (step === 3) {
-            // Image is mandatory — must have a real uploaded URL
-            return !!(form.image_url && form.image_url.trim().length > 5);
-        }
+        if (step === 3) return !!(form.image_url && form.image_url.trim().length > 5);
+        // Step 4: price + city + state + village + taluk are all required
         if (step === 4) return (form.price !== '' || form.for_adoption) && form.location.trim().length > 2 && !!form.state && form.village.trim().length > 1 && form.taluk.trim().length > 1;
         return true;
     }
@@ -739,9 +737,9 @@ export default function SellPage() {
                         </div>
                         <div className="fg">
                             <div className="ff">
-                                <label>{t('sellPage.city')}</label>
+                                <label>{t('sellPage.city')} <span style={{ color: '#e63946' }}>*</span></label>
                                 <input placeholder={t('sellPage.cityPlaceholder', { defaultValue: "e.g. Coimbatore" })} value={form.location} onChange={e => setF('location', e.target.value)} maxLength={100} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.location.length}/100</small>
+                                <small style={{ fontSize: 11, color: 'var(--g3)', textAlign: 'right', display: 'block' }}>{form.location.length}/100</small>
                                 {fieldErrors.location && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.location}</div>}
                             </div>
                             <div className="ff">
