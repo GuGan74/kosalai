@@ -72,44 +72,52 @@ export default function HomePage() {
     const fetchListings = useCallback(async (signal) => {
         const cacheKey = `ks_home_${listingType}_${selectedState}_${sortBy}`;
         
+        // 1. Try Cache First - If found, show it immediately without full 'loading' state
         try {
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
                 const parsed = JSON.parse(cached);
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                     setListings(parsed);
-                    setLoading(false);
-                } else {
-                    setLoading(true);
-                    setListings([]);
+                    setLoading(false); // Found cache, stop showing skeletons
                 }
-            } else {
-                setLoading(true);
-                setListings([]);
             }
         } catch(e) {
+            console.warn('Cache read error', e);
+        }
+
+        // Only show full loading if we have NO data yet
+        if (listings.length === 0) {
             setLoading(true);
-            setListings([]);
         }
 
         try {
-            let query = supabase.from('listings').select('*').eq('status', 'active');
+            // 2. Selective Fetch - Only get columns needed for the card
+            // This significantly reduces the JSON payload size
+            let query = supabase.from('listings')
+                .select('id, title, category, breed, location, state, price, milk_yield_liters, age_years, for_adoption, image_url, user_id, status, gender, created_at')
+                .eq('status', 'active');
+
             if (listingType === 'livestock') {
                 query = query.in('category', LIVESTOCK_IDS);
             } else {
                 query = query.in('category', PET_IDS);
             }
+
             if (selectedState !== 'all') query = query.eq('state', selectedState);
+            
             if (sortBy === 'recent') query = query.order('created_at', { ascending: false });
             else if (sortBy === 'price_low') query = query.order('price', { ascending: true });
             else if (sortBy === 'price_high') query = query.order('price', { ascending: false });
+
             const { data, error } = await query.limit(60);
 
-            // If the request was cancelled (mode changed again), don't update state
             if (signal?.aborted) return;
-
             if (error) throw error;
+
             const fetched = data || [];
+            
+            // 3. Fallback to Demo if empty
             if (fetched.length === 0) {
                 const fallback = listingType === 'livestock'
                     ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
@@ -123,10 +131,7 @@ export default function HomePage() {
         } catch (err) {
             if (signal?.aborted) return;
             console.error('Fetch error:', err);
-            const fallback = listingType === 'livestock'
-                ? DEMO_LISTINGS.filter(l => !PET_IDS.includes(l.category))
-                : DEMO_LISTINGS.filter(l => PET_IDS.includes(l.category));
-            setListings(fallback);
+            // Don't wipe the screen on error if we have old data
         } finally {
             if (!signal?.aborted) {
                 setLoading(false);
