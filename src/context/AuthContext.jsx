@@ -160,7 +160,7 @@ export function AuthProvider({ children }) {
         });
     }
 
-    const value = {
+    const value = React.useMemo(() => ({
         currentUser,
         currentProfile,
         isLoggedIn,
@@ -179,7 +179,10 @@ export function AuthProvider({ children }) {
         needsProfileSetup: isLoggedIn &&
             currentProfile !== null &&
             !currentProfile?.is_profile_complete,
-    };
+    }), [
+        currentUser, currentProfile, isLoggedIn, loading, 
+        userRole, isGuest, guestPrefs, listingType, loadProfile
+    ]);
 
     return (
         <AuthContext.Provider value={value}>
