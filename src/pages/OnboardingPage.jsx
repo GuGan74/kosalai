@@ -7,10 +7,14 @@ import logoImg from '../assets/kosalai-logo-removebg-preview.png';
 
 export default function OnboardingPage() {
     const navigate = useNavigate();
-    const { enterGuestMode } = useAuth();
+    const { enterGuestMode, setListingType } = useAuth();
     const { t } = useTranslation();
 
     function go(role, category) {
+        // 1. Sync the app mode (Cattle vs Pets) immediately
+        setListingType(category);
+
+        // 2. Persist guest preferences
         try {
             localStorage.setItem('pb_guest', 'true');
             localStorage.setItem('pb_guest_prefs',
@@ -18,16 +22,18 @@ export default function OnboardingPage() {
         } catch (err) {
             console.error('Failed to set guest preference', err);
         }
+        
         enterGuestMode({ role, category });
 
-        // Sellers go directly to sell page
-        // (LoginGuard will redirect them to login if not signed in,
-        //  then bring them back to /sell after sign in)
-        if (role === 'seller') {
-            navigate('/sell');
-        } else {
-            navigate('/');
-        }
+        // 3. Navigate with a micro-task delay to ensure state propagates
+        // Sellers go to /sell (protected), Buyers go to / (home)
+        setTimeout(() => {
+            if (role === 'seller') {
+                navigate('/sell');
+            } else {
+                navigate('/');
+            }
+        }, 10);
     }
 
     const card = (onClick, bg, border, accent, icon, label, sub) => (
