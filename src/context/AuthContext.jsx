@@ -67,13 +67,13 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         let mounted = true;
 
-        // Fallback: Force loading false after 6s if Supabase hangs
+        // Fallback: Force loading false after 60s if Supabase hangs
         const fallbackTimer = setTimeout(() => {
             if (mounted) {
-                console.warn("Auth session fetch timed out after 6s. Proceeding...");
+                console.warn("Auth session fetch timed out after 60s. Proceeding...");
                 setLoading(false);
             }
-        }, 6000);
+        }, 60000);
 
         supabase.auth.getSession().then(async ({ data: { session }, error }) => {
             if (error) console.error("Session error:", error);
