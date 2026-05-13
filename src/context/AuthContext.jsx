@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
+    const FALLBACK_MS = 10000; // 10 seconds max wait for auth session
     const [currentUser, setCurrentUser] = useState(null);
     const [currentProfile, setCurrentProfile] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
