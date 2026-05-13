@@ -56,9 +56,10 @@ export function AuthProvider({ children }) {
     // ────────────────────────────────────────────────────────
 
     const loadProfile = React.useCallback(async (uid) => {
-        const { data } = await supabase
+        if (!uid) return;
+        const { data, error } = await supabase
             .from('profiles').select('*').eq('id', uid).single();
-        if (data) {
+        if (data && !error) {
             setCurrentProfile(data);
             setUserRole(data.role || 'user');
         }
@@ -66,15 +67,11 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         let mounted = true;
-
-        // Fallback: Force loading false after 60s if Supabase hangs
         const fallbackTimer = setTimeout(() => {
-            if (mounted) {
-                console.warn("Auth session fetch timed out after 60s. Proceeding...");
-                setLoading(false);
-            }
-        }, 60000);
+            if (mounted) setLoading(false);
+        }, FALLBACK_MS);
 
+        // Initial session check
         supabase.auth.getSession().then(async ({ data: { session }, error }) => {
             if (error) console.error("Session error:", error);
             
@@ -82,8 +79,9 @@ export function AuthProvider({ children }) {
                 setCurrentUser(session.user);
                 setIsLoggedIn(true);
                 clearGuestMode();
-                // Start profile fetch in background without blocking the UI
                 loadProfile(session.user.id);
+            } else if (!session && mounted) {
+                setIsLoggedIn(false);
             }
 
             if (mounted) {
