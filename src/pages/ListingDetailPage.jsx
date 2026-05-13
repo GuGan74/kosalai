@@ -25,48 +25,68 @@ export default function ListingDetailPage() {
 
     const [isLiked, setIsLiked] = useState(false);
 
-    const checkIfLiked = React.useCallback(async () => {
-        if (!currentUser) return;
-        if (String(id).startsWith('d') && String(id).length < 10) return;
-
-        const { data } = await supabase
-            .from('favorites')
-            .select('id')
-            .eq('user_id', currentUser.id)
-            .eq('listing_id', id);
-        if (data && data.length > 0) setIsLiked(true);
-    }, [id, currentUser]);
-
-    const fetchListing = React.useCallback(async () => {
+    const fetchAllData = React.useCallback(async () => {
+        // Demo mode shortcut
         if (String(id).startsWith('d') && String(id).length < 10) {
             setListing(DEMO_MAP[id] || DEMO_MAP['d1']);
             setLoading(false);
             return;
         }
-        const { data } = await supabase.from('listings').select('*').eq('id', id).single();
-        setListing(data);
 
-        // Fetch seller profile
-        if (data?.user_id) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('phone, full_name, created_at')
-                .eq('id', data.user_id)
-                .single();
-            if (profile?.phone) setSellerPhone(profile.phone);
-            if (profile?.full_name) setSellerName(profile.full_name);
-            if (profile?.created_at) setSellerJoinDate(profile.created_at);
+        // 1. Check cache first for instant display on refresh
+        const cacheKey = `ks_listing_${id}`;
+        try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const { listing: cl, seller } = JSON.parse(cached);
+                if (cl) {
+                    setListing(cl);
+                    setLoading(false); // Show immediately from cache
+                    if (seller?.phone) setSellerPhone(seller.phone);
+                    if (seller?.full_name) setSellerName(seller.full_name);
+                    if (seller?.created_at) setSellerJoinDate(seller.created_at);
+                }
+            }
+        } catch (e) { /* ignore cache errors */ }
+
+        // 2. Run all DB fetches in PARALLEL (not sequential)
+        const listingPromise = supabase.from('listings').select('*').eq('id', id).single();
+        const likedPromise = currentUser
+            ? supabase.from('favorites').select('id').eq('user_id', currentUser.id).eq('listing_id', id)
+            : Promise.resolve({ data: [] });
+
+        // Fire both at the same time
+        const [{ data: listingData }, { data: likedData }] = await Promise.all([listingPromise, likedPromise]);
+
+        if (likedData && likedData.length > 0) setIsLiked(true);
+
+        if (listingData) {
+            setListing(listingData);
+
+            // 3. Fetch seller profile in parallel with the above (non-blocking)
+            if (listingData.user_id) {
+                supabase.from('profiles')
+                    .select('phone, full_name, created_at')
+                    .eq('id', listingData.user_id)
+                    .single()
+                    .then(({ data: profile }) => {
+                        if (profile?.phone) setSellerPhone(profile.phone);
+                        if (profile?.full_name) setSellerName(profile.full_name);
+                        if (profile?.created_at) setSellerJoinDate(profile.created_at);
+                        // Save to cache
+                        try {
+                            sessionStorage.setItem(cacheKey, JSON.stringify({ listing: listingData, seller: profile }));
+                        } catch(e) {}
+                    });
+            }
         }
 
         setLoading(false);
-    }, [id]);
+    }, [id, currentUser]);
 
     useEffect(() => {
-        (async () => {
-            await fetchListing();
-            await checkIfLiked();
-        })();
-    }, [fetchListing, checkIfLiked]);
+        fetchAllData();
+    }, [fetchAllData]);
 
     async function handleToggleLike() {
         if (!currentUser) { toast.error('Please log in to like'); return; }
