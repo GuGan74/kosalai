@@ -45,6 +45,11 @@ function LazyFallback() {
 function AuthGuard({ children }) {
   const { isLoggedIn } = useAuth();
   if (isLoggedIn) {
+    const saved = sessionStorage.getItem('pb_redirect_after_login');
+    if (saved) {
+      sessionStorage.removeItem('pb_redirect_after_login');
+      return <Navigate to={saved} replace />;
+    }
     return <Navigate to="/" replace />;
   }
   return children;
