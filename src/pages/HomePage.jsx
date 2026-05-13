@@ -36,8 +36,31 @@ export default function HomePage() {
     const { currentUser, listingType } = useAuth();
     const navigate = useNavigate();
 
-    const [listings, setListings] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Initialize from cache SYNCHRONOUSLY so there is zero skeleton flash on refresh
+    const [listings, setListings] = useState(() => {
+        try {
+            const savedType = localStorage.getItem('ks_listing_type') || 'livestock';
+            const cacheKey = `ks_home_${savedType}_all_recent`;
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (e) {}
+        return [];
+    });
+    const [loading, setLoading] = useState(() => {
+        try {
+            const savedType = localStorage.getItem('ks_listing_type') || 'livestock';
+            const cacheKey = `ks_home_${savedType}_all_recent`;
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (Array.isArray(parsed) && parsed.length > 0) return false; // have data, skip skeleton
+            }
+        } catch (e) {}
+        return true;
+    });
     const [activeTab, setActiveTab] = useState('all');
     const [selectedState, setSelectedState] = useState('all');
     const [sortBy, setSortBy] = useState('recent');
