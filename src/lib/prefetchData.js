@@ -12,7 +12,7 @@ import { supabase } from './supabase';
 
 const LIVESTOCK_CATEGORIES = ['cow', 'buffalo', 'goat', 'horse', 'poultry', 'sheep', 'other'];
 const PET_CATEGORIES = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
-const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,user_id,status,gender,created_at';
+const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at';
 
 // Start fetching ALL data the moment this module is imported (before React mounts)
 // Increased limit to 1000 to cover all categories adequately since we have 800+ test rows

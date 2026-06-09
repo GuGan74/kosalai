@@ -13,7 +13,7 @@ import './HomePage.css';
 const PAGE_SIZE = 16;
 const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
 const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
-const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,user_id,status,gender,created_at';
+const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at';
 
 const INDIAN_STATES = [
     'Tamil Nadu', 'Karnataka', 'Kerala', 'Andhra Pradesh', 'Telangana',

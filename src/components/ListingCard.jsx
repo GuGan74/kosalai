@@ -8,7 +8,7 @@ import { getPostAgeInfo } from '../utils/helpers';
 import TranslatedText from './TranslatedText';
 import './ListingCard.css';
 import { useFavorites } from '../hooks/useFavorites';
-
+import { shareListing } from '../utils/shareListing';
 const BG_MAP = {
     cow: '#fffde7', buffalo: '#e8edf5', goat: '#f0fff4', horse: '#fff8e1',
     poultry: '#fff3e8', dog: '#f0ebff', cat: '#fff0f6', bird: '#e3f8ff',
@@ -20,9 +20,11 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
 
     const {
         id, title, category, location: loc, state, price,
-        milk_yield_liters, age_years, for_adoption, image_url,
+        milk_yield_liters, age_years, for_adoption, image_url, image_urls,
         user_id: owner_id
     } = listing;
+    
+    const displayImage = (image_urls && image_urls.length > 0) ? image_urls[0] : image_url;
 
     const ageInfo = getPostAgeInfo(listing.created_at);
 
@@ -90,12 +92,23 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
             }}
         >
             {/* Image Box */}
-            <div className={`lc-img-box${!image_url ? ' show-emoji' : ''}`} style={{ background: bg }}>
+            <div className={`lc-img-box${!displayImage ? ' show-emoji' : ''}`} style={{ background: bg }}>
 
-                <div className={`lc-heart ${isLiked ? 'liked' : ''}`} onClick={handleLike} aria-label={t('listingCard.addToFavorites')}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill={isLiked ? "#EF4444" : "none"} stroke={isLiked ? "#EF4444" : "currentColor"} strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+                <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 8, zIndex: 10 }}>
+                    <div className="lc-share-btn" onClick={(e) => { e.stopPropagation(); shareListing(listing); }} aria-label="Share" style={{ width: 34, height: 34, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.1)' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                    </div>
+                    <div className={`lc-heart ${isLiked ? 'liked' : ''}`} onClick={handleLike} aria-label={t('listingCard.addToFavorites')} style={{ position: 'relative', top: 0, right: 0 }}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill={isLiked ? "#EF4444" : "none"} stroke={isLiked ? "#EF4444" : "currentColor"} strokeWidth="2">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
                 </div>
 
                 {/* Post Age Badge */}
@@ -104,9 +117,9 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                     <span className="lc-age-label">{ageInfo.label}</span>
                 </div>
 
-                {image_url ? (
+                {displayImage ? (
                     <img
-                        src={image_url}
+                        src={displayImage}
                         alt={title}
                         className="lc-img-actual"
                         loading="lazy"

@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LIVESTOCK_CATS, PET_CATS } from '../constants/index';
-import { uploadToCloudinary } from '../lib/cloudinary';
+import { uploadToCloudinary, uploadMultipleToCloudinary } from '../lib/cloudinary';
 import toast from 'react-hot-toast';
 import './SellPage.css';
 
@@ -135,6 +135,7 @@ export default function SellPage() {
         state: '',
         description: '',
         image_url: '',
+        image_urls: [],
         imageSkipped: false,
         for_adoption: false,
         is_promoted: false,
@@ -199,6 +200,7 @@ export default function SellPage() {
                 state: l.state || '',
                 description: l.description || '',
                 image_url: l.image_url || '',
+                image_urls: l.image_urls || (l.image_url ? [l.image_url] : []),
                 imageSkipped: false,
                 for_adoption: l.for_adoption || false,
                 is_promoted: l.is_promoted || false,
@@ -243,8 +245,8 @@ export default function SellPage() {
         if (!form.breed) errs.breed = 'Please select a breed';
         if (form.title.trim().length > 100) errs.title = 'Title must be under 100 characters';
         // BUG 1 Fix C — Image is required
-        const hasRealImage = form.image_url && form.image_url.trim().length > 5;
-        if (!hasRealImage) errs.image = 'Please upload a photo of your animal';
+        const hasRealImage = (form.image_urls && form.image_urls.length > 0) || (form.image_url && form.image_url.trim().length > 5);
+        if (!hasRealImage) errs.image = 'Please upload at least 1 photo of your animal';
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
         if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
         if (form.location.trim().length < 3) errs.location = 'Please enter a valid city';
@@ -276,7 +278,7 @@ export default function SellPage() {
     function canGoNext() {
         if (step === 1) return form.category !== '';
         if (step === 2) return form.title.trim().length >= 5 && form.breed.trim().length >= 1 && !!form.gender && form.age_years !== '' && form.weight_kg !== '';
-        if (step === 3) return !!(form.image_url && form.image_url.trim().length > 5);
+        if (step === 3) return (form.image_urls && form.image_urls.length > 0) || (form.image_url && form.image_url.trim().length > 5);
         // Step 4: price + city + state + village + taluk are all required
         if (step === 4) return (form.price !== '' || form.for_adoption) && form.location.trim().length > 2 && !!form.state && form.village.trim().length > 1 && form.taluk.trim().length > 1;
         return true;
@@ -340,6 +342,7 @@ export default function SellPage() {
                 state: form.state.trim(),
                 description: form.description.trim(),
                 image_url: (form.image_url && form.image_url.trim().length > 5) ? form.image_url.trim() : null,
+                image_urls: form.image_urls && form.image_urls.length > 0 ? form.image_urls : ((form.image_url && form.image_url.trim().length > 5) ? [form.image_url.trim()] : []),
                 for_adoption: form.for_adoption,
                 is_promoted: form.is_promoted,
                 status: 'active',
@@ -587,41 +590,31 @@ export default function SellPage() {
                             {t('sellPage.photoSubtitle')}
                         </p>
 
-                        {/* Show upload zone OR large preview — image is mandatory */}
-                        {form.image_url && form.image_url.trim() ? (
+                        {/* Show upload zone OR multiple previews */}
+                        {(form.image_urls?.length > 0 || form.image_url) ? (
                             <div className="photo-preview-wrap">
-                                <img
-                                    src={form.image_url}
-                                    alt="Cattle preview"
-                                    className="photo-preview-img"
-                                />
+                                <div style={{display:'flex', gap:10, overflowX:'auto', paddingBottom:10}}>
+                                    {(form.image_urls?.length > 0 ? form.image_urls : [form.image_url]).map((u, i) => (
+                                        <img key={i} src={u} alt={`Cattle preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', flexShrink: 0, borderRadius: 8}} />
+                                    ))}
+                                </div>
                                 <div className="photo-preview-bar">
                                     <span style={{ color: 'var(--green)', fontWeight: 700, fontSize: 13 }}>
-                                        ✅ {t('sellPage.photoSuccess')}
+                                        ✅ {form.image_urls?.length || 1} Photo(s) Added
                                     </span>
                                     <label
                                         htmlFor="photo-upload"
-                                        style={{
-                                            cursor: 'pointer',
-                                            color: 'var(--blue)',
-                                            fontWeight: 700,
-                                            fontSize: 13,
-                                            textDecoration: 'underline',
-                                        }}
+                                        style={{ cursor: 'pointer', color: 'var(--blue)', fontWeight: 700, fontSize: 13, textDecoration: 'underline' }}
                                     >
-                                        {t('sellPage.changePhoto')}
+                                        Add More / Replace
                                     </label>
                                 </div>
                             </div>
                         ) : (
                             <label className="upload-zone-big" htmlFor="photo-upload">
                                 <div className="uzb-icon">📷</div>
-                                <div className="uzb-sub">{t('sellPage.photoFormat')}</div>
-                                <div style={{
-                                    marginTop: 12, fontSize: 13, fontWeight: 700,
-                                    color: '#e63946', background: '#fff5f5',
-                                    borderRadius: 8, padding: '6px 12px'
-                                }}>
+                                <div className="uzb-sub">{t('sellPage.photoFormat')} (Up to 5 images)</div>
+                                <div style={{ marginTop: 12, fontSize: 13, fontWeight: 700, color: '#e63946', background: '#fff5f5', borderRadius: 8, padding: '6px 12px' }}>
                                     📸 Photo required to continue
                                 </div>
                             </label>
@@ -631,7 +624,7 @@ export default function SellPage() {
                         {imageWarning && (
                             <div style={{ background: '#fff8e1', border: '1px solid #f9a825', borderRadius: 10, padding: '10px 14px', marginBottom: 14, fontSize: 13, color: '#856404', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                                 <span style={{ fontSize: 18 }}>⚠️</span>
-                                <span>Please ensure the uploaded image shows a <strong>{form.category || 'matching animal'}</strong>. Mismatched images may be rejected during review.</span>
+                                <span>Please ensure the uploaded images show a <strong>{form.category || 'matching animal'}</strong>. Mismatched images may be rejected during review.</span>
                             </div>
                         )}
 
@@ -639,39 +632,30 @@ export default function SellPage() {
                             id="photo-upload"
                             type="file"
                             accept="image/jpeg,image/png,image/webp"
+                            multiple
                             style={{ display: 'none' }}
                             onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (!file) return;
-                                // File type validation
-                                const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
-                                if (!validTypes.includes(file.type)) {
-                                    toast.error('Only JPG, PNG, or WebP images are allowed.');
+                                const files = Array.from(e.target.files || []);
+                                if (files.length === 0) return;
+                                if (files.length > 5) {
+                                    toast.error('You can upload a maximum of 5 images.');
                                     return;
                                 }
-                                // File size validation
-                                if (file.size > 5 * 1024 * 1024) {
-                                    toast.error('Image too large. Max 5MB.');
-                                    return;
-                                }
-                                // Dimension validation
-                                const dimOk = await new Promise(resolve => {
-                                    const img = new Image();
-                                    img.onload = () => {
-                                        if (img.width < 300 || img.height < 300) {
-                                            toast.error('Image must be at least 300×300 pixels.');
-                                            resolve(false);
-                                        } else { resolve(true); }
-                                    };
-                                    img.onerror = () => resolve(true);
-                                    img.src = URL.createObjectURL(file);
-                                });
-                                if (!dimOk) return;
-                                const url = await uploadImage(file);
-                                if (url) {
-                                    setF('image_url', url);
-                                    setImageWarning(true);
-                                    toast.success('Photo uploaded! ✓');
+                                
+                                toast.loading(`Uploading ${files.length} photo(s)...`, { id: 'img-upload' });
+                                
+                                try {
+                                    const urls = await uploadMultipleToCloudinary(files, {
+                                        folder: 'listing-images'
+                                    });
+                                    if (urls && urls.length > 0) {
+                                        setForm(f => ({ ...f, image_urls: urls, image_url: urls[0] }));
+                                        setImageWarning(true);
+                                        toast.success('Photos uploaded! ✓', { id: 'img-upload' });
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                    toast.error('Image upload failed', { id: 'img-upload' });
                                 }
                             }}
                         />

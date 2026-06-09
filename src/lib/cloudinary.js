@@ -74,3 +74,10 @@ export async function uploadToCloudinary(file, { folder = 'listing-images', onPr
         throw err;
     }
 }
+
+export async function uploadMultipleToCloudinary(files, options) {
+    if (!files || files.length === 0) return [];
+    const uploadPromises = Array.from(files).map(file => uploadToCloudinary(file, options));
+    return Promise.all(uploadPromises);
+}
+

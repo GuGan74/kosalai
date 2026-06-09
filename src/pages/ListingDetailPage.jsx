@@ -9,6 +9,7 @@ import loadingGif from '../assets/379.gif';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import TranslatedText from '../components/TranslatedText';
+import { shareListing } from '../utils/shareListing';
 import './ListingDetailPage.css';
 
 export default function ListingDetailPage() {
@@ -22,6 +23,7 @@ export default function ListingDetailPage() {
     const [sellerJoinDate, setSellerJoinDate] = useState(null);
     const [loading, setLoading] = useState(true);
     const [reporting, setReporting] = useState(false);
+    const [activeImgIndex, setActiveImgIndex] = useState(0);
 
     const [isLiked, setIsLiked] = useState(false);
 
@@ -158,7 +160,7 @@ export default function ListingDetailPage() {
         "@type": "Product",
         "name": listing.title,
         "description": listing.description || `${listing.breed}, ${listing.age_years} years old`,
-        "image": listing.image_url || '',
+        "image": (listing.image_urls && listing.image_urls.length > 0) ? listing.image_urls[0] : (listing.image_url || ''),
         "offers": {
             "@type": "Offer",
             "priceCurrency": "INR",
@@ -168,12 +170,14 @@ export default function ListingDetailPage() {
         }
     };
 
+    const displayImages = listing.image_urls && listing.image_urls.length > 0 ? listing.image_urls : (listing.image_url ? [listing.image_url] : []);
+
     return (
         <div className="det-page">
             <SEOHead
                 title={`${listing.title} for sale in ${listing.location} | Kosalai`}
                 description={`${listing.breed || ''}, ${listing.age_years ? listing.age_years + ' years old' : ''}. Price: ${listing.for_adoption ? 'Free' : '₹' + Number(listing.price).toLocaleString('en-IN')}. Located in ${listing.location}${listing.state ? ', ' + listing.state : ''}.`}
-                imageUrl={listing.image_url}
+                imageUrl={displayImages[0] || null}
                 url={`https://kosalai.in/listing/${listing.id}`}
             />
             <script
@@ -193,19 +197,38 @@ export default function ListingDetailPage() {
                         <span><TranslatedText>{listing.title}</TranslatedText></span>
                     </div>
 
-                    <div className="det-img-wrap">
-                        {listing.image_url ? (
-                            <img
-                                src={listing.image_url}
-                                alt={listing.title}
-                                className="det-img"
-                                style={{ objectFit: 'cover', objectPosition: 'center' }}
-                                onError={e => {
-                                    e.target.style.display = 'none';
-                                    const ph = e.target.parentElement.querySelector('.det-img-placeholder');
-                                    if (ph) ph.style.display = 'flex';
-                                }}
-                            />
+                    <div className="det-img-wrap" style={{ position: 'relative' }}>
+                        {displayImages.length > 0 ? (
+                            <>
+                                <img
+                                    src={displayImages[activeImgIndex]}
+                                    alt={`${listing.title} - ${activeImgIndex + 1}`}
+                                    className="det-img"
+                                    style={{ objectFit: 'cover', objectPosition: 'center', width: '100%' }}
+                                    onError={e => {
+                                        e.target.style.display = 'none';
+                                    }}
+                                />
+                                {displayImages.length > 1 && (
+                                    <>
+                                        <button 
+                                            onClick={() => setActiveImgIndex(i => i === 0 ? displayImages.length - 1 : i - 1)}
+                                            style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+                                            ❮
+                                        </button>
+                                        <button 
+                                            onClick={() => setActiveImgIndex(i => i === displayImages.length - 1 ? 0 : i + 1)}
+                                            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+                                            ❯
+                                        </button>
+                                        <div style={{ position: 'absolute', bottom: 15, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6 }}>
+                                            {displayImages.map((_, idx) => (
+                                                <div key={idx} onClick={() => setActiveImgIndex(idx)} style={{ width: 8, height: 8, borderRadius: '50%', background: activeImgIndex === idx ? 'white' : 'rgba(255,255,255,0.5)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </>
                         ) : (
                             <div className="det-img det-img-placeholder">
                                 <span style={{ fontSize: 80 }}>
@@ -295,6 +318,21 @@ export default function ListingDetailPage() {
                             }}
                         >
                             {t('listingDetail.reachSeller')}
+                        </button>
+                        <button
+                            className="btn-fav-large"
+                            onClick={() => shareListing(listing)}
+                            style={{
+                                width: '100%', marginTop: '10px', padding: '14px',
+                                borderRadius: '12px', background: 'white',
+                                color: 'var(--blue)', fontWeight: 800,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                gap: '8px', cursor: 'pointer',
+                                border: '1px solid #bfdbfe',
+                                transition: '0.2s'
+                            }}
+                        >
+                            📤 Share Listing
                         </button>
                         <button
                             className={`btn-fav-large ${isLiked ? 'active' : ''}`}
