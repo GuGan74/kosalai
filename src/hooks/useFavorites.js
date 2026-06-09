@@ -1,34 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+
+const DEBOUNCE_MS = 350; // wait 350ms after listing IDs settle before querying favorites
 
 /**
  * useFavorites — batch fetches all liked listing IDs in ONE query (no N+1).
+ * Now debounced so rapid listing changes don't fire multiple DB requests.
  * @param {string|null} userId
  * @param {string[]} listingIds
  * @returns {{ likedIds: Set<string>, toggleFavorite: Function }}
  */
 export function useFavorites(userId, listingIds = []) {
     const [likedIds, setLikedIds] = useState(new Set());
-
     useEffect(() => {
-        if (!userId || listingIds.length === 0) return;
+        if (!userId) return;
 
-        // Filter out demo IDs (start with 'd' and shorter than 10 chars)
-        const realIds = listingIds.filter(id => !(String(id).startsWith('d') && String(id).length < 10));
-        if (realIds.length === 0) return;
-
-        // Single batch query instead of N queries
+        // Fetch all of the user's favorites exactly once on mount/login
         supabase
             .from('favorites')
             .select('listing_id')
             .eq('user_id', userId)
-            .in('listing_id', realIds)
-            .then(({ data }) => {
-                if (data) {
+            .then(({ data, error }) => {
+                if (data && !error) {
                     setLikedIds(new Set(data.map(f => f.listing_id)));
                 }
             });
-    }, [userId, listingIds.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [userId]); // No longer depends on screen state or tabs!
 
     async function toggleFavorite(listingId, listing, currentProfile, explicitIsLiked = null) {
         if (!userId) return { error: { message: 'Not logged in' } };
