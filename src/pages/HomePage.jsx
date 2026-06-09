@@ -287,7 +287,6 @@ export default function HomePage() {
                         <span className="hp-sort-label">{t('homePage.filterLabel')}</span>
                         <select value={filterBy} onChange={e => setFilterBy(e.target.value)} className="hp-sort-select">
                             <option value="all">{t('homePage.allListings')}</option>
-                            <option value="verified">{t('homePage.verifiedOnly')}</option>
                             <option value="with_images">{t('homePage.withPhotos')}</option>
                             <option value="male">{t('homePage.male')}</option>
                             <option value="female">{t('homePage.female')}</option>
