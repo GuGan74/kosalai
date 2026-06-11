@@ -81,3 +81,28 @@ export async function uploadMultipleToCloudinary(files, options) {
     return Promise.all(uploadPromises);
 }
 
+export function getOptimizedCloudinaryUrl(originalUrl, width = 'auto') {
+    if (!originalUrl || typeof originalUrl !== 'string' || !originalUrl.includes('cloudinary.com/')) {
+        return originalUrl;
+    }
+
+    const widthTransform = width === 'auto' ? 'w_auto' : `w_${width}`;
+    const newTransforms = `${widthTransform},f_auto,q_auto`;
+
+    const parts = originalUrl.split('/upload/');
+    if (parts.length !== 2) return originalUrl;
+
+    let rightSide = parts[1];
+    
+    // Detect and strip existing transformations
+    const nextSlashIndex = rightSide.indexOf('/');
+    if (nextSlashIndex !== -1) {
+        const firstSegment = rightSide.substring(0, nextSlashIndex);
+        if (firstSegment.includes('_')) {
+            rightSide = rightSide.substring(nextSlashIndex + 1);
+        }
+    }
+
+    return `${parts[0]}/upload/${newTransforms}/${rightSide}`;
+}
+

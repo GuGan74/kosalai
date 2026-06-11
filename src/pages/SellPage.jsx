@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LIVESTOCK_CATS, PET_CATS } from '../constants/index';
-import { uploadToCloudinary, uploadMultipleToCloudinary } from '../lib/cloudinary';
+import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 import toast from 'react-hot-toast';
 import './SellPage.css';
 
@@ -595,7 +595,7 @@ export default function SellPage() {
                             <div className="photo-preview-wrap">
                                 <div style={{display:'flex', gap:10, overflowX:'auto', paddingBottom:10}}>
                                     {(form.image_urls?.length > 0 ? form.image_urls : [form.image_url]).map((u, i) => (
-                                        <img key={i} src={u} alt={`Cattle preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', flexShrink: 0, borderRadius: 8}} />
+                                        <img key={i} src={getOptimizedCloudinaryUrl(u, 200)} alt={`Cattle preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', flexShrink: 0, borderRadius: 8}} />
                                     ))}
                                 </div>
                                 <div className="photo-preview-bar">

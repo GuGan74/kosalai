@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import TranslatedText from '../components/TranslatedText';
 import { shareListing } from '../utils/shareListing';
+import { getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 import './ListingDetailPage.css';
 
 export default function ListingDetailPage() {
@@ -201,7 +202,7 @@ export default function ListingDetailPage() {
                         {displayImages.length > 0 ? (
                             <>
                                 <img
-                                    src={displayImages[activeImgIndex]}
+                                    src={getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 900)}
                                     alt={`${listing.title} - ${activeImgIndex + 1}`}
                                     className="det-img"
                                     style={{ objectFit: 'cover', objectPosition: 'center', width: '100%' }}

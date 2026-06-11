@@ -9,6 +9,7 @@ import TranslatedText from './TranslatedText';
 import './ListingCard.css';
 import { useFavorites } from '../hooks/useFavorites';
 import { shareListing } from '../utils/shareListing';
+import { getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 const BG_MAP = {
     cow: '#fffde7', buffalo: '#e8edf5', goat: '#f0fff4', horse: '#fff8e1',
     poultry: '#fff3e8', dog: '#f0ebff', cat: '#fff0f6', bird: '#e3f8ff',
@@ -119,7 +120,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
 
                 {displayImage ? (
                     <img
-                        src={displayImage}
+                        src={getOptimizedCloudinaryUrl(displayImage, 400)}
                         alt={title}
                         className="lc-img-actual"
                         loading="lazy"
