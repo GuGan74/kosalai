@@ -28,6 +28,29 @@ export default function ListingDetailPage() {
 
     const [isLiked, setIsLiked] = useState(false);
 
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const imgs = listing?.image_urls?.length > 0 ? listing.image_urls : (listing?.image_url ? [listing.image_url] : []);
+        
+        if (distance > minSwipeDistance) {
+            setActiveImgIndex(i => i === imgs.length - 1 ? 0 : i + 1);
+        } else if (distance < -minSwipeDistance) {
+            setActiveImgIndex(i => i === 0 ? imgs.length - 1 : i - 1);
+        }
+    };
     const fetchAllData = React.useCallback(async () => {
         // Demo mode shortcut
         if (String(id).startsWith('d') && String(id).length < 10) {
@@ -198,7 +221,13 @@ export default function ListingDetailPage() {
                         <span><TranslatedText>{listing.title}</TranslatedText></span>
                     </div>
 
-                    <div className="det-img-wrap" style={{ position: 'relative' }}>
+                    <div 
+                        className="det-img-wrap" 
+                        style={{ position: 'relative' }}
+                        onTouchStart={onTouchStart}
+                        onTouchMove={onTouchMove}
+                        onTouchEnd={onTouchEnd}
+                    >
                         {displayImages.length > 0 ? (
                             <>
                                 <img

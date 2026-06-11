@@ -595,7 +595,29 @@ export default function SellPage() {
                             <div className="photo-preview-wrap">
                                 <div style={{display:'flex', gap:10, overflowX:'auto', paddingBottom:10}}>
                                     {(form.image_urls?.length > 0 ? form.image_urls : [form.image_url]).map((u, i) => (
-                                        <img key={i} src={getOptimizedCloudinaryUrl(u, 200)} alt={`Cattle preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', flexShrink: 0, borderRadius: 8}} />
+                                        <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
+                                            <img src={getOptimizedCloudinaryUrl(u, 200)} alt={`Preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', borderRadius: 8}} />
+                                            <button 
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setForm(f => {
+                                                        const currentUrls = f.image_urls?.length > 0 ? f.image_urls : [f.image_url];
+                                                        const newUrls = currentUrls.filter((_, idx) => idx !== i);
+                                                        return { ...f, image_urls: newUrls, image_url: newUrls[0] || '' };
+                                                    });
+                                                }}
+                                                style={{
+                                                    position: 'absolute', top: -5, right: -5, 
+                                                    background: '#e63946', color: 'white', border: 'none', 
+                                                    borderRadius: '50%', width: 24, height: 24, 
+                                                    cursor: 'pointer', fontWeight: 'bold', 
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                                                }}
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
                                     ))}
                                 </div>
                                 <div className="photo-preview-bar">
@@ -613,7 +635,7 @@ export default function SellPage() {
                         ) : (
                             <label className="upload-zone-big" htmlFor="photo-upload">
                                 <div className="uzb-icon">📷</div>
-                                <div className="uzb-sub">{t('sellPage.photoFormat')} (Up to 5 images)</div>
+                                <div className="uzb-sub">{t('sellPage.photoFormat')} (Up to 3 images)</div>
                                 <div style={{ marginTop: 12, fontSize: 13, fontWeight: 700, color: '#e63946', background: '#fff5f5', borderRadius: 8, padding: '6px 12px' }}>
                                     📸 Photo required to continue
                                 </div>
@@ -637,8 +659,8 @@ export default function SellPage() {
                             onChange={async (e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length === 0) return;
-                                if (files.length > 5) {
-                                    toast.error('You can upload a maximum of 5 images.');
+                                if (files.length > 3) {
+                                    toast.error('You can upload a maximum of 3 images.');
                                     return;
                                 }
                                 
