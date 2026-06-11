@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LIVESTOCK_CATS, PET_CATS } from '../constants/index';
 import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryUrl } from '../lib/cloudinary';
+import { parseImageUrls } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import './SellPage.css';
 
@@ -200,7 +201,7 @@ export default function SellPage() {
                 state: l.state || '',
                 description: l.description || '',
                 image_url: l.image_url || '',
-                image_urls: l.image_urls || (l.image_url ? [l.image_url] : []),
+                image_urls: l.image_urls ? parseImageUrls(l.image_urls) : (l.image_url ? [l.image_url] : []),
                 imageSkipped: false,
                 for_adoption: l.for_adoption || false,
                 is_promoted: l.is_promoted || false,

@@ -86,6 +86,11 @@ export function getOptimizedCloudinaryUrl(originalUrl, width = 'auto') {
         return originalUrl;
     }
 
+    // PATCH for missing load testing images which cause 404s
+    if (originalUrl.includes('/dmdrjb2n5/') && (originalUrl.includes('sample.jpg') || originalUrl.includes('cld-sample'))) {
+        originalUrl = originalUrl.replace('/dmdrjb2n5/', '/demo/');
+    }
+
     const widthTransform = width === 'auto' ? 'w_auto' : `w_${width}`;
     const newTransforms = `${widthTransform},f_auto,q_auto`;
 

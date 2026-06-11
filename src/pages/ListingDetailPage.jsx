@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import TranslatedText from '../components/TranslatedText';
 import { shareListing } from '../utils/shareListing';
 import { getOptimizedCloudinaryUrl } from '../lib/cloudinary';
+import { parseImageUrls } from '../utils/helpers';
 import './ListingDetailPage.css';
 
 export default function ListingDetailPage() {
@@ -43,7 +44,8 @@ export default function ListingDetailPage() {
     const onTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
         const distance = touchStart - touchEnd;
-        const imgs = listing?.image_urls?.length > 0 ? listing.image_urls : (listing?.image_url ? [listing.image_url] : []);
+        const parsedUrls = listing?.image_urls ? parseImageUrls(listing.image_urls) : [];
+        const imgs = parsedUrls.length > 0 ? parsedUrls : (listing?.image_url ? [listing.image_url] : []);
         
         if (distance > minSwipeDistance) {
             setActiveImgIndex(i => i === imgs.length - 1 ? 0 : i + 1);
@@ -184,7 +186,7 @@ export default function ListingDetailPage() {
         "@type": "Product",
         "name": listing.title,
         "description": listing.description || `${listing.breed}, ${listing.age_years} years old`,
-        "image": (listing.image_urls && listing.image_urls.length > 0) ? listing.image_urls[0] : (listing.image_url || ''),
+        "image": (listing.image_urls && parseImageUrls(listing.image_urls).length > 0) ? parseImageUrls(listing.image_urls)[0] : (listing.image_url || ''),
         "offers": {
             "@type": "Offer",
             "priceCurrency": "INR",
@@ -194,7 +196,8 @@ export default function ListingDetailPage() {
         }
     };
 
-    const displayImages = listing.image_urls && listing.image_urls.length > 0 ? listing.image_urls : (listing.image_url ? [listing.image_url] : []);
+    const parsedDisplayUrls = listing.image_urls ? parseImageUrls(listing.image_urls) : [];
+    const displayImages = parsedDisplayUrls.length > 0 ? parsedDisplayUrls : (listing.image_url ? [listing.image_url] : []);
 
     return (
         <div className="det-page">

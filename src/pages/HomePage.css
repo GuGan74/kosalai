@@ -1153,3 +1153,83 @@
 @media (max-width: 480px) {
     .seller-listings-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════
+   LOAD MORE + RESULT COUNT
+   ═══════════════════════════════════════════ */
+
+/* Result count badge in controls bar */
+.hp-result-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    margin-left: auto;
+    background: #F3F4F6;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+/* Load More wrapper */
+.hp-load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 28px 0 16px;
+}
+
+/* Load More button */
+.hp-load-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #194628;
+    color: white;
+    border: none;
+    border-radius: 28px;
+    padding: 14px 36px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 16px rgba(25, 70, 40, 0.25);
+}
+
+.hp-load-more-btn:hover {
+    background: #11331D;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 70, 40, 0.35);
+}
+
+.hp-load-more-btn:active {
+    transform: translateY(0);
+}
+
+.hp-load-more-count {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* End of results indicator */
+.hp-end-of-results {
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 24px 0 8px;
+    letter-spacing: 0.2px;
+}
+
+@media (max-width: 640px) {
+    .hp-result-count {
+        display: none; /* hidden on small screens to save space */
+    }
+
+    .hp-load-more-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+        border-radius: 12px;
+    }
+}

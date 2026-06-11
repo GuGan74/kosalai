@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
-import { getPostAgeInfo } from '../utils/helpers';
+import { getPostAgeInfo, parseImageUrls } from '../utils/helpers';
 import TranslatedText from './TranslatedText';
 import './ListingCard.css';
 import { useFavorites } from '../hooks/useFavorites';
@@ -25,7 +25,8 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
         user_id: owner_id
     } = listing;
     
-    const displayImage = (image_urls && image_urls.length > 0) ? image_urls[0] : image_url;
+    const parsedUrls = parseImageUrls(image_urls);
+    const displayImage = parsedUrls.length > 0 ? parsedUrls[0] : image_url;
 
     const ageInfo = getPostAgeInfo(listing.created_at);
 

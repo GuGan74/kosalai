@@ -50,3 +50,21 @@ export function getPostAgeInfo(createdAt) {
         };
     }
 }
+
+/**
+ * Safely parses image_urls which might be a stringified JSON array or an actual array
+ * @param {any} imageUrls 
+ * @returns {string[]}
+ */
+export function parseImageUrls(imageUrls) {
+    if (Array.isArray(imageUrls)) return imageUrls;
+    if (typeof imageUrls === 'string') {
+        try {
+            const parsed = JSON.parse(imageUrls);
+            if (Array.isArray(parsed)) return parsed;
+        } catch (e) {
+            // ignore
+        }
+    }
+    return [];
+}
