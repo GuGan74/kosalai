@@ -131,10 +131,10 @@ export function AuthProvider({ children }) {
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     if (session?.user) {
                         setCurrentUser(session.user);
-                        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                        if (event === 'SIGNED_IN') {
                             await loadProfile(session.user.id);
                             clearGuestMode();
                             setIsLoggedIn(true);

@@ -34,14 +34,25 @@ export default function ProfileSetupPage() {
     }
     setLoading(true);
     const formatted = '+91' + phone.replace(/\D/g, '').replace(/^91/, '');
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        phone: formatted,
-        location: district,
-        is_profile_complete: true,
-      })
-      .eq('id', currentUser.id);
+    
+    let error = null;
+    // Retry up to 3 times to handle spurious Supabase 'Lock broken' abort errors
+    for (let i = 0; i < 3; i++) {
+        const res = await supabase
+          .from('profiles')
+          .update({
+            phone: formatted,
+            location: district,
+            is_profile_complete: true,
+          })
+          .eq('id', currentUser.id);
+        
+        error = res.error;
+        if (!error || !error.message?.includes('Lock broken')) {
+            break; // Success or a real error, stop retrying
+        }
+        await new Promise(r => setTimeout(r, 500)); // Wait 500ms before retry
+    }
 
     if (error) {
       toast.error('Failed to save: ' + error.message);
