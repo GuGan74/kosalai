@@ -8,17 +8,33 @@ export function AuthProvider({ children }) {
     // Supabase stores the token under this key — check it synchronously
     const SB_KEY = `sb-ulbrlhcelwoojwnvznrd-auth-token`;
 
-    // Synchronous check: if we have a token, assume logged in immediately
-    // This eliminates the green splash screen on refresh
-    const hasStoredToken = (() => {
-        try { return !!localStorage.getItem(SB_KEY); }
-        catch { return false; }
+    // Synchronous check: if we have a token, parse it to avoid race conditions
+    // This eliminates the green splash screen on refresh AND prevents the "reset" flash
+    const storedSession = (() => {
+        try {
+            const raw = localStorage.getItem(SB_KEY);
+            return raw ? JSON.parse(raw) : null;
+        }
+        catch { return null; }
     })();
 
-    const [currentUser, setCurrentUser] = useState(null);
-    const [currentProfile, setCurrentProfile] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(hasStoredToken); // instant guess
-    const [loading, setLoading] = useState(!hasStoredToken); // skip splash if token exists
+    const [currentUser, setCurrentUser] = useState(storedSession?.user || null);
+    
+    // Fallback profile from JWT metadata to prevent UI flashes before loadProfile finishes
+    const [currentProfile, setCurrentProfile] = useState(() => {
+        if (!storedSession?.user) return null;
+        const meta = storedSession.user.user_metadata || {};
+        return {
+            id: storedSession.user.id,
+            full_name: meta.full_name || meta.name || '',
+            avatar_url: meta.avatar_url || meta.picture || '',
+            email: storedSession.user.email || '',
+        };
+    });
+
+    const [isLoggedIn, setIsLoggedIn] = useState(!!storedSession); 
+    const [loading, setLoading] = useState(false); // completely skip splash
+    const [profileReady, setProfileReady] = useState(false); // Tracks if DB profile fetch is complete
     const [userRole, setUserRole] = useState('user');
 
     // ── Guest mode ──────────────────────────────────────────
@@ -67,13 +83,17 @@ export function AuthProvider({ children }) {
     // ────────────────────────────────────────────────────────
 
     const loadProfile = React.useCallback(async (uid) => {
-        if (!uid) return;
+        if (!uid) {
+            setProfileReady(true);
+            return;
+        }
         const { data, error } = await supabase
             .from('profiles').select('*').eq('id', uid).single();
         if (data && !error) {
             setCurrentProfile(data);
             setUserRole(data.role || 'user');
         }
+        setProfileReady(true);
     }, []);
 
     useEffect(() => {
@@ -90,9 +110,10 @@ export function AuthProvider({ children }) {
                 setCurrentUser(session.user);
                 setIsLoggedIn(true);
                 clearGuestMode();
-                loadProfile(session.user.id);
+                await loadProfile(session.user.id);
             } else if (!session && mounted) {
                 setIsLoggedIn(false);
+                setProfileReady(true);
             }
 
             if (mounted) {
@@ -103,16 +124,17 @@ export function AuthProvider({ children }) {
             console.error("Session fetch rejected:", err);
             if (mounted) {
                 setLoading(false);
+                setProfileReady(true);
                 clearTimeout(fallbackTimer);
             }
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                     if (session?.user) {
                         setCurrentUser(session.user);
-                        if (event === 'SIGNED_IN') {
+                        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
                             await loadProfile(session.user.id);
                             clearGuestMode();
                             setIsLoggedIn(true);
@@ -123,6 +145,7 @@ export function AuthProvider({ children }) {
                     setCurrentProfile(null);
                     setIsLoggedIn(false);
                     setUserRole('user');
+                    setProfileReady(true);
                 }
             }
         );
@@ -169,6 +192,7 @@ export function AuthProvider({ children }) {
     const value = React.useMemo(() => ({
         currentUser,
         currentProfile,
+        profileReady,
         isLoggedIn,
         loading,
         userRole,
@@ -183,10 +207,11 @@ export function AuthProvider({ children }) {
         saveInterest,
         loadProfile,
         needsProfileSetup: isLoggedIn &&
+            profileReady &&
             currentProfile !== null &&
             !currentProfile?.is_profile_complete,
     }), [
-        currentUser, currentProfile, isLoggedIn, loading, 
+        currentUser, currentProfile, profileReady, isLoggedIn, loading, 
         userRole, isGuest, guestPrefs, listingType, loadProfile
     ]);
 

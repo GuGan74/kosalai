@@ -10,7 +10,7 @@ import './ProfilePage.css';
 
 export default function ProfilePage() {
     const navigate = useNavigate();
-    const { currentProfile, signOut, currentUser, loadProfile } = useAuth();
+    const { currentProfile, signOut, currentUser, loadProfile, profileReady } = useAuth();
     const { t } = useTranslation();
     const p = currentProfile || {};
     const initials = (p.full_name || 'U').slice(0, 2).toUpperCase();
@@ -19,6 +19,7 @@ export default function ProfilePage() {
     const [likedListings, setLikedListings] = useState([]);
     const [loadingLiked, setLoadingLiked] = useState(true);
     const [stats, setStats] = useState({ listings: 0, views: 0, inquiries: 0, sold: 0 });
+    const [statsLoading, setStatsLoading] = useState(true);
 
     const [editing, setEditing] = useState(false);
     const [editForm, setEditForm] = useState({
@@ -27,6 +28,7 @@ export default function ProfilePage() {
 
     const fetchStats = React.useCallback(async () => {
         if (!currentUser) return;
+        setStatsLoading(true);
         try {
             const [listingsRes, inquiriesRes, soldRes] = await Promise.all([
                 supabase.from('listings').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
@@ -42,6 +44,8 @@ export default function ProfilePage() {
             });
         } catch (err) {
             console.error('Stats fetch error:', err);
+        } finally {
+            setStatsLoading(false);
         }
     }, [currentUser]);
 
@@ -109,14 +113,18 @@ export default function ProfilePage() {
             <BackButton fallbackPath="/" />
             {/* Left Card */}
             <div className="prof-card">
-                <div className="prof-hd-bg">
-                    <div className="p-av">{initials}</div>
-                    <div className="p-nm">{p.full_name || t('profilePage.myAccount')}</div>
-                    <div className="p-meta">{p.location ? `📍 ${p.location} · ` : ''}{t('profilePage.memberSince', { year: yr })}</div>
-                    <div className="p-badges">
-
+                {!profileReady ? (
+                    <div className="prof-hd-bg" style={{ minHeight: 180, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div className="spinner" style={{ borderColor: 'rgba(255,255,255,0.3)', borderTopColor: '#fff' }} />
                     </div>
-                </div>
+                ) : (
+                    <div className="prof-hd-bg">
+                        <div className="p-av">{initials}</div>
+                        <div className="p-nm">{p.full_name || t('profilePage.myAccount')}</div>
+                        <div className="p-meta">{p.location ? `📍 ${p.location} · ` : ''}{t('profilePage.memberSince', { year: yr })}</div>
+                        <div className="p-badges"></div>
+                    </div>
+                )}
 
                 {editing ? (
                     <div className="section-card" style={{ margin: '16px' }}>
@@ -170,9 +178,9 @@ export default function ProfilePage() {
                 ) : (
                     <>
                         <div className="p-stats">
-                            <div className="pst"><div className="n">{stats.listings}</div><div className="l">{t('profilePage.listings')}</div></div>
-                            <div className="pst"><div className="n">{stats.inquiries}</div><div className="l">{t('profilePage.inquiries')}</div></div>
-                            <div className="pst"><div className="n">{stats.sold}</div><div className="l">{t('profilePage.sold')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.listings}</div><div className="l">{t('profilePage.listings')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.inquiries}</div><div className="l">{t('profilePage.inquiries')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.sold}</div><div className="l">{t('profilePage.sold')}</div></div>
                         </div>
                         <div className="prof-body">
                             {menuItems.map((m, i) => (
