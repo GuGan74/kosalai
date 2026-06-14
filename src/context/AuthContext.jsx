@@ -205,6 +205,18 @@ export function AuthProvider({ children }) {
         });
     }
 
+    const needsProfileSetupFlag = isLoggedIn &&
+        profileReady &&
+        currentProfile !== null &&
+        !currentProfile?.is_profile_complete;
+
+    console.log('[DEBUG] AuthState:', {
+        isLoggedIn,
+        profileReady,
+        currentProfile,
+        needsProfileSetup: needsProfileSetupFlag
+    });
+
     const value = React.useMemo(() => ({
         currentUser,
         currentProfile,
@@ -222,13 +234,10 @@ export function AuthProvider({ children }) {
         signOut,
         saveInterest,
         loadProfile,
-        needsProfileSetup: isLoggedIn &&
-            profileReady &&
-            currentProfile !== null &&
-            !currentProfile?.is_profile_complete,
+        needsProfileSetup: needsProfileSetupFlag,
     }), [
         currentUser, currentProfile, profileReady, isLoggedIn, loading, 
-        userRole, isGuest, guestPrefs, listingType, loadProfile
+        userRole, isGuest, guestPrefs, listingType, loadProfile, needsProfileSetupFlag
     ]);
 
     return (
