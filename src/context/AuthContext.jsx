@@ -33,7 +33,7 @@ export function AuthProvider({ children }) {
     });
 
     const [isLoggedIn, setIsLoggedIn] = useState(!!storedSession); 
-    const [loading, setLoading] = useState(false); // completely skip splash
+    const [loading, setLoading] = useState(true); // Explicit loading gate to prevent premature routing
     const [profileReady, setProfileReady] = useState(false); // Tracks if DB profile fetch is complete
     const [userRole, setUserRole] = useState('user');
 
