@@ -30,16 +30,19 @@ export default function ProfilePage() {
         if (!currentUser) return;
         setStatsLoading(true);
         try {
-            const [listingsRes, inquiriesRes, soldRes] = await Promise.all([
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Stats fetch timeout')), 5000));
+            const fetchPromise = Promise.all([
                 supabase.from('listings').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
                 supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('type', 'inquiry'),
                 supabase.from('listings').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'sold')
             ]);
 
+            const [listingsRes, inquiriesRes, soldRes] = await Promise.race([fetchPromise, timeoutPromise]);
+
             setStats({
-                listings: listingsRes.count || 0,
-                inquiries: inquiriesRes.count || 0,
-                sold: soldRes.count || 0,
+                listings: listingsRes?.count || 0,
+                inquiries: inquiriesRes?.count || 0,
+                sold: soldRes?.count || 0,
                 views: 0 // listing_views table not yet created
             });
         } catch (err) {
@@ -51,13 +54,16 @@ export default function ProfilePage() {
 
     const fetchLikedListings = React.useCallback(async () => {
         try {
-            const { data } = await supabase
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Liked fetch timeout')), 5000));
+            const fetchPromise = supabase
                 .from('favorites')
                 .select(`
                     listing_id,
                     listings (*)
                 `)
                 .eq('user_id', currentUser.id);
+
+            const { data } = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (data) {
                 const list = data.map(item => item.listings).filter(Boolean);

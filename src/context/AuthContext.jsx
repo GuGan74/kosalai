@@ -87,13 +87,22 @@ export function AuthProvider({ children }) {
             setProfileReady(true);
             return;
         }
-        const { data, error } = await supabase
-            .from('profiles').select('*').eq('id', uid).single();
-        if (data && !error) {
-            setCurrentProfile(data);
-            setUserRole(data.role || 'user');
+        try {
+            // Use Promise.race to prevent infinite hangs if Supabase locks deadlock
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Profile fetch timeout')), 5000));
+            const fetchPromise = supabase.from('profiles').select('*').eq('id', uid).single();
+            
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+            
+            if (data && !error) {
+                setCurrentProfile(data);
+                setUserRole(data.role || 'user');
+            }
+        } catch (err) {
+            console.error('Failed to load profile (timeout or error):', err);
+        } finally {
+            setProfileReady(true);
         }
-        setProfileReady(true);
     }, []);
 
     useEffect(() => {
