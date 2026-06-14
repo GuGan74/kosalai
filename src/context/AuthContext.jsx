@@ -113,13 +113,6 @@ export function AuthProvider({ children }) {
             if (mounted) setLoading(false);
         }, FALLBACK_MS);
 
-        // Break the waterfall: Start fetching DB profile IMMEDIATELY, in parallel with getSession
-        const cachedUserId = storedSession?.user?.id;
-        if (cachedUserId && !profileFetchStarted.current) {
-            profileFetchStarted.current = true;
-            loadProfile(cachedUserId);
-        }
-
         // Initial session check
         supabase.auth.getSession().then(async ({ data: { session }, error }) => {
             if (error) console.error("Session error:", error);
@@ -129,10 +122,10 @@ export function AuthProvider({ children }) {
                 setIsLoggedIn(true);
                 clearGuestMode();
                 
-                // Fallback: If localStorage was empty but session exists (rare), fetch it now
+                // Fetch profile only AFTER session is confirmed loaded
                 if (!profileFetchStarted.current) {
                     profileFetchStarted.current = true;
-                    loadProfile(session.user.id);
+                    await loadProfile(session.user.id);
                 }
             } else if (!session && mounted) {
                 setIsLoggedIn(false);
