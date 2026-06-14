@@ -38,14 +38,18 @@ export default function ProfileSetupPage() {
     let error = null;
     // Retry up to 3 times to handle spurious Supabase 'Lock broken' abort errors
     for (let i = 0; i < 3; i++) {
+        // Use upsert to guarantee the row is created even if the Postgres trigger failed
         const res = await supabase
           .from('profiles')
-          .update({
+          .upsert({
+            id: currentUser.id,
+            email: currentUser.email,
+            full_name: currentProfile?.full_name || '',
+            avatar_url: currentProfile?.avatar_url || '',
             phone: formatted,
             location: district,
             is_profile_complete: true,
-          })
-          .eq('id', currentUser.id);
+          }, { onConflict: 'id' });
         
         error = res.error;
         if (!error || !error.message?.includes('Lock broken')) {
