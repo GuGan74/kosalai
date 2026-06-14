@@ -105,11 +105,20 @@ export function AuthProvider({ children }) {
         }
     }, []);
 
+    const profileFetchStarted = React.useRef(false);
+
     useEffect(() => {
         let mounted = true;
         const fallbackTimer = setTimeout(() => {
             if (mounted) setLoading(false);
         }, FALLBACK_MS);
+
+        // Break the waterfall: Start fetching DB profile IMMEDIATELY, in parallel with getSession
+        const cachedUserId = storedSession?.user?.id;
+        if (cachedUserId && !profileFetchStarted.current) {
+            profileFetchStarted.current = true;
+            loadProfile(cachedUserId);
+        }
 
         // Initial session check
         supabase.auth.getSession().then(async ({ data: { session }, error }) => {
@@ -119,7 +128,12 @@ export function AuthProvider({ children }) {
                 setCurrentUser(session.user);
                 setIsLoggedIn(true);
                 clearGuestMode();
-                await loadProfile(session.user.id);
+                
+                // Fallback: If localStorage was empty but session exists (rare), fetch it now
+                if (!profileFetchStarted.current) {
+                    profileFetchStarted.current = true;
+                    loadProfile(session.user.id);
+                }
             } else if (!session && mounted) {
                 setIsLoggedIn(false);
                 setProfileReady(true);
