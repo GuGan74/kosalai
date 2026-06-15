@@ -105,7 +105,7 @@ export default function MyListingsPage() {
             )}
 
             <div className="myl-tabs">
-                {[['active', t('myListingsPage.active'), 'green'], ['pending', t('myListingsPage.pending'), 'orange'], ['sold', t('myListingsPage.sold'), '']].map(([id, label, color]) => {
+                {[['active', t('myListingsPage.active'), 'green'], ['sold', t('myListingsPage.sold'), '']].map(([id, label, color]) => {
                     const count = listings.filter(l => l.status === id).length;
                     return (
                         <button key={id} className={`myl-tab${tab === id ? ' act' : ''}${color === 'orange' ? ' or' : ''}`} onClick={() => setTab(id)}>
