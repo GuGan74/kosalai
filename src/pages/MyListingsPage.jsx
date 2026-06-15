@@ -32,7 +32,8 @@ export default function MyListingsPage() {
     async function deleteListing(id) {
         if (!window.confirm('Delete this listing permanently? This cannot be undone.')) return;
         
-        console.log('DELETE ID', id);
+        console.log('DELETE PARAM', id);
+        console.log('DELETE PARAM TYPE', typeof id);
         
         try {
             const { data, error, status, statusText } = await supabase.from('listings').delete().eq('id', id).select();
@@ -133,13 +134,13 @@ export default function MyListingsPage() {
                                     <>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20 }} onClick={() => navigate('/sell', { state: { editListing: l } })}>✏️ {t('myListingsPage.edit')}</button>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--green)', borderColor: 'var(--green)' }} onClick={() => markSold(l.id)}>✅ {t('myListingsPage.markSold')}</button>
-                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => deleteListing(l.id)}>🗑️ {t('myListingsPage.delete')}</button>
+                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => { console.log('DELETE CLICK VALUE', l.id); deleteListing(l.id); }}>🗑️ {t('myListingsPage.delete')}</button>
                                     </>
                                 )}
                                 {l.status === 'pending' && (
                                     <>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20 }} onClick={() => navigate('/sell', { state: { editListing: l } })}>✏️ Edit</button>
-                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => deleteListing(l.id)}>🗑️ Delete</button>
+                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => { console.log('DELETE CLICK VALUE', l.id); deleteListing(l.id); }}>🗑️ Delete</button>
                                     </>
                                 )}
                                 {l.status === 'sold' && (
