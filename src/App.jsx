@@ -36,7 +36,8 @@ const lazyRetry = function(componentImport) {
             .catch((error) => {
                 if (error.message.includes('Failed to fetch dynamically imported module') || 
                     error.message.includes('Importing a module script failed') ||
-                    error.message.includes('ChunkLoadError')) {
+                    error.message.includes('ChunkLoadError') ||
+                    error.message.includes('Unable to preload CSS')) {
                     const hasRetried = sessionStorage.getItem('chunk-retry');
                     if (!hasRetried) {
                         sessionStorage.setItem('chunk-retry', 'true');

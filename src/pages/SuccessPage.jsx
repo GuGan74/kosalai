@@ -23,7 +23,7 @@ export default function SuccessPage() {
             </div>
 
             <div className="suc-btns">
-                <button className="btn-view" onClick={() => listing?.id ? navigate(`/listing/${listing.id}`) : navigate('/')}>{t('success.viewListing')}</button>
+                <button className="btn-view" onClick={() => navigate('/my-listings')}>{t('success.viewListing')}</button>
                 <button className="btn-post2" onClick={() => navigate('/sell')}>+ {t('success.createAnother')}</button>
             </div>
             <button className="btn-secondary" style={{ width: '100%', marginTop: 12, justifyContent: 'center' }} onClick={() => navigate('/')}>

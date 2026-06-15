@@ -64,6 +64,14 @@ export default function HomePage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+    // ─── Reset Filters on Marketplace Toggle ──────────────────────────────────
+    useEffect(() => {
+        setActiveTab('all');
+        setSearchQuery('');
+        setFilterBy('all');
+        setVisibleCount(PAGE_SIZE);
+    }, [listingType]);
+
     // ─── Favorites ────────────────────────────────────────────────────────────
     const { likedIds, toggleFavorite } = useFavorites(currentUser?.id);
 
