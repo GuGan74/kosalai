@@ -380,7 +380,10 @@ export default function SellPage() {
                     <div className="sell-ttl">
                         {isEditing ? t('sellPage.editListing') : (listingType === 'livestock' ? t('sellPage.sellCattle') : t('sellPage.sellPet'))}
                     </div>
-                    <div className="sell-sub">{t('sellPage.stepOf', { step, total: STEPS.length })}: {t(`sellPage.${STEPS[step - 1]}`)}</div>
+                    <div className="sell-sub">
+                        {t('sellPage.stepOf', { step, total: STEPS.length })}:{' '}
+                        {STEPS[step - 1] === 'cattleType' && listingType === 'pets' ? 'Pet Type' : t(`sellPage.${STEPS[step - 1]}`)}
+                    </div>
                 </div>
             </div>
 
@@ -392,7 +395,9 @@ export default function SellPage() {
                             <div className={`step-c${i + 1 < step ? ' done' : i + 1 === step ? ' act' : ''}`}>
                                 {i + 1 < step ? '✓' : i + 1}
                             </div>
-                            <span className={`step-lbl${i + 1 <= step ? ' act' : ''}`}>{t(`sellPage.${s}`)}</span>
+                            <span className={`step-lbl${i + 1 <= step ? ' act' : ''}`}>
+                                {s === 'cattleType' && listingType === 'pets' ? 'Pet Type' : t(`sellPage.${s}`)}
+                            </span>
                         </div>
                         {i < STEPS.length - 1 && <div className={`step-line${i + 1 < step ? ' done' : ''}`} />}
                     </React.Fragment>
