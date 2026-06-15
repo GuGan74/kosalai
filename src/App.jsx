@@ -18,11 +18,44 @@ import MyListingsPage from './pages/MyListingsPage';
 import ProfileSetupPage from './pages/ProfileSetupPage';
 import SellerProfilePage from './pages/SellerProfilePage';
 
-const NotificationsPage = React.lazy(() => import('./pages/NotificationsPage'));
-const PaymentPage = React.lazy(() => import('./pages/PaymentPage'));
-const SuccessPage = React.lazy(() => import('./pages/SuccessPage'));
-const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
-const AdminPage = React.lazy(() => import('./pages/AdminPage'));
+/**
+ * Utility to catch stale chunks (due to background Vite deployments) 
+ * and force a hard reload. This allows the browser to fetch the new 
+ * index.html with the updated chunk hashes without crashing.
+ * Session storage is used to prevent infinite reload loops if a chunk 
+ * is legitimately missing.
+ */
+const lazyRetry = function(componentImport) {
+    return new Promise((resolve, reject) => {
+        componentImport()
+            .then((component) => {
+                // Clear the flag on success so future background deployments can recover automatically
+                sessionStorage.removeItem('chunk-retry');
+                resolve(component);
+            })
+            .catch((error) => {
+                if (error.message.includes('Failed to fetch dynamically imported module') || 
+                    error.message.includes('Importing a module script failed') ||
+                    error.message.includes('ChunkLoadError')) {
+                    const hasRetried = sessionStorage.getItem('chunk-retry');
+                    if (!hasRetried) {
+                        sessionStorage.setItem('chunk-retry', 'true');
+                        window.location.reload(true);
+                    } else {
+                        reject(error);
+                    }
+                } else {
+                    reject(error);
+                }
+            });
+    });
+};
+
+const NotificationsPage = React.lazy(() => lazyRetry(() => import('./pages/NotificationsPage')));
+const PaymentPage = React.lazy(() => lazyRetry(() => import('./pages/PaymentPage')));
+const SuccessPage = React.lazy(() => lazyRetry(() => import('./pages/SuccessPage')));
+const NotFoundPage = React.lazy(() => lazyRetry(() => import('./pages/NotFoundPage')));
+const AdminPage = React.lazy(() => lazyRetry(() => import('./pages/AdminPage')));
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import loadingGif from './assets/379.gif';
