@@ -31,10 +31,26 @@ export default function MyListingsPage() {
 
     async function deleteListing(id) {
         if (!window.confirm('Delete this listing permanently? This cannot be undone.')) return;
-        // Note: For now, we accept unused images remaining in Cloudinary via the free tier instead of building a secure node/edge backend just to delete them.
-        await supabase.from('listings').delete().eq('id', id);
-        setListings(prev => prev.filter(l => l.id !== id));
-        toast.success('Listing deleted');
+        
+        console.log('DELETE ID', id);
+        
+        try {
+            const { data, error, status, statusText } = await supabase.from('listings').delete().eq('id', id).select();
+            
+            console.log({ data, error, status, statusText });
+            
+            if (error) throw error;
+            
+            if (!data || data.length === 0) {
+                throw new Error('Deletion blocked by database security policy or listing not found.');
+            }
+
+            setListings(prev => prev.filter(l => l.id !== id));
+            toast.success('Listing deleted');
+        } catch (err) {
+            console.error('Delete error:', err);
+            toast.error(err.message || 'Failed to delete listing. Please try again.');
+        }
     }
 
     async function relistListing(id) {
