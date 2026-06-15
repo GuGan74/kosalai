@@ -903,6 +903,8 @@
     color: #374151;
     background: transparent;
     cursor: pointer;
+    max-width: 160px;
+    text-overflow: ellipsis;
 }
 
 .hp-search-divider {
@@ -1029,8 +1031,8 @@
 
 @media (max-width: 480px) {
     .hp-top-row { flex-direction: column; }
-    .hp-search-box { padding: 8px 10px; flex-wrap: wrap; }
-    .hp-state-select-inline { font-size: 12px; }
+    .hp-search-box { padding: 8px 10px; flex-wrap: nowrap; }
+    .hp-state-select-inline { font-size: 12px; max-width: 100px; text-overflow: ellipsis; }
     .hp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
     /* Improved Filter/Sort Bar for Mobile */
