@@ -18,7 +18,7 @@ export default function ProfilePage() {
 
     const [likedListings, setLikedListings] = useState([]);
     const [loadingLiked, setLoadingLiked] = useState(true);
-    const [stats, setStats] = useState({ listings: 0, views: 0, inquiries: 0, sold: 0 });
+    const [stats, setStats] = useState({ listings: 0, activeListings: 0, sold: 0 });
     const [statsLoading, setStatsLoading] = useState(true);
 
     const [editing, setEditing] = useState(false);
@@ -33,17 +33,18 @@ export default function ProfilePage() {
             const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Stats fetch timeout')), 5000));
             const fetchPromise = Promise.all([
                 supabase.from('listings').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id),
-                supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('type', 'inquiry'),
                 supabase.from('listings').select('id', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'sold')
             ]);
 
-            const [listingsRes, inquiriesRes, soldRes] = await Promise.race([fetchPromise, timeoutPromise]);
+            const [listingsRes, soldRes] = await Promise.race([fetchPromise, timeoutPromise]);
+
+            const totalListings = listingsRes?.count || 0;
+            const soldListings = soldRes?.count || 0;
 
             setStats({
-                listings: listingsRes?.count || 0,
-                inquiries: inquiriesRes?.count || 0,
-                sold: soldRes?.count || 0,
-                views: 0 // listing_views table not yet created
+                listings: totalListings,
+                activeListings: totalListings - soldListings,
+                sold: soldListings
             });
         } catch (err) {
             console.error('Stats fetch error:', err);
@@ -184,9 +185,9 @@ export default function ProfilePage() {
                 ) : (
                     <>
                         <div className="p-stats">
-                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.listings}</div><div className="l">{t('profilePage.listings')}</div></div>
-                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.inquiries}</div><div className="l">{t('profilePage.inquiries')}</div></div>
-                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.sold}</div><div className="l">{t('profilePage.sold')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.listings}</div><div className="l">{t('profilePage.totalListings', 'Total Listings')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.activeListings}</div><div className="l">{t('profilePage.activeListings', 'Active Listings')}</div></div>
+                            <div className="pst"><div className="n">{statsLoading ? '-' : stats.sold}</div><div className="l">{t('profilePage.soldListings', 'Sold Listings')}</div></div>
                         </div>
                         <div className="prof-body">
                             {menuItems.map((m, i) => (
