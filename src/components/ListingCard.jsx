@@ -134,6 +134,44 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                     />
                 ) : null}
                 <div className="lc-emoji">{emoji}</div>
+
+                {/* SOLD overlay — shown only when listing.status === 'sold' */}
+                {listing.status === 'sold' && (
+                    <>
+                        {/* Semi-transparent dark overlay covering full image */}
+                        <div style={{
+                            position: 'absolute', inset: 0,
+                            background: 'rgba(0,0,0,0.45)',
+                            borderRadius: 'inherit',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            zIndex: 5,
+                        }}>
+                            <span style={{
+                                color: '#fff',
+                                fontWeight: 800,
+                                fontSize: 'clamp(22px, 6vw, 36px)',
+                                letterSpacing: '0.18em',
+                                textShadow: '0 2px 12px rgba(0,0,0,0.7)',
+                                fontFamily: 'Poppins, sans-serif',
+                                userSelect: 'none',
+                            }}>SOLD</span>
+                        </div>
+                        {/* Corner badge — top-left */}
+                        <div style={{
+                            position: 'absolute', top: 10, left: 10,
+                            background: '#e53935',
+                            color: '#fff',
+                            fontWeight: 700,
+                            fontSize: 11,
+                            padding: '3px 8px',
+                            borderRadius: 20,
+                            letterSpacing: '0.06em',
+                            zIndex: 6,
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                            fontFamily: 'Poppins, sans-serif',
+                        }}>✓ SOLD</div>
+                    </>
+                )}
             </div>
 
             {/* Content Box */}
