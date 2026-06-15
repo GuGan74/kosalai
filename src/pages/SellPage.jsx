@@ -91,7 +91,7 @@ const STEPS = ['cattleType', 'details', 'photos', 'pricing'];
 export default function SellPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { currentUser, guestPrefs, listingType: globalListingType } = useAuth();
+    const { currentUser, guestPrefs, listingType: globalListingType, isGuest } = useAuth();
     const { t } = useTranslation();
     const [step, setStep] = useState(1);
     const [submitting, setSubmitting] = useState(false);
@@ -403,7 +403,7 @@ export default function SellPage() {
                 <div className="sell-section animate-fadeIn">
                     <h3>{t('sellPage.whatSelling')}</h3>
                     <div className="toggle-row" style={{ marginBottom: 30, marginTop: 15 }}>
-                        {(guestPrefs?.category !== 'pets') && (
+                        {(!isGuest || guestPrefs?.category !== 'pets') && (
                             <button
                                 className={`tbtn toggle-btn${listingType === 'livestock' ? ' active' : ''}`}
                                 onClick={() => { setListingType('livestock'); setF('category', ''); }}
@@ -411,7 +411,7 @@ export default function SellPage() {
                                 🐄 {t('homePage.cattle')}
                             </button>
                         )}
-                        {(guestPrefs?.category !== 'livestock') && (
+                        {(!isGuest || guestPrefs?.category !== 'livestock') && (
                             <button
                                 className={`tbtn toggle-btn${listingType === 'pets' ? ' active' : ''}`}
                                 onClick={() => { setListingType('pets'); setF('category', ''); }}
