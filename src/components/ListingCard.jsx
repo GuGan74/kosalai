@@ -22,7 +22,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
     const {
         id, title, category, location: loc, state, price,
         milk_yield_liters, age_years, for_adoption, image_url, image_urls,
-        user_id: owner_id
+        user_id: owner_id, status,
     } = listing;
     
     const parsedUrls = parseImageUrls(image_urls);
@@ -136,7 +136,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 <div className="lc-emoji">{emoji}</div>
 
                 {/* SOLD overlay — shown only when listing.status === 'sold' */}
-                {listing.status === 'sold' && (
+                {status === 'sold' && (
                     <>
                         {/* Semi-transparent dark overlay covering full image */}
                         <div style={{
