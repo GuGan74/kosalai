@@ -279,6 +279,41 @@ export default function ListingDetailPage() {
                             {listing.is_promoted && <span className="gal-badge o">⚡ Promoted</span>}
                             {listing.for_adoption && <span className="gal-badge p">💜 Free Adoption</span>}
                         </div>
+
+                        {/* SOLD overlay on the detail image */}
+                        {listing.status === 'sold' && (
+                            <>
+                                <div style={{
+                                    position: 'absolute', inset: 0,
+                                    background: 'rgba(0,0,0,0.45)',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    zIndex: 5,
+                                }}>
+                                    <span style={{
+                                        color: '#fff',
+                                        fontWeight: 800,
+                                        fontSize: 'clamp(28px, 8vw, 52px)',
+                                        letterSpacing: '0.2em',
+                                        textShadow: '0 2px 16px rgba(0,0,0,0.7)',
+                                        fontFamily: 'Poppins, sans-serif',
+                                        userSelect: 'none',
+                                    }}>SOLD</span>
+                                </div>
+                                <div style={{
+                                    position: 'absolute', top: 14, left: 14,
+                                    background: '#e53935',
+                                    color: '#fff',
+                                    fontWeight: 700,
+                                    fontSize: 13,
+                                    padding: '4px 12px',
+                                    borderRadius: 20,
+                                    letterSpacing: '0.06em',
+                                    zIndex: 6,
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                                    fontFamily: 'Poppins, sans-serif',
+                                }}>✓ SOLD</div>
+                            </>
+                        )}
                     </div>
 
                     <div className="det-badges">
@@ -340,48 +375,66 @@ export default function ListingDetailPage() {
                         <div className="price-note">{t('listingDetail.negotiable')}</div>
                     </div>
                     <div className="w-btns">
-                        <button
-                            className={`btn-wcall${isPet ? ' p' : ''}`}
-                            onClick={() => {
-                                if (listing.user_id) {
-                                    navigate(`/seller/${listing.user_id}`);
-                                } else {
-                                    toast.error('Seller profile not available');
-                                }
-                            }}
-                        >
-                            {t('listingDetail.reachSeller')}
-                        </button>
-                        <button
-                            className="btn-fav-large"
-                            onClick={() => shareListing(listing)}
-                            style={{
-                                width: '100%', marginTop: '10px', padding: '14px',
-                                borderRadius: '12px', background: 'white',
-                                color: 'var(--blue)', fontWeight: 800,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                gap: '8px', cursor: 'pointer',
-                                border: '1px solid #bfdbfe',
-                                transition: '0.2s'
-                            }}
-                        >
-                            📤 Share Listing
-                        </button>
-                        <button
-                            className={`btn-fav-large ${isLiked ? 'active' : ''}`}
-                            onClick={handleToggleLike}
-                            style={{
-                                width: '100%', marginTop: '10px', padding: '14px',
-                                borderRadius: '12px', background: isLiked ? '#fff0f0' : 'white',
-                                color: isLiked ? '#e63946' : '#666', fontWeight: 800,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                gap: '8px', cursor: 'pointer',
-                                border: isLiked ? '1px solid #fecaca' : '1px solid #e5e7eb',
-                                transition: '0.2s'
-                            }}
-                        >
-                            {isLiked ? t('listingDetail.savedToProfile') : t('listingDetail.addToFavorites')}
-                        </button>
+                        {listing.status === 'sold' ? (
+                            /* SOLD notice — replaces contact buttons */
+                            <div style={{
+                                background: '#fef2f2',
+                                border: '1.5px solid #fca5a5',
+                                borderRadius: 12,
+                                padding: '16px 12px',
+                                textAlign: 'center',
+                                marginBottom: 8,
+                            }}>
+                                <div style={{ fontSize: 28, marginBottom: 6 }}>🏷️</div>
+                                <div style={{ fontWeight: 800, fontSize: 16, color: '#e53935', fontFamily: 'Poppins, sans-serif' }}>This listing is sold</div>
+                                <div style={{ fontSize: 13, color: '#6b7280', marginTop: 4 }}>This animal is no longer available for purchase.</div>
+                            </div>
+                        ) : (
+                            <>
+                            <button
+                                className={`btn-wcall${isPet ? ' p' : ''}`}
+                                onClick={() => {
+                                    if (listing.user_id) {
+                                        navigate(`/seller/${listing.user_id}`);
+                                    } else {
+                                        toast.error('Seller profile not available');
+                                    }
+                                }}
+                            >
+                                {t('listingDetail.reachSeller')}
+                            </button>
+                            <button
+                                className="btn-fav-large"
+                                onClick={() => shareListing(listing)}
+                                style={{
+                                    width: '100%', marginTop: '10px', padding: '14px',
+                                    borderRadius: '12px', background: 'white',
+                                    color: 'var(--blue)', fontWeight: 800,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    gap: '8px', cursor: 'pointer',
+                                    border: '1px solid #bfdbfe',
+                                    transition: '0.2s'
+                                }}
+                            >
+                                📤 Share Listing
+                            </button>
+                            <button
+                                className={`btn-fav-large ${isLiked ? 'active' : ''}`}
+                                onClick={handleToggleLike}
+                                style={{
+                                    width: '100%', marginTop: '10px', padding: '14px',
+                                    borderRadius: '12px', background: isLiked ? '#fff0f0' : 'white',
+                                    color: isLiked ? '#e63946' : '#666', fontWeight: 800,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    gap: '8px', cursor: 'pointer',
+                                    border: isLiked ? '1px solid #fecaca' : '1px solid #e5e7eb',
+                                    transition: '0.2s'
+                                }}
+                            >
+                                {isLiked ? t('listingDetail.savedToProfile') : t('listingDetail.addToFavorites')}
+                            </button>
+                            </>
+                        )}
                     </div>
                     <button
                         onClick={handleReport}
