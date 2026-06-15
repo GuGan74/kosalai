@@ -7,6 +7,7 @@ import { LIVESTOCK_CATS, PET_CATS } from '../constants/index';
 import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 import { parseImageUrls } from '../utils/helpers';
 import toast from 'react-hot-toast';
+import { INDIAN_STATES } from '../constants/states';
 import './SellPage.css';
 
 // Boost tiers moved to constants if needed, otherwise kept here as comments
@@ -83,18 +84,7 @@ function getDescriptionPlaceholder(category) {
     return map[category] || 'Describe the animal — health, age, temperament, history...';
 }
 
-const INDIAN_STATES = [
-    'Tamil Nadu', 'Maharashtra', 'Uttar Pradesh', 'Rajasthan',
-    'Gujarat', 'Punjab', 'Haryana', 'Telangana', 'Karnataka',
-    'Andhra Pradesh', 'Madhya Pradesh', 'Bihar',
-    'Arunachal Pradesh', 'Assam', 'Chhattisgarh', 'Goa',
-    'Himachal Pradesh', 'Jharkhand', 'Kerala', 'Manipur',
-    'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Sikkim',
-    'Tripura', 'Uttarakhand', 'West Bengal',
-    'Delhi', 'Jammu & Kashmir', 'Ladakh', 'Chandigarh',
-    'Puducherry', 'Andaman & Nicobar', 'Dadra & Nagar Haveli',
-    'Daman & Diu', 'Lakshadweep'
-];
+// INDIAN_STATES imported from constants
 
 const STEPS = ['cattleType', 'details', 'photos', 'pricing'];
 

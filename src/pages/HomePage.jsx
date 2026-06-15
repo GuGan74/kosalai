@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import ListingCard from '../components/ListingCard';
 import SkeletonCard from '../components/SkeletonCard';
 import SEOHead from '../components/SEOHead';
+import { INDIAN_STATES } from '../constants/states';
 import './HomePage.css';
 
 const PAGE_SIZE = 16;
@@ -15,14 +16,7 @@ const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
 const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
 const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at';
 
-const INDIAN_STATES = [
-    'Tamil Nadu', 'Karnataka', 'Kerala', 'Andhra Pradesh', 'Telangana',
-    'Maharashtra', 'Gujarat', 'Rajasthan', 'Punjab', 'Haryana',
-    'Uttar Pradesh', 'Bihar', 'West Bengal', 'Odisha', 'Madhya Pradesh',
-    'Assam', 'Jharkhand', 'Uttarakhand', 'Himachal Pradesh', 'Chhattisgarh',
-    'Goa', 'Tripura', 'Meghalaya', 'Manipur', 'Arunachal Pradesh',
-    'Delhi', 'Jammu & Kashmir', 'Puducherry',
-];
+// INDIAN_STATES imported from constants
 
 const DEMO_LISTINGS = import.meta.env.VITE_SHOW_DEMO_DATA === 'true' ? [
     { id: 'd1', title: 'HF Cow — High Milk Yield', category: 'cow', breed: 'HF Holstein', age_years: 4, price: 65000, location: 'Coimbatore', state: 'Tamil Nadu', milk_yield_liters: 18, is_vaccinated: true, is_verified: true, is_pregnant: true, is_promoted: false, for_adoption: false, image_url: null, status: 'active', gender: 'female', created_at: new Date().toISOString() },
