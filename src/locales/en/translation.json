@@ -480,14 +480,6 @@
     "phoneIcon": "📱 Phone",
     "editIcon": "✏️ Edit"
   },
-  "searchPage": {
-    "searching": "Searching…",
-    "resultsFound": "{{count}} result found",
-    "resultsFoundPlural": "{{count}} results found",
-    "noResults": "No results found",
-    "tryDifferent": "Try a different keyword or clear filters",
-    "searchPlaceholder": "Search cow, buffalo, goat, Labrador…"
-  },
   "paymentPage": {
     "completeYourListing": "Complete Your Listing",
     "payOnce": "Pay once to publish your listing on Kosalai",
