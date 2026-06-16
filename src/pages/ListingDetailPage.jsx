@@ -371,7 +371,6 @@ export default function ListingDetailPage() {
                         <div>
                             <div className="s-name">{t('listingDetail.verifiedSeller')}</div>
                             <div className="s-sub">{t('listingDetail.memberSince', { year: new Date(sellerJoinDate || Date.now()).getFullYear() })}</div>
-                            <div className={`s-vfy${isPet ? ' p' : ''}`}>{t('listingDetail.otpVerified')}</div>
                         </div>
                     </div>
                     <div className="price-w">
