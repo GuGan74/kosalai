@@ -60,6 +60,7 @@ const AdminPage = React.lazy(() => lazyRetry(() => import('./pages/AdminPage')))
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import loadingGif from './assets/379.gif';
+import loadingVideo from './assets/loading_splash.mp4';
 import './index.css';
 import './App.css';
 
@@ -115,25 +116,52 @@ function AppRoutes() {
   if (loading) {
     return (
       <div style={{
-        minHeight: '100vh', display: 'flex',
-        flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', padding: '20px 16px',
-        background:
-          'linear-gradient(160deg,#0f5228 0%,#1a7a3c 55%,#0d3d1e 100%)',
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        width: '100vw', 
+        height: '100vh', 
+        zIndex: 9999,
+        backgroundColor: '#000'
       }}>
-        {/* Logo */}
-        <div style={{ textAlign: 'center', color: 'white' }}>
-          <div style={{ fontSize: 64, marginBottom: 16 }}>🐄</div>
-          <div style={{
-            fontFamily: 'Poppins,sans-serif',
-            fontSize: 28, fontWeight: 900
-          }}>
-            Kosalai
-          </div>
-          <div style={{ marginTop: 20 }}>
-            <img src={loadingGif} alt="Loading..." style={{ width: 80, height: 80, objectFit: 'contain' }} />
+        <video 
+          src={loadingVideo}
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          preload="auto"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover' 
+          }}
+          onError={(e) => {
+            // Fallback to old gradient and gif if video fails
+            e.target.style.display = 'none';
+            document.getElementById('fallback-loading').style.display = 'flex';
+          }}
+        />
+        
+        {/* Fallback container (hidden by default) */}
+        <div id="fallback-loading" style={{
+          display: 'none',
+          width: '100%', height: '100%',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: 'linear-gradient(160deg,#0f5228 0%,#1a7a3c 55%,#0d3d1e 100%)',
+          position: 'absolute', top: 0, left: 0, zIndex: 1
+        }}>
+          <div style={{ textAlign: 'center', color: 'white' }}>
+            <div style={{ fontSize: 64, marginBottom: 16 }}>🐄</div>
+            <div style={{ fontFamily: 'Poppins,sans-serif', fontSize: 28, fontWeight: 900 }}>
+              Kosalai
+            </div>
+            <div style={{ marginTop: 20 }}>
+              <img src={loadingGif} alt="Loading..." style={{ width: 80, height: 80, objectFit: 'contain' }} />
+            </div>
           </div>
         </div>
+
       </div>
     );
   }
