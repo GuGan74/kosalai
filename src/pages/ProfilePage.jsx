@@ -7,6 +7,7 @@ import { DISTRICTS } from '../constants/locations';
 import ListingCard from '../components/ListingCard';
 import BackButton from '../components/BackButton';
 import toast from 'react-hot-toast';
+import TranslatedText from '../components/TranslatedText';
 import './ProfilePage.css';
 
 export default function ProfilePage() {
@@ -147,17 +148,17 @@ export default function ProfilePage() {
                     <div className="prof-hd-bg">
                         <div className="p-av">{initials}</div>
                         <div className="p-nm">{p.full_name || t('profilePage.myAccount')}</div>
-                        <div className="p-meta">{p.location ? `📍 ${p.location} · ` : ''}{t('profilePage.memberSince', { year: yr })}</div>
+                        <div className="p-meta">{p.location ? <>📍 <TranslatedText>{p.location}</TranslatedText> · </> : ''}{t('profilePage.memberSince', { year: yr })}</div>
                         <div className="p-badges"></div>
                     </div>
                 )}
 
                 {editing ? (
                     <div className="section-card" style={{ margin: '16px' }}>
-                        <h4>Edit Profile</h4>
+                        <h4>{t('profilePage.editProfile', { defaultValue: 'Edit Profile' })}</h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Full Name <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.fullName', { defaultValue: 'Full Name' })} <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <input
                                     value={editForm.full_name}
                                     onChange={e => {
@@ -169,7 +170,7 @@ export default function ProfilePage() {
                                 {errors.full_name && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.full_name}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Phone <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.phone', { defaultValue: 'Phone' })} <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <input
                                     type="tel"
                                     maxLength={10}
@@ -184,7 +185,7 @@ export default function ProfilePage() {
                                 {errors.phone && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.phone}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>State <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.state', { defaultValue: 'State' })} <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <select
                                     value={editForm.state}
                                     onChange={e => {
@@ -193,7 +194,7 @@ export default function ProfilePage() {
                                     }}
                                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.state ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: 'white' }}
                                 >
-                                    <option value="">Select State</option>
+                                    <option value="">{t('profilePage.selectState', { defaultValue: 'Select State' })}</option>
                                     {DISTRICTS.map(g => (
                                         <option key={g.group} value={g.group}>{g.group}</option>
                                     ))}
@@ -201,7 +202,7 @@ export default function ProfilePage() {
                                 {errors.state && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.state}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>District <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.district', { defaultValue: 'District' })} <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <select
                                     value={editForm.location}
                                     onChange={e => {
@@ -211,7 +212,7 @@ export default function ProfilePage() {
                                     disabled={!editForm.state}
                                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.location ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: !editForm.state ? '#f3f4f6' : 'white', cursor: !editForm.state ? 'not-allowed' : 'pointer' }}
                                 >
-                                    <option value="">{editForm.state ? 'Select District' : 'Select State First'}</option>
+                                    <option value="">{editForm.state ? t('profilePage.selectDistrict', { defaultValue: 'Select District' }) : t('profilePage.selectStateFirst', { defaultValue: 'Select State First' })}</option>
                                     {editForm.state && DISTRICTS.find(g => g.group === editForm.state)?.opts.map(o => (
                                         <option key={o} value={o}>{o}</option>
                                     ))}
@@ -219,7 +220,7 @@ export default function ProfilePage() {
                                 {errors.location && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.location}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Language</label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.language', { defaultValue: 'Language' })}</label>
                                 <select
                                     value={editForm.language}
                                     onChange={e => {
@@ -228,7 +229,7 @@ export default function ProfilePage() {
                                     }}
                                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.language ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: 'white' }}
                                 >
-                                    <option value="">Select Language</option>
+                                    <option value="">{t('profilePage.selectLanguage', { defaultValue: 'Select Language' })}</option>
                                     <option value="English">English</option>
                                     <option value="Tamil">Tamil</option>
                                     <option value="Hindi">Hindi</option>
@@ -238,8 +239,8 @@ export default function ProfilePage() {
                                 </select>
                             </div>
                             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                <button className="btn-primary" style={{ flex: 1 }} onClick={saveProfile}>Save</button>
-                                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setEditing(false)}>Cancel</button>
+                                <button className="btn-primary" style={{ flex: 1 }} onClick={saveProfile}>{t('profilePage.save', { defaultValue: 'Save' })}</button>
+                                <button className="btn-secondary" style={{ flex: 1 }} onClick={() => setEditing(false)}>{t('profilePage.cancel', { defaultValue: 'Cancel' })}</button>
                             </div>
                         </div>
                     </div>
@@ -307,16 +308,16 @@ export default function ProfilePage() {
                                 setEditing(true);
                             }}
                         >
-                            ✏️ Edit
+                            ✏️ {t('profilePage.edit', { defaultValue: 'Edit' })}
                         </button>
                     </div>
                     <div className="prof-detail-row"><span>{t('profilePage.phoneIcon')}</span><span>{p.phone || '—'}</span></div>
-                    <div className="prof-detail-row"><span>📍</span><span>{p.location || '—'}</span></div>
+                    <div className="prof-detail-row"><span>📍</span><span>{p.location ? <TranslatedText>{p.location}</TranslatedText> : '—'}</span></div>
                     <div className="prof-detail-row"><span>{t('profilePage.email')}</span><span>{p.email || '—'}</span></div>
                 </div>
 
                 <div className="section-card" style={{ marginTop: 16 }}>
-                    <h4>❤️ Saved Listings</h4>
+                    <h4>❤️ {t('profilePage.savedListings', { defaultValue: 'Saved Listings' })}</h4>
                     {loadingLiked ? (
                         <div style={{ padding: 20, textAlign: 'center' }}><div className="spinner dark" /></div>
                     ) : likedListings.length === 0 ? (
