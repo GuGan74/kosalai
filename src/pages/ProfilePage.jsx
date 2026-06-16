@@ -253,7 +253,7 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="section-card" style={{ marginTop: 16 }}>
-                    <h4>❤️ {t('profilePage.likedCattle')}</h4>
+                    <h4>❤️ Saved Listings</h4>
                     {loadingLiked ? (
                         <div style={{ padding: 20, textAlign: 'center' }}><div className="spinner dark" /></div>
                     ) : likedListings.length === 0 ? (
