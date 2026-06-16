@@ -199,6 +199,14 @@ export default function ListingDetailPage() {
     const parsedDisplayUrls = listing.image_urls ? parseImageUrls(listing.image_urls) : [];
     const displayImages = parsedDisplayUrls.length > 0 ? parsedDisplayUrls : (listing.image_url ? [listing.image_url] : []);
 
+    const initials = sellerName
+        ?.split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase() || 'U';
+
     return (
         <div className="det-page">
             <SEOHead
@@ -359,7 +367,7 @@ export default function ListingDetailPage() {
                 {/* RIGHT: Seller Widget */}
                 <div className="seller-w">
                     <div className="s-top">
-                        <div className={`s-av${isPet ? ' p' : ''}`}>SL</div>
+                        <div className={`s-av${isPet ? ' p' : ''}`}>{initials}</div>
                         <div>
                             <div className="s-name">{t('listingDetail.verifiedSeller')}</div>
                             <div className="s-sub">{t('listingDetail.memberSince', { year: new Date(sellerJoinDate || Date.now()).getFullYear() })}</div>
