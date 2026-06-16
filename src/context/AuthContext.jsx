@@ -99,6 +99,7 @@ export function AuthProvider({ children }) {
                 
                 if (error) throw error;
                 if (data) {
+                    console.log('PROFILE_FETCH_SUCCESS');
                     setCurrentProfile(data);
                     setUserRole(data.role || 'user');
                     success = true;
@@ -139,7 +140,10 @@ export function AuthProvider({ children }) {
                 // Fetch profile only AFTER session is confirmed loaded
                 if (!profileFetchStarted.current) {
                     profileFetchStarted.current = true;
+                    console.log('PROFILE_FETCH_START [getSession]');
                     await loadProfile(session.user.id);
+                } else {
+                    console.log('PROFILE_FETCH_SKIPPED [getSession]');
                 }
             } else if (!session && mounted) {
                 setIsLoggedIn(false);
@@ -165,12 +169,19 @@ export function AuthProvider({ children }) {
                     if (session?.user) {
                         setCurrentUser(session.user);
                         if (event === 'SIGNED_IN') {
-                            await loadProfile(session.user.id);
+                            if (!profileFetchStarted.current) {
+                                profileFetchStarted.current = true;
+                                console.log('PROFILE_FETCH_START [onAuthStateChange]', event);
+                                await loadProfile(session.user.id);
+                            } else {
+                                console.log('PROFILE_FETCH_SKIPPED [onAuthStateChange]', event);
+                            }
                             clearGuestMode();
                             setIsLoggedIn(true);
                         }
                     }
                 } else if (event === 'SIGNED_OUT') {
+                    profileFetchStarted.current = false;
                     setCurrentUser(null);
                     setCurrentProfile(null);
                     setIsLoggedIn(false);
