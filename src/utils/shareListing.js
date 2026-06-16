@@ -1,7 +1,7 @@
 export async function shareListing(listing) {
     if (!listing || !listing.id) return false;
     
-    const url = `https://kosalai.in/listing/${listing.id}`;
+    const url = `https://kosalai.in/listing/${listing.listing_code || listing.id}`;
     const shareData = {
         title: listing.title || 'Kosalai Listing',
         text: 'Check out this listing on Kosalai',

@@ -261,7 +261,7 @@ export default function ProfilePage() {
                     ) : (
                         <div className="liked-animals-grid">
                             {likedListings.map(l => (
-                                <div key={l.id} className="mini-liked-card" onClick={() => navigate(`/listing/${l.id}`)}>
+                                <div key={l.id} className="mini-liked-card" onClick={() => navigate(`/listing/${l.listing_code || l.id}`)}>
                                     <div className="mlc-img">
                                         {l.image_url ? <img src={l.image_url} alt={l.title} /> : <span>🐾</span>}
                                     </div>

@@ -80,17 +80,17 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
             onKeyDown={e => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    navigate(`/listing/${id}`);
+                    navigate(`/listing/${listing.listing_code || id}`);
                 }
             }}
             onClick={() => {
                 if (!isLoggedIn) {
-                    sessionStorage.setItem('pb_redirect_after_login', `/listing/${id}`);
+                    sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
                     toast('Sign in to view full listing details 🔐', { icon: '👆', duration: 2500 });
                     setTimeout(() => navigate('/login'), 800);
                     return;
                 }
-                navigate(`/listing/${id}`);
+                navigate(`/listing/${listing.listing_code || id}`);
             }}
         >
             {/* Image Box */}
@@ -233,7 +233,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                     <button className="lc-btn-chat" onClick={async (e) => {
                         e.stopPropagation();
                         if (!isLoggedIn) {
-                            sessionStorage.setItem('pb_redirect_after_login', `/listing/${id}`);
+                            sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
                             toast('Sign in to view seller profile 🔐', { icon: '👆', duration: 2500 });
                             setTimeout(() => navigate('/login'), 800);
                             return;
@@ -244,7 +244,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                     </button>
                     <button className="lc-btn-call" onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/listing/${id}`);
+                        navigate(`/listing/${listing.listing_code || id}`);
                     }}>
                         <TranslatedText>Details</TranslatedText>
                     </button>

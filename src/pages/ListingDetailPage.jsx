@@ -77,16 +77,25 @@ export default function ListingDetailPage() {
             }
         } catch (e) { /* ignore cache errors */ }
 
-        // 2. Run all DB fetches in PARALLEL (not sequential)
-        const listingPromise = supabase.from('listings').select('*').eq('id', id).single();
-        const likedPromise = currentUser
-            ? supabase.from('favorites').select('id').eq('user_id', currentUser.id).eq('listing_id', id)
-            : Promise.resolve({ data: [] });
+        // 2. Fetch listing data first
+        let listingData = null;
+        let trueUuid = null;
 
-        // Fire both at the same time
-        const [{ data: listingData }, { data: likedData }] = await Promise.all([listingPromise, likedPromise]);
+        if (String(id).startsWith('KSL')) {
+            const { data } = await supabase.from('listings').select('*').eq('listing_code', id).single();
+            listingData = data;
+            trueUuid = data?.id;
+        } else {
+            const { data } = await supabase.from('listings').select('*').eq('id', id).single();
+            listingData = data;
+            trueUuid = id;
+        }
 
-        if (likedData && likedData.length > 0) setIsLiked(true);
+        // 3. Fetch favorites using the true UUID
+        if (currentUser && trueUuid) {
+            const { data: likedData } = await supabase.from('favorites').select('id').eq('user_id', currentUser.id).eq('listing_id', trueUuid);
+            if (likedData && likedData.length > 0) setIsLiked(true);
+        }
 
         if (listingData) {
             setListing(listingData);
@@ -192,7 +201,7 @@ export default function ListingDetailPage() {
             "priceCurrency": "INR",
             "price": listing.for_adoption ? 0 : listing.price,
             "availability": "https://schema.org/InStock",
-            "url": `https://kosalai.in/listing/${listing.id}`
+            "url": `https://kosalai.in/listing/${listing.listing_code || listing.id}`
         }
     };
 
@@ -213,7 +222,7 @@ export default function ListingDetailPage() {
                 title={`${listing.title} for sale in ${listing.location} | Kosalai`}
                 description={`${listing.breed || ''}, ${listing.age_years ? listing.age_years + ' years old' : ''}. Price: ${listing.for_adoption ? 'Free' : '₹' + Number(listing.price).toLocaleString('en-IN')}. Located in ${listing.location}${listing.state ? ', ' + listing.state : ''}.`}
                 imageUrl={displayImages[0] || null}
-                url={`https://kosalai.in/listing/${listing.id}`}
+                url={`https://kosalai.in/listing/${listing.listing_code || listing.id}`}
             />
             <script
                 type="application/ld+json"

@@ -236,7 +236,7 @@ export default function AdminPage() {
                                                     </td>
                                                     <td>{new Date(l.created_at).toLocaleDateString('en-IN')}</td>
                                                     <td>
-                                                        <button className="adm-act-btn" onClick={() => navigate(`/listing/${l.id}`)}>View</button>
+                                                        <button className="adm-act-btn" onClick={() => navigate(`/listing/${l.listing_code || l.id}`)}>View</button>
                                                         <button className="adm-act-btn danger" onClick={() => removeListing(l.id)}>Remove</button>
                                                     </td>
                                                 </tr>
@@ -305,7 +305,7 @@ export default function AdminPage() {
                                                     <td style={{ color: '#ff4d4f', maxWidth: 200, whiteSpace: 'normal', lineHeight: 1.4 }}>{r.reason}</td>
                                                     <td>{new Date(r.created_at).toLocaleDateString('en-IN')}</td>
                                                     <td>
-                                                        {r.listings && <button className="adm-act-btn" onClick={() => window.open(`/listing/${r.listing_id}`, '_blank')}>View</button>}
+                                                        {r.listings && <button className="adm-act-btn" onClick={() => window.open(`/listing/${r.listings.listing_code || r.listing_id}`, '_blank')}>View</button>}
                                                         <button className="adm-act-btn" style={{ marginLeft: 6, borderColor: 'var(--green)', color: 'var(--green)' }} onClick={() => resolveReport(r.id, 'keep', r.listing_id)}>Keep</button>
                                                         <button className="adm-act-btn danger" style={{ marginLeft: 6 }} onClick={() => resolveReport(r.id, 'remove', r.listing_id)}>Remove</button>
                                                     </td>
