@@ -353,15 +353,15 @@ export default function ListingDetailPage() {
                         {listing.gender && <div className="sg"><div className="lb">{t('listingDetail.gender')}</div><div className="vl" style={{ textTransform: 'capitalize' }}>{t('listing.' + listing.gender.toLowerCase(), { defaultValue: listing.gender })}</div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.category')}</div><div className="vl" style={{ textTransform: 'capitalize' }}><TranslatedText>{listing.category}</TranslatedText></div></div>
                         {listing.breed && <div className="sg"><div className="lb">{t('listingDetail.breed')}</div><div className="vl"><TranslatedText>{listing.breed}</TranslatedText></div></div>}
-                        {listing.village && <div className="sg"><div className="lb">{t('listingDetail.village')}</div><div className="vl"><TranslatedText>{listing.village}</TranslatedText></div></div>}
-                        {listing.taluk && <div className="sg"><div className="lb">{t('listingDetail.taluk')}</div><div className="vl"><TranslatedText>{listing.taluk}</TranslatedText></div></div>}
+                        {listing.village && <div className="sg"><div className="lb">{t('sellPage.village', { defaultValue: 'Village' })}</div><div className="vl"><TranslatedText>{listing.village}</TranslatedText></div></div>}
+                        {listing.taluk && <div className="sg"><div className="lb">{t('sellPage.taluk', { defaultValue: 'Taluk' })}</div><div className="vl"><TranslatedText>{listing.taluk}</TranslatedText></div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.location')}</div><div className="vl"><TranslatedText>{listing.location}</TranslatedText></div></div>
-                        {listing.landmark && <div className="sg"><div className="lb">{t('listingDetail.landmark')}</div><div className="vl"><TranslatedText>{listing.landmark}</TranslatedText></div></div>}
+                        {listing.landmark && <div className="sg"><div className="lb">{t('sellPage.landmark', { defaultValue: 'Landmark' })}</div><div className="vl"><TranslatedText>{listing.landmark}</TranslatedText></div></div>}
                     </div>
 
                     {listing.description && (
                         <div className="det-desc">
-                            <h4>📝 Description</h4>
+                            <h4>{t('listingDetail.description', { defaultValue: '📝 Description' })}</h4>
                             <p><TranslatedText>{listing.description}</TranslatedText></p>
                         </div>
                     )}
