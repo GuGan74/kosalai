@@ -82,27 +82,41 @@ export function AuthProvider({ children }) {
     }
     // ────────────────────────────────────────────────────────
 
-    const loadProfile = React.useCallback(async (uid) => {
+    const loadProfile = React.useCallback(async (uid, retries = 3) => {
         if (!uid) {
             setProfileReady(true);
             return;
         }
-        try {
-            // Use Promise.race to prevent infinite hangs if Supabase locks deadlock
-            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Profile fetch timeout')), 5000));
-            const fetchPromise = supabase.from('profiles').select('*').eq('id', uid).single();
-            
-            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-            
-            if (data && !error) {
-                setCurrentProfile(data);
-                setUserRole(data.role || 'user');
+        
+        let success = false;
+        for (let i = 0; i < retries; i++) {
+            try {
+                // Use Promise.race to prevent infinite hangs if Supabase locks deadlock
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Profile fetch timeout')), 5000));
+                const fetchPromise = supabase.from('profiles').select('*').eq('id', uid).single();
+                
+                const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+                
+                if (error) throw error;
+                if (data) {
+                    setCurrentProfile(data);
+                    setUserRole(data.role || 'user');
+                    success = true;
+                    break;
+                }
+            } catch (err) {
+                console.error(`Failed to load profile (attempt ${i + 1}):`, err);
+                if (i < retries - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // 2s backoff
+                }
             }
-        } catch (err) {
-            console.error('Failed to load profile (timeout or error):', err);
-        } finally {
-            setProfileReady(true);
         }
+        
+        if (!success) {
+            console.error("CRITICAL: Exhausted all retries fetching profile. Falling back to safe defaults.");
+        }
+        
+        setProfileReady(true);
     }, []);
 
     const profileFetchStarted = React.useRef(false);
@@ -205,10 +219,12 @@ export function AuthProvider({ children }) {
         });
     }
 
+    // STRICT CHECK: Only force setup if we definitively loaded the profile AND it is explicitly marked false.
+    // If it is undefined (due to network timeout/fallback), we assume true to prevent data destruction.
     const needsProfileSetupFlag = isLoggedIn &&
         profileReady &&
         currentProfile !== null &&
-        !currentProfile?.is_profile_complete;
+        currentProfile?.is_profile_complete === false;
 
     console.log('[DEBUG] AuthState:', {
         isLoggedIn,
