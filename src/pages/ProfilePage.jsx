@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { DISTRICTS } from '../constants/locations';
+import { INDIAN_STATES } from '../constants/states';
 import ListingCard from '../components/ListingCard';
 import BackButton from '../components/BackButton';
 import toast from 'react-hot-toast';
@@ -195,28 +196,42 @@ export default function ProfilePage() {
                                     style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.state ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: 'white' }}
                                 >
                                     <option value="">{t('profilePage.selectState', { defaultValue: 'Select State' })}</option>
-                                    {DISTRICTS.map(g => (
-                                        <option key={g.group} value={g.group}>{g.group}</option>
+                                    {INDIAN_STATES.map(s => (
+                                        <option key={s} value={s}>{s}</option>
                                     ))}
                                 </select>
                                 {errors.state && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.state}</div>}
                             </div>
                             <div>
                                 <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>{t('profilePage.district', { defaultValue: 'District' })} <span style={{ color: 'var(--red)' }}>*</span></label>
-                                <select
-                                    value={editForm.location}
-                                    onChange={e => {
-                                        setEditForm({ ...editForm, location: e.target.value });
-                                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, location: null }));
-                                    }}
-                                    disabled={!editForm.state}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.location ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: !editForm.state ? '#f3f4f6' : 'white', cursor: !editForm.state ? 'not-allowed' : 'pointer' }}
-                                >
-                                    <option value="">{editForm.state ? t('profilePage.selectDistrict', { defaultValue: 'Select District' }) : t('profilePage.selectStateFirst', { defaultValue: 'Select State First' })}</option>
-                                    {editForm.state && DISTRICTS.find(g => g.group === editForm.state)?.opts.map(o => (
-                                        <option key={o} value={o}>{o}</option>
-                                    ))}
-                                </select>
+                                {editForm.state && DISTRICTS.find(g => g.group === editForm.state) ? (
+                                    <select
+                                        value={editForm.location}
+                                        onChange={e => {
+                                            setEditForm({ ...editForm, location: e.target.value });
+                                            if (e.target.value.trim()) setErrors(prev => ({ ...prev, location: null }));
+                                        }}
+                                        disabled={!editForm.state}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.location ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: !editForm.state ? '#f3f4f6' : 'white', cursor: !editForm.state ? 'not-allowed' : 'pointer' }}
+                                    >
+                                        <option value="">{editForm.state ? t('profilePage.selectDistrict', { defaultValue: 'Select District' }) : t('profilePage.selectStateFirst', { defaultValue: 'Select State First' })}</option>
+                                        {DISTRICTS.find(g => g.group === editForm.state)?.opts.map(o => (
+                                            <option key={o} value={o}>{o}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={editForm.state ? "Enter your district / city" : "Select State First"}
+                                        value={editForm.location}
+                                        onChange={e => {
+                                            setEditForm({ ...editForm, location: e.target.value });
+                                            if (e.target.value.trim()) setErrors(prev => ({ ...prev, location: null }));
+                                        }}
+                                        disabled={!editForm.state}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.location ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: !editForm.state ? '#f3f4f6' : 'white', cursor: !editForm.state ? 'not-allowed' : 'text' }}
+                                    />
+                                )}
                                 {errors.location && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.location}</div>}
                             </div>
                             <div>

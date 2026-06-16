@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import logoImg from '../assets/kosalai-logo-removebg-preview.png';
 import loadingGif from '../assets/379.gif';
 import { DISTRICTS } from '../constants/locations';
+import { INDIAN_STATES } from '../constants/states';
 import './SplashPage.css';
 
 export default function ProfileSetupPage() {
@@ -219,8 +220,8 @@ export default function ProfileSetupPage() {
                 }}
               >
                 <option value="">Select your state</option>
-                {DISTRICTS.map(g => (
-                  <option key={g.group} value={g.group}>{g.group}</option>
+                {INDIAN_STATES.map(s => (
+                  <option key={s} value={s}>{s}</option>
                 ))}
               </select>
             </div>
@@ -230,28 +231,50 @@ export default function ProfileSetupPage() {
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
                 Your District <span style={{ color: '#ef4444' }}>*</span>
               </label>
-              <select
-                value={district}
-                onChange={e => {
-                  setDistrict(e.target.value);
-                  if (e.target.value) setErrors(prev => ({ ...prev, district: false }));
-                }}
-                disabled={!state}
-                style={{
-                  width: '100%',
-                  border: `1.5px solid ${errors.district ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
-                  padding: '12px 14px',
-                  fontSize: 14, outline: 'none',
-                  fontFamily: 'Inter, sans-serif',
-                  background: !state ? '#f3f4f6' : 'white',
-                  cursor: !state ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <option value="">{state ? 'Select your district' : 'Select State First'}</option>
-                {state && DISTRICTS.find(g => g.group === state)?.opts.map(o => (
-                  <option key={o} value={o}>{o}</option>
-                ))}
-              </select>
+              {state && DISTRICTS.find(g => g.group === state) ? (
+                <select
+                  value={district}
+                  onChange={e => {
+                    setDistrict(e.target.value);
+                    if (e.target.value) setErrors(prev => ({ ...prev, district: false }));
+                  }}
+                  disabled={!state}
+                  style={{
+                    width: '100%',
+                    border: `1.5px solid ${errors.district ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
+                    padding: '12px 14px',
+                    fontSize: 14, outline: 'none',
+                    fontFamily: 'Inter, sans-serif',
+                    background: 'white',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <option value="">Select your district</option>
+                  {DISTRICTS.find(g => g.group === state)?.opts.map(o => (
+                    <option key={o} value={o}>{o}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder={state ? "Enter your district / city" : "Select State First"}
+                  value={district}
+                  onChange={e => {
+                    setDistrict(e.target.value);
+                    if (e.target.value) setErrors(prev => ({ ...prev, district: false }));
+                  }}
+                  disabled={!state}
+                  style={{
+                    width: '100%',
+                    border: `1.5px solid ${errors.district ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
+                    padding: '12px 14px',
+                    fontSize: 14, outline: 'none',
+                    fontFamily: 'Inter, sans-serif',
+                    background: !state ? '#f3f4f6' : 'white',
+                    cursor: !state ? 'not-allowed' : 'text',
+                  }}
+                />
+              )}
             </div>
 
             {/* Language */}
