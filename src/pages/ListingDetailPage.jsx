@@ -307,28 +307,22 @@ export default function ListingDetailPage() {
                                     zIndex: 5,
                                 }}>
                                     <span style={{
-                                        color: '#fff',
-                                        fontWeight: 800,
-                                        fontSize: 'clamp(28px, 8vw, 52px)',
-                                        letterSpacing: '0.2em',
-                                        textShadow: '0 2px 16px rgba(0,0,0,0.7)',
-                                        fontFamily: 'Poppins, sans-serif',
+                                        color: '#d32f2f',
+                                        fontWeight: 900,
+                                        fontSize: 'clamp(32px, 10vw, 52px)',
+                                        letterSpacing: '0.15em',
+                                        fontFamily: 'Impact, Poppins, sans-serif',
                                         userSelect: 'none',
+                                        border: '6px solid #d32f2f',
+                                        borderRadius: '12px',
+                                        padding: '10px 30px',
+                                        transform: 'rotate(-15deg)',
+                                        display: 'inline-block',
+                                        background: 'rgba(255,255,255,0.85)',
+                                        boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+                                        textTransform: 'uppercase',
                                     }}>SOLD</span>
                                 </div>
-                                <div style={{
-                                    position: 'absolute', top: 14, left: 14,
-                                    background: '#e53935',
-                                    color: '#fff',
-                                    fontWeight: 700,
-                                    fontSize: 13,
-                                    padding: '4px 12px',
-                                    borderRadius: 20,
-                                    letterSpacing: '0.06em',
-                                    zIndex: 6,
-                                    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                                    fontFamily: 'Poppins, sans-serif',
-                                }}>✓ SOLD</div>
                             </>
                         )}
                     </div>

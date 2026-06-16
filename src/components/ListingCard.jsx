@@ -147,29 +147,22 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                             zIndex: 5,
                         }}>
                             <span style={{
-                                color: '#fff',
-                                fontWeight: 800,
-                                fontSize: 'clamp(22px, 6vw, 36px)',
-                                letterSpacing: '0.18em',
-                                textShadow: '0 2px 12px rgba(0,0,0,0.7)',
-                                fontFamily: 'Poppins, sans-serif',
+                                color: '#d32f2f',
+                                fontWeight: 900,
+                                fontSize: 'clamp(24px, 8vw, 36px)',
+                                letterSpacing: '0.15em',
+                                fontFamily: 'Impact, Poppins, sans-serif',
                                 userSelect: 'none',
+                                border: '4px solid #d32f2f',
+                                borderRadius: '8px',
+                                padding: '6px 20px',
+                                transform: 'rotate(-15deg)',
+                                display: 'inline-block',
+                                background: 'rgba(255,255,255,0.85)',
+                                boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
+                                textTransform: 'uppercase',
                             }}>SOLD</span>
                         </div>
-                        {/* Corner badge — top-left */}
-                        <div style={{
-                            position: 'absolute', top: 10, left: 10,
-                            background: '#e53935',
-                            color: '#fff',
-                            fontWeight: 700,
-                            fontSize: 11,
-                            padding: '3px 8px',
-                            borderRadius: 20,
-                            letterSpacing: '0.06em',
-                            zIndex: 6,
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                            fontFamily: 'Poppins, sans-serif',
-                        }}>✓ SOLD</div>
                     </>
                 )}
             </div>

@@ -119,31 +119,33 @@ export default function SearchPage() {
                 description={t('searchPage.seoDescription')}
                 url="https://kosalai.in/search"
             />
-            <div className="search-bar-top">
-                <BackButton fallbackPath="/" className="" />
-                <div className="search-inp-wrap">
-                    <span>🔍</span>
-                    <input
-                        value={query}
-                        onChange={e => setQuery(e.target.value)}
-                        placeholder={t('searchPage.searchPlaceholder')}
-                        autoFocus
-                    />
-                    {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--g3)', fontSize: 16 }}>✕</button>}
+            <div className="search-sticky-header">
+                <div className="search-bar-top">
+                    <BackButton fallbackPath="/" className="" />
+                    <div className="search-inp-wrap">
+                        <span>🔍</span>
+                        <input
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                            placeholder={t('searchPage.searchPlaceholder')}
+                            autoFocus
+                        />
+                        {query && <button onClick={() => setQuery('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--g3)', fontSize: 16 }}>✕</button>}
+                    </div>
                 </div>
-            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', margin: '0 16px 10px' }}>
-                <div className="filter-pills" style={{ flex: 1 }}>
-                    {activePillsList.map(p => (
-                        <button
-                            key={JSON.stringify(p)}
-                            className={`fpill${activePills.find(a => JSON.stringify(a) === JSON.stringify(p)) ? ' act' : ''}`}
-                            onClick={() => togglePill(p)}
-                        >
-                            {p.label} {t(`searchPage.${p.key}`)}
-                        </button>
-                    ))}
+                <div className="filter-pills-wrapper">
+                    <div className="filter-pills">
+                        {activePillsList.map(p => (
+                            <button
+                                key={JSON.stringify(p)}
+                                className={`fpill${activePills.find(a => JSON.stringify(a) === JSON.stringify(p)) ? ' act' : ''}`}
+                                onClick={() => togglePill(p)}
+                            >
+                                {p.label} {t(`searchPage.${p.key}`)}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 

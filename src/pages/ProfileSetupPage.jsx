@@ -5,33 +5,49 @@ import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import logoImg from '../assets/kosalai-logo-removebg-preview.png';
 import loadingGif from '../assets/379.gif';
+import { DISTRICTS } from '../constants/locations';
 import './SplashPage.css';
-
-const DISTRICTS = [
-  { group: 'Tamil Nadu', opts: ['Ariyalur','Chengalpattu','Chennai','Coimbatore','Cuddalore','Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram','Kanyakumari','Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam','Namakkal','Nilgiris','Perambalur','Pudukkottai','Ramanathapuram','Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni','Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur','Tiruppur','Tiruvallur','Tiruvannamalai','Tiruvarur','Vellore','Viluppuram','Virudhunagar'] },
-  { group: 'Andhra Pradesh', opts: ['Visakhapatnam','Vijayawada','Guntur','Nellore','Kurnool','Tirupati','Rajahmundry'] },
-  { group: 'Telangana', opts: ['Hyderabad','Warangal','Karimnagar','Nizamabad','Khammam'] },
-  { group: 'Karnataka', opts: ['Bengaluru','Mysuru','Hubli','Mangaluru','Belagavi','Davangere'] },
-  { group: 'Kerala', opts: ['Kochi','Thiruvananthapuram','Kozhikode','Thrissur','Kollam','Kannur'] },
-  { group: 'Maharashtra', opts: ['Mumbai','Pune','Nagpur','Nashik','Aurangabad'] },
-];
 
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
   const { currentUser, currentProfile, loadProfile } = useAuth();
   const [phone, setPhone] = useState('');
+  const [state, setState] = useState(currentProfile?.state || '');
   const [district, setDistrict] = useState('');
+  const [fullName, setFullName] = useState(currentProfile?.full_name || '');
+  const [language, setLanguage] = useState('English');
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  React.useEffect(() => {
+    if (currentProfile?.full_name && !fullName) {
+      setFullName(currentProfile.full_name);
+    }
+    if (currentProfile?.location) {
+      if (currentProfile.location.includes(', ')) {
+        const parts = currentProfile.location.split(', ');
+        if (!district) setDistrict(parts[0]);
+        if (!state) setState(parts[1]);
+      } else {
+        if (!district) setDistrict(currentProfile.location);
+      }
+    }
+  }, [currentProfile]);
+
   async function handleSubmit() {
-    if (!phone || phone.replace(/\D/g, '').length < 10) {
-      toast.error('Enter a valid 10-digit mobile number');
+    const newErrors = {};
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (!fullName.trim()) newErrors.fullName = true;
+    if (!phoneDigits || phoneDigits.length < 10) newErrors.phone = true;
+    if (!state) newErrors.state = true;
+    if (!district) newErrors.district = true;
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      toast.error('Please complete all required profile fields.');
       return;
     }
-    if (!district) {
-      toast.error('Please select your district');
-      return;
-    }
+    setErrors({});
     setLoading(true);
     const formatted = '+91' + phone.replace(/\D/g, '').replace(/^91/, '');
     
@@ -44,10 +60,11 @@ export default function ProfileSetupPage() {
           .upsert({
             id: currentUser.id,
             email: currentUser.email,
-            full_name: currentProfile?.full_name || '',
+            full_name: fullName.trim(),
             avatar_url: currentProfile?.avatar_url || '',
             phone: formatted,
-            location: district,
+            location: `${district}, ${state}`,
+            language: language,
             is_profile_complete: true,
           }, { onConflict: 'id' });
         
@@ -124,10 +141,33 @@ export default function ProfileSetupPage() {
               Tell us your phone number and location so buyers and sellers can reach you.
             </p>
 
+            {/* Full Name */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
+                Full Name <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your full name"
+                style={{
+                  width: '100%', boxSizing: 'border-box',
+                  border: `1.5px solid ${errors.fullName ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
+                  padding: '12px 14px',
+                  fontSize: 14, outline: 'none',
+                  fontFamily: 'Inter, sans-serif',
+                }}
+                value={fullName}
+                onChange={e => {
+                  setFullName(e.target.value);
+                  if (e.target.value.trim()) setErrors(prev => ({ ...prev, fullName: false }));
+                }}
+              />
+            </div>
+
             {/* Phone */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Mobile Number
+                Mobile Number <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <span style={{
@@ -141,29 +181,36 @@ export default function ProfileSetupPage() {
                   placeholder="Enter 10-digit number"
                   style={{
                     paddingLeft: 54, width: '100%', boxSizing: 'border-box',
-                    border: '1.5px solid #d1d5db', borderRadius: 10,
+                    border: `1.5px solid ${errors.phone ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
                     padding: '12px 14px 12px 54px',
                     fontSize: 14, outline: 'none',
                     fontFamily: 'Inter, sans-serif',
                   }}
                   maxLength={10}
                   value={phone}
-                  onChange={e => setPhone(e.target.value.replace(/\D/g, ''))}
+                  onChange={e => {
+                    setPhone(e.target.value.replace(/\D/g, ''));
+                    if (e.target.value.replace(/\D/g, '').length === 10) setErrors(prev => ({ ...prev, phone: false }));
+                  }}
                 />
               </div>
             </div>
 
-            {/* District */}
-            <div style={{ marginBottom: 24 }}>
+            {/* State */}
+            <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Your District
+                Your State <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <select
-                value={district}
-                onChange={e => setDistrict(e.target.value)}
+                value={state}
+                onChange={e => {
+                  setState(e.target.value);
+                  setDistrict(''); // Reset district on state change
+                  if (e.target.value) setErrors(prev => ({ ...prev, state: false }));
+                }}
                 style={{
                   width: '100%',
-                  border: '1.5px solid #d1d5db', borderRadius: 10,
+                  border: `1.5px solid ${errors.state ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
                   padding: '12px 14px',
                   fontSize: 14, outline: 'none',
                   fontFamily: 'Inter, sans-serif',
@@ -171,12 +218,70 @@ export default function ProfileSetupPage() {
                   cursor: 'pointer',
                 }}
               >
-                <option value="">Select your district</option>
+                <option value="">Select your state</option>
                 {DISTRICTS.map(g => (
-                  <optgroup key={g.group} label={g.group}>
-                    {g.opts.map(o => <option key={o} value={o}>{o}</option>)}
-                  </optgroup>
+                  <option key={g.group} value={g.group}>{g.group}</option>
                 ))}
+              </select>
+            </div>
+
+            {/* District */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
+                Your District <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <select
+                value={district}
+                onChange={e => {
+                  setDistrict(e.target.value);
+                  if (e.target.value) setErrors(prev => ({ ...prev, district: false }));
+                }}
+                disabled={!state}
+                style={{
+                  width: '100%',
+                  border: `1.5px solid ${errors.district ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
+                  padding: '12px 14px',
+                  fontSize: 14, outline: 'none',
+                  fontFamily: 'Inter, sans-serif',
+                  background: !state ? '#f3f4f6' : 'white',
+                  cursor: !state ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <option value="">{state ? 'Select your district' : 'Select State First'}</option>
+                {state && DISTRICTS.find(g => g.group === state)?.opts.map(o => (
+                  <option key={o} value={o}>{o}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Language */}
+            <div style={{ marginBottom: 24 }}>
+              <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
+                Language
+              </label>
+              <select
+                value={language}
+                onChange={e => {
+                  setLanguage(e.target.value);
+                  if (e.target.value) setErrors(prev => ({ ...prev, language: false }));
+                }}
+                style={{
+                  width: '100%',
+                  border: `1.5px solid ${errors.language ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
+                  padding: '12px 14px',
+                  fontSize: 14, outline: 'none',
+                  fontFamily: 'Inter, sans-serif',
+                  background: 'white',
+                  cursor: 'pointer',
+                }}
+              >
+                <option value="">Select Language</option>
+                <option value="English">English</option>
+                <option value="Tamil">Tamil</option>
+                <option value="Hindi">Hindi</option>
+                <option value="Telugu">Telugu</option>
+                <option value="Kannada">Kannada</option>
+                <option value="Malayalam">Malayalam</option>
               </select>
             </div>
 

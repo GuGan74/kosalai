@@ -104,21 +104,13 @@ export default function SellerProfilePage() {
                     <div className="seller-contact-item">
                         <span>📱</span>
                         <span style={{ color: '#6B7280', fontWeight: 600 }}>{t('sellerProfile.phoneNumber')}:</span>
-                        <a href={`tel:${seller.phone}`} style={{ color: '#1a7a3c', fontWeight: 700, textDecoration: 'none' }}>
-                            +91 {seller.phone}
+                        <a href={`tel:${seller.phone}`} style={{ color: '#1a7a3c', fontWeight: 700, textDecoration: 'none', letterSpacing: '0.02em' }}>
+                            {seller.phone.startsWith('+') ? seller.phone : `+91 ${seller.phone}`}
                         </a>
                     </div>
                 )}
 
-                {seller.email && (
-                    <div className="seller-contact-item">
-                        <span>📧</span>
-                        <span style={{ color: '#6B7280', fontWeight: 600 }}>{t('sellerProfile.emailAddress')}:</span>
-                        <a href={`mailto:${seller.email}`} style={{ color: '#1a7a3c', fontWeight: 700, textDecoration: 'none' }}>
-                            {seller.email}
-                        </a>
-                    </div>
-                )}
+
 
                 {seller.location && (
                     <div className="seller-contact-item">

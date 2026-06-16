@@ -618,14 +618,20 @@ export default function SellPage() {
                                 </div>
                                 <div className="photo-preview-bar">
                                     <span style={{ color: 'var(--green)', fontWeight: 700, fontSize: 13 }}>
-                                        ✅ {form.image_urls?.length || 1} Photo(s) Added
+                                        ✅ {form.image_urls?.length || 1} Photo{(form.image_urls?.length || 1) === 1 ? '' : 's'} Added
                                     </span>
-                                    <label
-                                        htmlFor="photo-upload"
-                                        style={{ cursor: 'pointer', color: 'var(--blue)', fontWeight: 700, fontSize: 13, textDecoration: 'underline' }}
-                                    >
-                                        Add More / Replace
-                                    </label>
+                                    {(form.image_urls?.length || 1) < 3 ? (
+                                        <label
+                                            htmlFor="photo-upload"
+                                            style={{ cursor: 'pointer', color: 'var(--blue)', fontWeight: 700, fontSize: 13, textDecoration: 'underline' }}
+                                        >
+                                            + Add More Photos
+                                        </label>
+                                    ) : (
+                                        <span style={{ color: 'var(--g4)', fontWeight: 600, fontSize: 12 }}>
+                                            Maximum photos reached
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         ) : (
@@ -655,8 +661,11 @@ export default function SellPage() {
                             onChange={async (e) => {
                                 const files = Array.from(e.target.files || []);
                                 if (files.length === 0) return;
-                                if (files.length > 3) {
-                                    toast.error('You can upload a maximum of 3 images.');
+                                
+                                const currentCount = form.image_urls?.length || (form.image_url ? 1 : 0);
+                                if (currentCount + files.length > 3) {
+                                    toast.error(`You can only add ${3 - currentCount} more image(s).`);
+                                    e.target.value = '';
                                     return;
                                 }
                                 
@@ -667,7 +676,11 @@ export default function SellPage() {
                                         folder: 'listing-images'
                                     });
                                     if (urls && urls.length > 0) {
-                                        setForm(f => ({ ...f, image_urls: urls, image_url: urls[0] }));
+                                        setForm(f => {
+                                            const existing = f.image_urls || (f.image_url ? [f.image_url] : []);
+                                            const combined = [...existing, ...urls].slice(0, 3);
+                                            return { ...f, image_urls: combined, image_url: combined[0] };
+                                        });
                                         setImageWarning(true);
                                         toast.success('Photos uploaded! ✓', { id: 'img-upload' });
                                     }
@@ -675,6 +688,7 @@ export default function SellPage() {
                                     console.error(err);
                                     toast.error('Image upload failed', { id: 'img-upload' });
                                 }
+                                e.target.value = '';
                             }}
                         />
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { DISTRICTS } from '../constants/locations';
 import ListingCard from '../components/ListingCard';
 import BackButton from '../components/BackButton';
 import toast from 'react-hot-toast';
@@ -23,8 +24,9 @@ export default function ProfilePage() {
 
     const [editing, setEditing] = useState(false);
     const [editForm, setEditForm] = useState({
-        full_name: '', phone: '', location: '', language: 'English'
+        full_name: '', phone: '', state: '', location: '', language: 'English'
     });
+    const [errors, setErrors] = useState({});
 
     const fetchStats = React.useCallback(async () => {
         if (!currentUser) return;
@@ -90,16 +92,33 @@ export default function ProfilePage() {
     }
 
     async function saveProfile() {
-        if (!editForm.full_name.trim()) {
-            toast.error('Name is required'); return;
+        const newErrors = {};
+        const fullNameStr = (editForm.full_name || '').trim();
+        const phoneStr = (editForm.phone || '').trim();
+        const stateStr = (editForm.state || '').trim();
+        const locationStr = (editForm.location || '').trim();
+        const languageStr = (editForm.language || '').trim();
+
+        const phoneDigits = phoneStr.replace(/\D/g, '');
+
+        if (!fullNameStr) newErrors.full_name = 'Full Name is required.';
+        if (!phoneDigits || phoneDigits.length < 10) newErrors.phone = 'Enter a valid 10-digit number.';
+        if (!stateStr) newErrors.state = 'State is required.';
+        if (!locationStr) newErrors.location = 'District is required.';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            toast.error('Please complete all required profile fields.');
+            return;
         }
+
         const { error } = await supabase
             .from('profiles')
             .update({
-                full_name: editForm.full_name.trim(),
-                phone: editForm.phone.trim(),
-                location: editForm.location.trim(),
-                language: editForm.language,
+                full_name: fullNameStr,
+                phone: phoneStr,
+                location: `${locationStr}, ${stateStr}`,
+                language: languageStr,
             })
             .eq('id', currentUser.id);
         if (error) { toast.error('Failed to update profile'); return; }
@@ -138,42 +157,84 @@ export default function ProfilePage() {
                         <h4>Edit Profile</h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Full Name *</label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Full Name <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <input
                                     value={editForm.full_name}
-                                    onChange={e => setEditForm({ ...editForm, full_name: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--g5)' }}
+                                    onChange={e => {
+                                        setEditForm({ ...editForm, full_name: e.target.value });
+                                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, full_name: null }));
+                                    }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.full_name ? 'var(--red)' : 'var(--g5)'}`, outline: 'none' }}
                                 />
+                                {errors.full_name && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.full_name}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Phone</label>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Phone <span style={{ color: 'var(--red)' }}>*</span></label>
                                 <input
+                                    type="tel"
+                                    maxLength={10}
                                     value={editForm.phone}
-                                    onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--g5)' }}
+                                    onChange={e => {
+                                        const val = e.target.value.replace(/\D/g, '');
+                                        setEditForm({ ...editForm, phone: val });
+                                        if (val.length === 10) setErrors(prev => ({ ...prev, phone: null }));
+                                    }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.phone ? 'var(--red)' : 'var(--g5)'}`, outline: 'none' }}
                                 />
+                                {errors.phone && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.phone}</div>}
                             </div>
                             <div>
-                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Location</label>
-                                <input
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>State <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <select
+                                    value={editForm.state}
+                                    onChange={e => {
+                                        setEditForm({ ...editForm, state: e.target.value, location: '' });
+                                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, state: null }));
+                                    }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.state ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: 'white' }}
+                                >
+                                    <option value="">Select State</option>
+                                    {DISTRICTS.map(g => (
+                                        <option key={g.group} value={g.group}>{g.group}</option>
+                                    ))}
+                                </select>
+                                {errors.state && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.state}</div>}
+                            </div>
+                            <div>
+                                <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>District <span style={{ color: 'var(--red)' }}>*</span></label>
+                                <select
                                     value={editForm.location}
-                                    onChange={e => setEditForm({ ...editForm, location: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--g5)' }}
-                                />
+                                    onChange={e => {
+                                        setEditForm({ ...editForm, location: e.target.value });
+                                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, location: null }));
+                                    }}
+                                    disabled={!editForm.state}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.location ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: !editForm.state ? '#f3f4f6' : 'white', cursor: !editForm.state ? 'not-allowed' : 'pointer' }}
+                                >
+                                    <option value="">{editForm.state ? 'Select District' : 'Select State First'}</option>
+                                    {editForm.state && DISTRICTS.find(g => g.group === editForm.state)?.opts.map(o => (
+                                        <option key={o} value={o}>{o}</option>
+                                    ))}
+                                </select>
+                                {errors.location && <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 4 }}>{errors.location}</div>}
                             </div>
                             <div>
                                 <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase' }}>Language</label>
                                 <select
                                     value={editForm.language}
-                                    onChange={e => setEditForm({ ...editForm, language: e.target.value })}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--g5)' }}
+                                    onChange={e => {
+                                        setEditForm({ ...editForm, language: e.target.value });
+                                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, language: null }));
+                                    }}
+                                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: `1.5px solid ${errors.language ? 'var(--red)' : 'var(--g5)'}`, outline: 'none', background: 'white' }}
                                 >
-                                    <option>English</option>
-                                    <option>Tamil</option>
-                                    <option>Hindi</option>
-                                    <option>Telugu</option>
-                                    <option>Kannada</option>
-                                    <option>Malayalam</option>
+                                    <option value="">Select Language</option>
+                                    <option value="English">English</option>
+                                    <option value="Tamil">Tamil</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Telugu">Telugu</option>
+                                    <option value="Kannada">Kannada</option>
+                                    <option value="Malayalam">Malayalam</option>
                                 </select>
                             </div>
                             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
@@ -239,7 +300,8 @@ export default function ProfilePage() {
                                 setEditForm({
                                     full_name: p.full_name || '',
                                     phone: p.phone || '',
-                                    location: p.location || '',
+                                    state: p.location?.includes(', ') ? p.location.split(', ')[1] : '',
+                                    location: p.location?.includes(', ') ? p.location.split(', ')[0] : (p.location || ''),
                                     language: p.language || 'English'
                                 });
                                 setEditing(true);
@@ -249,6 +311,7 @@ export default function ProfilePage() {
                         </button>
                     </div>
                     <div className="prof-detail-row"><span>{t('profilePage.phoneIcon')}</span><span>{p.phone || '—'}</span></div>
+                    <div className="prof-detail-row"><span>📍</span><span>{p.location || '—'}</span></div>
                     <div className="prof-detail-row"><span>{t('profilePage.email')}</span><span>{p.email || '—'}</span></div>
                 </div>
 
