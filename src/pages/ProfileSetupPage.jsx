@@ -7,10 +7,12 @@ import logoImg from '../assets/kosalai-logo-removebg-preview.png';
 import loadingGif from '../assets/379.gif';
 import { DISTRICTS } from '../constants/locations';
 import { INDIAN_STATES } from '../constants/states';
+import { useTranslation } from 'react-i18next';
 import './SplashPage.css';
 
 export default function ProfileSetupPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { currentUser, currentProfile, loadProfile } = useAuth();
   const [phone, setPhone] = useState('');
   const [state, setState] = useState(currentProfile?.state || '');
@@ -45,7 +47,7 @@ export default function ProfileSetupPage() {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      toast.error('Please complete all required profile fields.');
+      toast.error(t('profileSetup.errorRequiredFields', { defaultValue: 'Please complete all required profile fields.' }));
       return;
     }
     setErrors({});
@@ -77,12 +79,12 @@ export default function ProfileSetupPage() {
     }
 
     if (error) {
-      toast.error('Failed to save: ' + error.message);
+      toast.error(t('profileSetup.errorSaveFailed', { defaultValue: 'Failed to save: ' }) + error.message);
       setLoading(false);
       return;
     }
     await loadProfile(currentUser.id);
-    toast.success('Welcome to Kosalai! 🎉');
+    toast.success(t('profileSetup.welcomeMessage', { defaultValue: 'Welcome to Kosalai! 🎉' }));
     // Small delay so AuthContext re-renders with new profile before navigation
     setTimeout(() => navigate('/', { replace: true }), 300);
   }
@@ -93,10 +95,10 @@ export default function ProfileSetupPage() {
       <div className="splash-image-panel hide-mobile" style={{ background: 'linear-gradient(160deg,#0f5228 0%,#1a7a3c 55%,#0d3d1e 100%)' }}>
         <div className="splash-img-content">
           <h1 className="splash-headline hide-mobile">
-            India's Most Trusted Cattle Marketplace
+            {t('profileSetup.headline', { defaultValue: "India's Most Trusted Cattle Marketplace" })}
           </h1>
           <p className="splash-subtext hide-mobile">
-            Buy and sell cows, buffaloes, goats and pets directly with verified farmers.
+            {t('profileSetup.subtext', { defaultValue: 'Buy and sell cows, buffaloes, goats and pets directly with verified farmers.' })}
           </p>
         </div>
       </div>
@@ -128,7 +130,7 @@ export default function ProfileSetupPage() {
                 />
               )}
               <div style={{ fontWeight: 700, fontSize: 18, color: '#1a3c1a' }}>
-                Hi, {currentProfile?.full_name}! 👋
+                {t('profileSetup.greeting', { name: currentProfile?.full_name, defaultValue: 'Hi, {{name}}! 👋' })}
               </div>
               <div style={{ fontSize: 13, color: '#666', marginTop: 4 }}>
                 {currentProfile?.email}
@@ -136,20 +138,20 @@ export default function ProfileSetupPage() {
             </div>
 
             <h2 className="splash-card-title" style={{ marginBottom: 4 }}>
-              One Last Step! 🎉
+              {t('profileSetup.oneLastStep', { defaultValue: 'One Last Step! 🎉' })}
             </h2>
             <p className="splash-card-desc" style={{ marginBottom: 20 }}>
-              Tell us your phone number and location so buyers and sellers can reach you.
+              {t('profileSetup.description', { defaultValue: 'Tell us your phone number and location so buyers and sellers can reach you.' })}
             </p>
 
             {/* Full Name */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Full Name <span style={{ color: '#ef4444' }}>*</span>
+                {t('profileSetup.fullName', { defaultValue: 'Full Name' })} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <input
                 type="text"
-                placeholder="Enter your full name"
+                placeholder={t('profileSetup.fullNamePlaceholder', { defaultValue: 'Enter your full name' })}
                 style={{
                   width: '100%', boxSizing: 'border-box',
                   border: `1.5px solid ${errors.fullName ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
@@ -168,7 +170,7 @@ export default function ProfileSetupPage() {
             {/* Phone */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Mobile Number <span style={{ color: '#ef4444' }}>*</span>
+                {t('profileSetup.mobileNumber', { defaultValue: 'Mobile Number' })} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <span style={{
@@ -179,7 +181,7 @@ export default function ProfileSetupPage() {
                 }}>+91</span>
                 <input
                   type="tel"
-                  placeholder="Enter 10-digit number"
+                  placeholder={t('profileSetup.mobileNumberPlaceholder', { defaultValue: 'Enter 10-digit number' })}
                   style={{
                     paddingLeft: 54, width: '100%', boxSizing: 'border-box',
                     border: `1.5px solid ${errors.phone ? '#ef4444' : '#d1d5db'}`, borderRadius: 10,
@@ -200,7 +202,7 @@ export default function ProfileSetupPage() {
             {/* State */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Your State <span style={{ color: '#ef4444' }}>*</span>
+                {t('profileSetup.state', { defaultValue: 'Your State' })} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               <select
                 value={state}
@@ -219,7 +221,7 @@ export default function ProfileSetupPage() {
                   cursor: 'pointer',
                 }}
               >
-                <option value="">Select your state</option>
+                <option value="">{t('profileSetup.selectState', { defaultValue: 'Select your state' })}</option>
                 {INDIAN_STATES.map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -229,7 +231,7 @@ export default function ProfileSetupPage() {
             {/* District */}
             <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Your District <span style={{ color: '#ef4444' }}>*</span>
+                {t('profileSetup.district', { defaultValue: 'Your District' })} <span style={{ color: '#ef4444' }}>*</span>
               </label>
               {state && DISTRICTS.find(g => g.group === state) ? (
                 <select
@@ -249,7 +251,7 @@ export default function ProfileSetupPage() {
                     cursor: 'pointer',
                   }}
                 >
-                  <option value="">Select your district</option>
+                  <option value="">{t('profileSetup.selectDistrict', { defaultValue: 'Select your district' })}</option>
                   {DISTRICTS.find(g => g.group === state)?.opts.map(o => (
                     <option key={o} value={o}>{o}</option>
                   ))}
@@ -257,7 +259,7 @@ export default function ProfileSetupPage() {
               ) : (
                 <input
                   type="text"
-                  placeholder={state ? "Enter your district / city" : "Select State First"}
+                  placeholder={state ? t('profileSetup.enterDistrict', { defaultValue: 'Enter your district / city' }) : t('profileSetup.selectStateFirst', { defaultValue: 'Select State First' })}
                   value={district}
                   onChange={e => {
                     setDistrict(e.target.value);
@@ -280,7 +282,7 @@ export default function ProfileSetupPage() {
             {/* Language */}
             <div style={{ marginBottom: 24 }}>
               <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: 13, color: '#374151' }}>
-                Language
+                {t('profileSetup.language', { defaultValue: 'Language' })}
               </label>
               <select
                 value={language}
@@ -298,7 +300,7 @@ export default function ProfileSetupPage() {
                   cursor: 'pointer',
                 }}
               >
-                <option value="">Select Language</option>
+                <option value="">{t('profileSetup.selectLanguage', { defaultValue: 'Select Language' })}</option>
                 <option value="English">English</option>
                 <option value="Tamil">Tamil</option>
                 <option value="Hindi">Hindi</option>
@@ -326,13 +328,13 @@ export default function ProfileSetupPage() {
             >
               {loading
                 ? <img src={loadingGif} alt="Loading" style={{ width: 22, height: 22, objectFit: 'contain' }} />
-                : 'Complete Setup & Enter →'
+                : t('profileSetup.completeBtn', { defaultValue: 'Complete Setup & Enter →' })
               }
             </button>
           </div>
 
           <p className="splash-legal hide-mobile" style={{ marginTop: 20 }}>
-            Your phone number is only shared with buyers/sellers you contact.
+            {t('profileSetup.legalFooter', { defaultValue: 'Your phone number is only shared with buyers/sellers you contact.' })}
           </p>
         </div>
       </div>
