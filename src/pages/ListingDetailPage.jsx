@@ -426,7 +426,7 @@ export default function ListingDetailPage() {
                                     transition: '0.2s'
                                 }}
                             >
-                                📤 Share Listing
+                                📤 {t('listingDetail.shareListing', 'Share Listing')}
                             </button>
                             <button
                                 className={`btn-fav-large ${isLiked ? 'active' : ''}`}
