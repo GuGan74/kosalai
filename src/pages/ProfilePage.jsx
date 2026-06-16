@@ -327,7 +327,7 @@ export default function ProfilePage() {
                         </button>
                     </div>
                     <div className="prof-detail-row"><span>{t('profilePage.phoneIcon')}</span><span>{p.phone || '—'}</span></div>
-                    <div className="prof-detail-row"><span>📍</span><span>{p.location ? <TranslatedText>{p.location}</TranslatedText> : '—'}</span></div>
+                    <div className="prof-detail-row"><span>📍 {t('profilePage.location', { defaultValue: 'Location' })}</span><span>{p.location ? <TranslatedText>{p.location}</TranslatedText> : '—'}</span></div>
                     <div className="prof-detail-row"><span>{t('profilePage.email')}</span><span>{p.email || '—'}</span></div>
                 </div>
 
@@ -345,7 +345,7 @@ export default function ProfilePage() {
                                         {l.image_url ? <img src={l.image_url} alt={l.title} /> : <span>🐾</span>}
                                     </div>
                                     <div className="mlc-info">
-                                        <div className="mlc-name">{l.title}</div>
+                                        <div className="mlc-name"><TranslatedText>{l.title}</TranslatedText></div>
                                         <div className="mlc-price">₹{Number(l.price).toLocaleString()}</div>
                                     </div>
                                     <span className="mlc-arrow">›</span>
