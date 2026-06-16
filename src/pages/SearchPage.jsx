@@ -2,20 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 import ListingCard from '../components/ListingCard';
 import BackButton from '../components/BackButton';
 import SEOHead from '../components/SEOHead';
 import './SearchPage.css';
 
-const FILTER_PILLS = [
+const CATTLE_PILLS = [
     { label: '🐄', key: 'cow', cat: 'cow' },
     { label: '🦬', key: 'buffalo', cat: 'buffalo' },
     { label: '🐐', key: 'goat', cat: 'goat' },
+    { label: '🐑', key: 'sheep', cat: 'sheep' },
+    { label: '🐔', key: 'poultry', cat: 'poultry' },
+];
+
+const PETS_PILLS = [
     { label: '🐕', key: 'dog', cat: 'dog' },
     { label: '🐈', key: 'cat', cat: 'cat' },
+    { label: '🦜', key: 'bird', cat: 'bird' },
+    { label: '🐇', key: 'rabbit', cat: 'rabbit' },
+    { label: '🐟', key: 'fish', cat: 'fish' },
+];
+
+const COMMON_PILLS = [
     { label: '💉', key: 'vaccinated', prop: 'vaccinated' },
     { label: '✅', key: 'verified', prop: 'verified' },
 ];
+
+const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
+const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
 
 const DEMO_DATA = [
     { id: 'd1', title: 'HF Cow — High Milk Yield', category: 'cow', breed: 'HF Holstein', age_years: 4, price: 65000, location: 'Coimbatore', state: 'Tamil Nadu', milk_yield_liters: 18, is_vaccinated: true, is_verified: true, is_pregnant: true, is_promoted: true, for_adoption: false, image_url: null },
@@ -27,21 +42,35 @@ const DEMO_DATA = [
 export default function SearchPage() {
     const [searchParams] = useSearchParams();
     const { t } = useTranslation();
+    const { listingType } = useAuth();
     const [query, setQuery] = useState(searchParams.get('q') || '');
     const [results, setResults] = useState([]);
     const [activePills, setActivePills] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Clear active pills when listingType changes
+    useEffect(() => {
+        setActivePills([]);
+    }, [listingType]);
+
+    const activePillsList = listingType === 'livestock' ? [...CATTLE_PILLS, ...COMMON_PILLS] : [...PETS_PILLS, ...COMMON_PILLS];
+    const allowedCats = listingType === 'livestock' ? LIVESTOCK_IDS : PET_IDS;
 
     const doSearch = React.useCallback(async () => {
         setLoading(true);
         try {
             let q = supabase.from('listings').select('*').eq('status', 'active');
             if (query) q = q.ilike('title', `%${query}%`);
+            
             const activeCats = activePills.filter(p => p.cat).map(p => p.cat);
-            if (activeCats.length === 1) {
-                q = q.eq('category', activeCats[0]);
-            } else if (activeCats.length > 1) {
-                q = q.in('category', activeCats);
+            const finalCats = activeCats.length > 0 ? activeCats.filter(c => allowedCats.includes(c)) : allowedCats;
+
+            if (finalCats.length === 1) {
+                q = q.eq('category', finalCats[0]);
+            } else if (finalCats.length > 1) {
+                q = q.in('category', finalCats);
+            } else {
+                q = q.in('category', allowedCats);
             }
 
             activePills.forEach(p => {
@@ -49,15 +78,27 @@ export default function SearchPage() {
                 if (p.prop === 'verified') q = q.eq('is_verified', true);
             });
             const { data } = await q.order('created_at', { ascending: false }).limit(40);
-            let filtered = data && data.length > 0 ? data : DEMO_DATA.filter(d => !query || d.title.toLowerCase().includes(query.toLowerCase()));
+            
+            const fallbackFilter = (d) => {
+                if (!allowedCats.includes(d.category)) return false;
+                if (query && !d.title.toLowerCase().includes(query.toLowerCase())) return false;
+                return true;
+            };
+
+            let filtered = data && data.length > 0 ? data : DEMO_DATA.filter(fallbackFilter);
             setResults(filtered);
         } catch {
-            let fallback = DEMO_DATA.filter(d => !query || d.title.toLowerCase().includes(query.toLowerCase()));
+            const fallbackFilter = (d) => {
+                if (!allowedCats.includes(d.category)) return false;
+                if (query && !d.title.toLowerCase().includes(query.toLowerCase())) return false;
+                return true;
+            };
+            let fallback = DEMO_DATA.filter(fallbackFilter);
             setResults(fallback);
         } finally {
             setLoading(false);
         }
-    }, [query, activePills]);
+    }, [query, activePills, allowedCats]);
 
     useEffect(() => {
         doSearch();
@@ -94,7 +135,7 @@ export default function SearchPage() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', margin: '0 16px 10px' }}>
                 <div className="filter-pills" style={{ flex: 1 }}>
-                    {FILTER_PILLS.map(p => (
+                    {activePillsList.map(p => (
                         <button
                             key={JSON.stringify(p)}
                             className={`fpill${activePills.find(a => JSON.stringify(a) === JSON.stringify(p)) ? ' act' : ''}`}
