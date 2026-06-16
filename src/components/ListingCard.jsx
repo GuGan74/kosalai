@@ -116,7 +116,12 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 {/* Post Age Badge */}
                 <div className={`lc-age-badge ${ageInfo.className}`}>
                     <span className="lc-age-icon">{ageInfo.icon}</span>
-                    <span className="lc-age-label">{ageInfo.label}</span>
+                    <span className="lc-age-label">
+                        {ageInfo.label === 'Today' 
+                            ? t('listing.today', { defaultValue: 'TODAY' }).toUpperCase() 
+                            : (ageInfo.label.includes('day') ? t('listing.daysAgo', { count: parseInt(ageInfo.label) }) : ageInfo.label).toUpperCase()
+                        }
+                    </span>
                 </div>
 
                 {displayImage ? (
@@ -161,7 +166,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                                 background: 'rgba(255,255,255,0.85)',
                                 boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
                                 textTransform: 'uppercase',
-                            }}>SOLD</span>
+                            }}>{t('listingDetail.sold', { defaultValue: 'SOLD' })}</span>
                         </div>
                     </>
                 )}
@@ -172,7 +177,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 <div className="lc-header-row">
                     <div className="lc-title"><TranslatedText>{title}</TranslatedText></div>
                     <div className="lc-price" style={for_adoption ? { color: 'var(--purple)' } : {}}>
-                        {for_adoption ? 'Free Adoption' : `₹${Number(price).toLocaleString('en-IN')}`}
+                        {for_adoption ? t('listingDetail.freeAdoption', 'Free Adoption').replace('💜 ', '') : `₹${Number(price).toLocaleString('en-IN')}`}
                     </div>
                 </div>
 
@@ -194,8 +199,8 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                                         {milk_yield_liters 
                                             ? (String(milk_yield_liters).length > 6 
                                                 ? `${String(milk_yield_liters).substring(0, 6)}...` 
-                                                : `${milk_yield_liters}L/day`)
-                                            : 'N/A'}
+                                                : `${milk_yield_liters} ${t('listingDetail.perDay', { defaultValue: 'L/day' })}`)
+                                            : t('listingCard.unknown')}
                                     </div>
                                 </div>
                             )}
@@ -233,13 +238,13 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                         }
                         navigate(`/seller/${owner_id}`);
                     }}>
-                        <TranslatedText>View Seller</TranslatedText>
+                        <span>{t('listingCard.viewSeller', { defaultValue: 'View Seller' })}</span>
                     </button>
                     <button className="lc-btn-call" onClick={(e) => {
                         e.stopPropagation();
                         navigate(`/listing/${listing.listing_code || id}`);
                     }}>
-                        <TranslatedText>Details</TranslatedText>
+                        <span>{t('listingCard.details', { defaultValue: 'Details' })}</span>
                     </button>
                 </div>
             </div>

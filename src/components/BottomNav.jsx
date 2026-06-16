@@ -21,7 +21,7 @@ export default function BottomNav() {
     }
 
     const toggleIcon = listingType === 'livestock' ? '🐾' : '🐄';
-    const toggleLabel = listingType === 'livestock' ? 'Buy Pets' : 'Buy Cattle';
+    const toggleLabel = listingType === 'livestock' ? t('navbar.buyPets', { defaultValue: 'Buy Pets' }) : t('navbar.buyCattle', { defaultValue: 'Buy Cattle' });
 
     return (
         <nav className="bottom-nav">
