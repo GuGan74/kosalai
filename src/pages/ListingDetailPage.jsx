@@ -379,7 +379,7 @@ export default function ListingDetailPage() {
                         ) : (
                             <div className={`price-big${isPet ? ' p' : ''}`}>₹{Number(listing.price).toLocaleString('en-IN')}</div>
                         )}
-                        <div className="price-note">{t('listingDetail.negotiable')}</div>
+                        {!listing.for_adoption && <div className="price-note">{t('listingDetail.negotiable')}</div>}
                     </div>
                     <div className="w-btns">
                         {listing.status === 'sold' ? (
