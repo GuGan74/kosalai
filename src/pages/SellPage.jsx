@@ -8,6 +8,7 @@ import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryU
 import { parseImageUrls } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { INDIAN_STATES } from '../constants/states';
+import { DISTRICTS } from '../constants/locations';
 import './SellPage.css';
 
 // Boost tiers moved to constants if needed, otherwise kept here as comments
@@ -240,8 +241,8 @@ export default function SellPage() {
         if (!hasRealImage) errs.image = 'Please upload at least 1 photo of your animal';
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
         if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
-        if (form.location.trim().length < 3) errs.location = 'Please enter a valid city';
         if (!form.state) errs.state = 'Please select your state';
+        if (!form.location.trim()) errs.location = 'Please select or enter your district';
         if (!form.village.trim()) errs.village = 'Please enter your village';
         else if (form.village.length > 100) errs.village = 'Village name too long (max 100 characters)';
 
@@ -734,47 +735,74 @@ export default function SellPage() {
                     </div>
                     <div className="fs oa">
                         <h3>{t('sellPage.locationDetails')}</h3>
+                        
                         <div className="fg">
                             <div className="ff">
-                                {/* BUG 6 Fix B — village is optional */}
-                                <label>{t('sellPage.village')} *</label>
-                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={100} />
-                                {/* BUG 7 Fix D — char counter */}
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/100</small>
-                                {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
-                            </div>
-                            <div className="ff">
-                                {/* BUG 6 Fix B — taluk is optional */}
-                                <label>{t('sellPage.taluk')} *</label>
-                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={100} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/100</small>
-                                {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
-                            </div>
-                        </div>
-                        <div className="fg">
-                            <div className="ff">
-                                <label>{t('sellPage.city')} <span style={{ color: '#e63946' }}>*</span></label>
-                                <input placeholder={t('sellPage.cityPlaceholder', { defaultValue: "e.g. Coimbatore" })} value={form.location} onChange={e => setF('location', e.target.value)} maxLength={100} />
-                                <small style={{ fontSize: 11, color: 'var(--g3)', textAlign: 'right', display: 'block' }}>{form.location.length}/100</small>
-                                {fieldErrors.location && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.location}</div>}
-                            </div>
-                            <div className="ff">
-                                <label>{t('sellPage.landmark')} <span style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.landmarkOptional')}</span></label>
-                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={150} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/150</small>
-                                {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
-                            </div>
-                        </div>
-                        <div className="fg">
-                            <div className="ff">
-                                <label>{t('sellPage.state')}</label>
-                                <select value={form.state} onChange={e => setF('state', e.target.value)}>
-                                    <option value="">{t('sellPage.selectState')}</option>
+                                <label>{t('profileSetup.state', { defaultValue: 'State' })} <span style={{ color: '#e63946' }}>*</span></label>
+                                <select 
+                                    value={form.state} 
+                                    onChange={e => {
+                                        setF('state', e.target.value);
+                                        setF('location', ''); // Reset district when state changes
+                                    }}
+                                >
+                                    <option value="">{t('profileSetup.selectState', { defaultValue: 'Select your state' })}</option>
                                     {INDIAN_STATES.map(s => (
                                         <option key={s} value={s}>{s}</option>
                                     ))}
                                 </select>
                                 {fieldErrors.state && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.state}</div>}
+                            </div>
+
+                            <div className="ff">
+                                <label>{t('profileSetup.district', { defaultValue: 'District' })} <span style={{ color: '#e63946' }}>*</span></label>
+                                {form.state && DISTRICTS.find(g => g.group === form.state) ? (
+                                    <select
+                                        value={form.location}
+                                        onChange={e => setF('location', e.target.value)}
+                                        disabled={!form.state}
+                                    >
+                                        <option value="">{t('profileSetup.selectDistrict', { defaultValue: 'Select your district' })}</option>
+                                        {DISTRICTS.find(g => g.group === form.state)?.opts.map(o => (
+                                            <option key={o} value={o}>{o}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <input
+                                        type="text"
+                                        placeholder={form.state ? t('profileSetup.enterDistrict', { defaultValue: 'Enter your district' }) : t('profileSetup.selectStateFirst', { defaultValue: 'Select State First' })}
+                                        value={form.location}
+                                        onChange={e => setF('location', e.target.value)}
+                                        maxLength={100}
+                                        disabled={!form.state}
+                                        style={{ background: !form.state ? '#f3f4f6' : '#fff', cursor: !form.state ? 'not-allowed' : 'text' }}
+                                    />
+                                )}
+                                {fieldErrors.location && <div style={{ color: '#e63946', fontSize: 12, marginTop: 4 }}>⚠️ {fieldErrors.location}</div>}
+                            </div>
+                        </div>
+
+                        <div className="fg">
+                            <div className="ff">
+                                <label>{t('sellPage.village')} <span style={{ color: '#e63946' }}>*</span></label>
+                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={100} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/100</small>
+                                {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
+                            </div>
+                            <div className="ff">
+                                <label>{t('sellPage.taluk')} <span style={{ color: '#e63946' }}>*</span></label>
+                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={100} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/100</small>
+                                {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
+                            </div>
+                        </div>
+
+                        <div className="fg">
+                            <div className="ff" style={{ width: '100%' }}>
+                                <label>{t('sellPage.landmark')} <span style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.landmarkOptional')}</span></label>
+                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={150} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/150</small>
+                                {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
                             </div>
                         </div>
                     </div>
