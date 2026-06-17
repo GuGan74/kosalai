@@ -169,7 +169,7 @@ export default function ListingDetailPage() {
         setReporting(true);
         try {
             const { error } = await supabase.from('reports').insert({
-                listing_id: id, reporter_id: currentUser.id, reason
+                listing_id: id, reporter_id: currentUser.id, reason, report_type: 'buyer'
             });
             if (error) throw error;
             toast.success('Thank you. Report submitted for review.');

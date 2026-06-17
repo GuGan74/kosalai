@@ -150,6 +150,16 @@ export default function Navbar() {
                     ))}
                     <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
 
+                    {/* Admin Dashboard — only for admin role + verified email */}
+                    {currentProfile?.role === 'admin' && currentProfile?.email === 'mail.kosalai@gmail.com' && (
+                        <>
+                            <button className="mob-dl" onClick={() => { navigate('/admin'); setDrawerOpen(false); }} style={{ color: '#8b5cf6', background: 'rgba(139,92,246,0.08)' }}>
+                                🛡️ {t('manage_admin', { defaultValue: 'Admin Dashboard' })}
+                            </button>
+                            <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
+                        </>
+                    )}
+
                     <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '0 0 8px' }} />
                     <button className="mob-dl" onClick={() => { navigate('/sell'); setDrawerOpen(false); }} style={{ color: 'var(--green)', background: 'var(--green-light)' }}>
                         {t('navbar.postNewListing')}

@@ -8,9 +8,14 @@ import BackButton from '../components/BackButton';
 import toast from 'react-hot-toast';
 import './MyListingsPage.css';
 
-const DEMO = [
-    { id: 'd1', title: 'HF Cow — High Milk Yield', category: 'cow', breed: 'HF Holstein', age_years: 4, price: 65000, location: 'Coimbatore', state: 'Tamil Nadu', milk_yield_liters: 18, is_vaccinated: true, is_verified: true, is_pregnant: true, is_promoted: true, for_adoption: false, image_url: null, status: 'active', created_at: new Date().toISOString() },
-    { id: 'd2', title: 'Gir Heifer Cow', category: 'cow', breed: 'Gir', age_years: 3, price: 48000, location: 'Amreli', state: 'Gujarat', milk_yield_liters: 12, is_vaccinated: true, is_verified: true, is_pregnant: false, is_promoted: false, for_adoption: false, image_url: null, status: 'pending', created_at: new Date().toISOString() },
+const REPORT_CATEGORIES = [
+    'Listing not showing correctly',
+    'Wrong category or details',
+    'Image upload issue',
+    'Price display problem',
+    'Buyer harassment',
+    'Duplicate listing',
+    'Other',
 ];
 
 export default function MyListingsPage() {
@@ -22,6 +27,12 @@ export default function MyListingsPage() {
     const [tab, setTab] = useState('active');
     const [error, setError] = useState(null);
 
+    // Seller Report Modal state
+    const [reportModal, setReportModal] = useState(null); // listing object or null
+    const [reportCategory, setReportCategory] = useState('');
+    const [reportDescription, setReportDescription] = useState('');
+    const [submittingReport, setSubmittingReport] = useState(false);
+
     async function markSold(id) {
         if (!window.confirm('Mark this listing as sold?')) return;
         await supabase.from('listings').update({ status: 'sold' }).eq('id', id);
@@ -31,21 +42,12 @@ export default function MyListingsPage() {
 
     async function deleteListing(id) {
         if (!window.confirm('Delete this listing permanently? This cannot be undone.')) return;
-        
-        console.log('DELETE PARAM', id);
-        console.log('DELETE PARAM TYPE', typeof id);
-        
         try {
-            const { data, error, status, statusText } = await supabase.from('listings').delete().eq('id', id).select();
-            
-            console.log({ data, error, status, statusText });
-            
+            const { data, error } = await supabase.from('listings').delete().eq('id', id).select();
             if (error) throw error;
-            
             if (!data || data.length === 0) {
                 throw new Error('Deletion blocked by database security policy or listing not found.');
             }
-
             setListings(prev => prev.filter(l => l.id !== id));
             toast.success('Listing deleted');
         } catch (err) {
@@ -58,6 +60,31 @@ export default function MyListingsPage() {
         await supabase.from('listings').update({ status: 'active' }).eq('id', id);
         setListings(prev => prev.map(l => l.id === id ? { ...l, status: 'active' } : l));
         toast.success('Listing relisted! ✓');
+    }
+
+    async function submitSellerReport() {
+        if (!reportCategory) { toast.error('Please select an issue category'); return; }
+        if (!reportDescription.trim()) { toast.error('Please describe the issue'); return; }
+        setSubmittingReport(true);
+        try {
+            const { error } = await supabase.from('reports').insert({
+                listing_id: reportModal.id,
+                reporter_id: currentUser.id,
+                reason: `[${reportCategory}] ${reportDescription.trim()}`,
+                report_type: 'seller',
+                status: 'pending',
+            });
+            if (error) throw error;
+            toast.success('Report submitted! Our team will review it shortly. ✅');
+            setReportModal(null);
+            setReportCategory('');
+            setReportDescription('');
+        } catch (err) {
+            console.error('Seller report error:', err);
+            toast.error('Failed to submit report. Please try again.');
+        } finally {
+            setSubmittingReport(false);
+        }
     }
 
     const fetchMyListings = React.useCallback(async () => {
@@ -133,18 +160,19 @@ export default function MyListingsPage() {
                                 <span style={{ fontSize: 14, color: 'var(--blue)', fontWeight: 800 }}>{l.listing_code || 'N/A'}</span>
                             </div>
                             <ListingCard listing={l} />
-                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
                                 {l.status === 'active' && (
                                     <>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20 }} onClick={() => navigate('/sell', { state: { editListing: l } })}>✏️ {t('myListingsPage.edit')}</button>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--green)', borderColor: 'var(--green)' }} onClick={() => markSold(l.id)}>✅ {t('myListingsPage.markSold')}</button>
-                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => { console.log('DELETE CLICK VALUE', l.id); deleteListing(l.id); }}>🗑️ {t('myListingsPage.delete')}</button>
+                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => deleteListing(l.id)}>🗑️ {t('myListingsPage.delete')}</button>
+                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: '#8b5cf6', borderColor: '#8b5cf6' }} onClick={() => setReportModal(l)}>⚠️ Report Issue</button>
                                     </>
                                 )}
                                 {l.status === 'pending' && (
                                     <>
                                         <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20 }} onClick={() => navigate('/sell', { state: { editListing: l } })}>✏️ Edit</button>
-                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => { console.log('DELETE CLICK VALUE', l.id); deleteListing(l.id); }}>🗑️ Delete</button>
+                                        <button className="btn-secondary" style={{ padding: '6px 12px', fontSize: 12, borderRadius: 20, color: 'var(--red)', borderColor: 'var(--red)' }} onClick={() => deleteListing(l.id)}>🗑️ Delete</button>
                                     </>
                                 )}
                                 {l.status === 'sold' && (
@@ -154,6 +182,86 @@ export default function MyListingsPage() {
                         </div>
                     ))}
                 </div>
+            )}
+
+            {/* ── SELLER REPORT MODAL ──────────────────────────── */}
+            {reportModal && (
+                <>
+                    <div
+                        onClick={() => { setReportModal(null); setReportCategory(''); setReportDescription(''); }}
+                        style={{
+                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                            background: 'rgba(0,0,0,0.5)', zIndex: 999,
+                            backdropFilter: 'blur(4px)',
+                        }}
+                    />
+                    <div style={{
+                        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                        background: 'white', borderRadius: 20, padding: '28px 24px', width: '90%', maxWidth: 440,
+                        zIndex: 1000, boxShadow: '0 24px 60px rgba(0,0,0,0.25)',
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                            <h3 style={{ fontFamily: 'Poppins, sans-serif', fontWeight: 800, fontSize: 18, margin: 0 }}>⚠️ Report Issue</h3>
+                            <button onClick={() => { setReportModal(null); setReportCategory(''); setReportDescription(''); }}
+                                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: 'var(--g3)' }}>✕</button>
+                        </div>
+
+                        {/* Listing reference */}
+                        <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 14px', marginBottom: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <div style={{ fontSize: 11, color: 'var(--g3)', fontWeight: 600 }}>Listing</div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--g1)' }}>{reportModal.title}</div>
+                            </div>
+                            <div style={{ fontSize: 13, color: 'var(--blue)', fontWeight: 800 }}>{reportModal.listing_code || 'N/A'}</div>
+                        </div>
+
+                        {/* Issue Category */}
+                        <div style={{ marginBottom: 14 }}>
+                            <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Issue Category <span style={{ color: 'var(--red)' }}>*</span>
+                            </label>
+                            <select
+                                value={reportCategory}
+                                onChange={e => setReportCategory(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--g5)', outline: 'none', fontSize: 14, marginTop: 6, background: 'white' }}
+                            >
+                                <option value="">Select category...</option>
+                                {REPORT_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+
+                        {/* Description */}
+                        <div style={{ marginBottom: 20 }}>
+                            <label style={{ fontSize: 11, fontWeight: 800, color: 'var(--g3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                                Description <span style={{ color: 'var(--red)' }}>*</span>
+                            </label>
+                            <textarea
+                                value={reportDescription}
+                                onChange={e => setReportDescription(e.target.value)}
+                                placeholder="Describe the issue in detail..."
+                                rows={4}
+                                style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: '1.5px solid var(--g5)', outline: 'none', fontSize: 14, marginTop: 6, resize: 'vertical', fontFamily: 'Nunito, sans-serif' }}
+                            />
+                        </div>
+
+                        {/* Buttons */}
+                        <div style={{ display: 'flex', gap: 10 }}>
+                            <button
+                                onClick={() => { setReportModal(null); setReportCategory(''); setReportDescription(''); }}
+                                style={{ flex: 1, padding: '12px', borderRadius: 12, border: '1.5px solid var(--g5)', background: 'white', fontWeight: 700, cursor: 'pointer', fontSize: 14, fontFamily: 'Nunito, sans-serif' }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={submitSellerReport}
+                                disabled={submittingReport}
+                                style={{ flex: 1, padding: '12px', borderRadius: 12, border: 'none', background: '#8b5cf6', color: 'white', fontWeight: 800, cursor: 'pointer', fontSize: 14, fontFamily: 'Poppins, sans-serif', opacity: submittingReport ? 0.7 : 1 }}
+                            >
+                                {submittingReport ? 'Submitting...' : 'Submit Report'}
+                            </button>
+                        </div>
+                    </div>
+                </>
             )}
         </div>
     );
