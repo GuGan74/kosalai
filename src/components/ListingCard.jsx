@@ -25,6 +25,8 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
         user_id: owner_id, status,
     } = listing;
     
+    console.log('ListingCard rendering listing:', listing.id, 'listing_code:', listing.listing_code);
+    
     const parsedUrls = parseImageUrls(image_urls);
     const displayImage = parsedUrls.length > 0 ? parsedUrls[0] : image_url;
 
@@ -175,7 +177,12 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
             {/* Content Box */}
             <div className="lc-content">
                 <div className="lc-header-row">
-                    <div className="lc-title"><TranslatedText>{title}</TranslatedText></div>
+                    <div className="lc-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ color: 'var(--blue)', fontSize: 11, fontWeight: 800, padding: '2px 6px', background: '#e0f2fe', borderRadius: 4 }}>
+                            #{listing.listing_code || 'N/A'}
+                        </span>
+                        <TranslatedText>{title}</TranslatedText>
+                    </div>
                     <div className="lc-price" style={for_adoption ? { color: 'var(--purple)' } : {}}>
                         {for_adoption ? t('listingDetail.freeAdoption', 'Free Adoption').replace('💜 ', '') : `₹${Number(price).toLocaleString('en-IN')}`}
                     </div>

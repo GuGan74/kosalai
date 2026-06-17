@@ -1,0 +1,29 @@
+BUG #1
+Root Cause: In the currently deployed version on Vercel, HomePage fetches a strict `.limit(200)` ordered by `created_at DESC`. Since 400+ mock records were inserted instantly, the newest 200 rows only contain the last-inserted categories (dogs, cats, birds). Because category filtering happens client-side *after* fetching those 200 rows, selecting the Poultry tab filters the array down to 0. When sorting by "Price: Low to High", the cheapest 200 rows naturally include a mix of all categories, which is why Poultry suddenly appears.
+Evidence: The `fetchListings` function in `HomePage.jsx` uses `.limit(200)` combined with `.order('created_at', { ascending: false })` for the default view, and then `filteredListings` applies `result.filter(l => l.category === activeTab)`.
+Affected Files: `src/pages/HomePage.jsx` (Specifically `fetchListings` and `filteredListings`), `src/lib/prefetchData.js`.
+
+BUG #2
+Root Cause: The mock data SQL script uses `gen_random_uuid()` for every inserted row. The SQL script was executed multiple times in the Supabase SQL editor (the DB currently has 816 rows instead of 400). Because a new UUID is generated on each run, identical listings are created as distinct rows in the database.
+Evidence: Supabase DB query confirms 816 total active listings (e.g., 100 poultry, 105 cows) instead of 50 each. React doesn't throw duplicate key warnings because `listing.id` is distinct for each row.
+Affected Files: Supabase `listings` table, `mock_data_inserts.sql`.
+
+BUG #3
+Root Cause: The Unsplash URL assigned to the Poultry category (`photo-1548509925-0e5bb596efb6`) is either broken, invalid, or heavily rate-limited. `ListingCard.jsx` attempts to load the image, fails after a timeout, triggers `onError`, and falls back to a beige background with an emoji.
+Evidence: Screenshots show poultry cards stuck as beige boxes with `🐓` emojis, while dogs/cats load fine. The URL is defined statically in the data generation map.
+Affected Files: `generateMockData.js` (`IMAGE_MAP.poultry`), `fix_images.sql`, `src/components/ListingCard.jsx` (image `onError` logic).
+
+BUG #4
+Root Cause: The mock data generation script selects a random location and a random state entirely independently from two disconnected arrays. There is no relational mapping tying a specific city to its correct state.
+Evidence: `generateMockData.js` lines 100-101 use `location: randItem(LOCATIONS)` and `state: randItem(STATES)` without checking if the location actually belongs to the state.
+Affected Files: `generateMockData.js`.
+
+BUG #5
+Root Cause: The mock data generation script applies a single randomized milk yield range (2 to 30 liters) indiscriminately to cows, buffalos, and goats.
+Evidence: `generateMockData.js` lines 82-84: `if (['cow', 'buffalo', 'goat'].includes(cat)) { milk_yield = rand(2, 30); }`. This allows a goat to be assigned 30L of milk yield.
+Affected Files: `generateMockData.js`.
+
+BUG #6
+Root Cause: In the currently deployed version, changing categories recalculates `visibleListings`, which changes `listingIds`. The `useFavorites` hook fires a new Supabase query (`in ('listing_id', realIds)`) every time `listingIds` changes. Additionally, the lack of a composite index on `(status, category, created_at)` forces Supabase to perform table scans when sorting large datasets.
+Evidence: `src/hooks/useFavorites.js` depends on `idsKey` which updates on category switches, triggering redundant network requests. 
+Affected Files: `src/hooks/useFavorites.js`, `src/pages/HomePage.jsx`, Supabase Database (Missing `idx_listings_perf` index).

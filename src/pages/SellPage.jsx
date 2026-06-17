@@ -360,6 +360,7 @@ export default function SellPage() {
                 navigate('/success', {
                     state: {
                         listingId: data.id,
+                        listingCode: data.listing_code,
                         category: payload.category || 'livestock'
                     }
                 });

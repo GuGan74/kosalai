@@ -369,6 +369,9 @@ export default function ListingDetailPage() {
 
                 {/* RIGHT: Seller Widget */}
                 <div className="seller-w">
+                    <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--g3)', fontWeight: 600, marginBottom: 12, borderBottom: '1px solid #eee', paddingBottom: 8 }}>
+                        Listing ID: {listing.listing_code || 'N/A'}
+                    </div>
                     <div className="s-top">
                         <div className={`s-av${isPet ? ' p' : ''}`}>{initials}</div>
                         <div>

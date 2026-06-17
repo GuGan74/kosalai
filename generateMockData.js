@@ -45,7 +45,7 @@ const BREED_MAP = {
 const IMAGE_MAP = {
   cow: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?auto=format&fit=crop&q=80&w=480',
   buffalo: 'https://images.unsplash.com/photo-1590432298711-20921ecfb25f?auto=format&fit=crop&q=80&w=480',
-  goat: 'https://images.unsplash.com/photo-1528318269466-5122e2bb97f7?auto=format&fit=crop&q=80&w=480',
+  goat: 'https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=480',
   sheep: 'https://images.unsplash.com/photo-1484557985045-edf25e08da73?auto=format&fit=crop&q=80&w=480',
   poultry: 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?auto=format&fit=crop&q=80&w=480',
   dog: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=480',

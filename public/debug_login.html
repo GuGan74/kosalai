@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html><body><script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabase = createClient(
+  'https://ulbrlhcelwoojwnvznrd.supabase.co',
+  'sb_publishable_YWwkOCwcVoNUM0xnC3Wbiw_y1rX3Y4i'
+);
+async function login() {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: 'test@example.com',
+    password: 'password123'
+  });
+  if (data.session) {
+    window.location.href = '/profile';
+  } else {
+    document.body.innerHTML = 'Login failed. ' + JSON.stringify(error);
+  }
+}
+login();
+</script></body></html>

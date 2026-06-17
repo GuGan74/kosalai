@@ -7,8 +7,7 @@ export default function SuccessPage() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { state } = useLocation();
-    const listing = state?.listing;
-    const [id] = React.useState(() => listing?.id || 'PB' + Date.now().toString().slice(-6));
+    const listingCode = state?.listingCode || 'N/A';
 
     return (
         <div className="suc-wrap">
@@ -18,7 +17,7 @@ export default function SuccessPage() {
 
             <div className="suc-id">
                 <div className="lb">LISTING ID</div>
-                <div className="id">{id}</div>
+                <div className="id">{listingCode}</div>
                 <div className="meta">{t('success.manageListing')}</div>
             </div>
 

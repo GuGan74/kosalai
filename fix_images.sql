@@ -11,7 +11,7 @@ SET image_url = 'https://images.unsplash.com/photo-1590432298711-20921ecfb25f?au
 WHERE category = 'buffalo';
 
 UPDATE listings 
-SET image_url = 'https://images.unsplash.com/photo-1528318269466-5122e2bb97f7?auto=format&fit=crop&q=80&w=480'
+SET image_url = 'https://images.unsplash.com/photo-1524024973431-2ad916746881?auto=format&fit=crop&q=80&w=480'
 WHERE category = 'goat';
 
 UPDATE listings 

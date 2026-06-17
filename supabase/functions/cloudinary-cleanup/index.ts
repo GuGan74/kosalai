@@ -1,7 +1,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { v2 as cloudinary } from 'npm:cloudinary@1.41.0'
 
-// 1. Initialize Cloudinary Admin API
+// 1. Initialize Cloudinary Admin API using Edge Secrets
 cloudinary.config({
   cloud_name: Deno.env.get('CLOUDINARY_CLOUD_NAME'),
   api_key: Deno.env.get('CLOUDINARY_API_KEY'),
@@ -11,6 +11,10 @@ cloudinary.config({
 // 2. Production-safe URL Parser
 function extractPublicId(url: string): string | null {
   if (!url || typeof url !== 'string') return null;
+  
+  // Ignore non-Cloudinary URLs safely
+  if (!url.includes('res.cloudinary.com')) return null;
+
   const uploadIndex = url.indexOf('/upload/');
   if (uploadIndex === -1) return null;
   
@@ -37,7 +41,11 @@ function extractPublicId(url: string): string | null {
 // 3. Webhook Handler
 serve(async (req) => {
   try {
-    const { old_record } = await req.json();
+    const payload = await req.json();
+    
+    // Supabase Webhook payload format uses 'record' and 'old_record'
+    const old_record = payload.old_record || payload.record;
+    
     if (!old_record) {
       return new Response(JSON.stringify({ error: 'No old_record provided' }), { status: 400 });
     }
@@ -55,7 +63,7 @@ serve(async (req) => {
       .filter(id => id !== null) as string[];
 
     if (publicIds.length === 0) {
-      return new Response(JSON.stringify({ message: 'No images to delete' }), { status: 200 });
+      return new Response(JSON.stringify({ message: 'No Cloudinary images to delete' }), { status: 200 });
     }
 
     // 4. Secure Bulk Deletion via Cloudinary Admin API
@@ -69,6 +77,7 @@ serve(async (req) => {
     });
   } catch (error: any) {
     console.error("Cleanup Error:", error);
+    // Even if it returns 500, the pg_net background trigger doesn't fail the DB deletion
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 })
