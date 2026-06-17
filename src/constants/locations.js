@@ -1,8 +1,9 @@
 export const DISTRICTS = [
   { group: 'Tamil Nadu', opts: ['Ariyalur','Chengalpattu','Chennai','Coimbatore','Cuddalore','Dharmapuri','Dindigul','Erode','Kallakurichi','Kancheepuram','Kanyakumari','Karur','Krishnagiri','Madurai','Mayiladuthurai','Nagapattinam','Namakkal','Nilgiris','Perambalur','Pudukkottai','Ramanathapuram','Ranipet','Salem','Sivaganga','Tenkasi','Thanjavur','Theni','Thoothukudi','Tiruchirappalli','Tirunelveli','Tirupathur','Tiruppur','Tiruvallur','Tiruvannamalai','Tiruvarur','Vellore','Viluppuram','Virudhunagar'] },
-  { group: 'Andhra Pradesh', opts: ['Visakhapatnam','Vijayawada','Guntur','Nellore','Kurnool','Tirupati','Rajahmundry'] },
-  { group: 'Telangana', opts: ['Hyderabad','Warangal','Karimnagar','Nizamabad','Khammam'] },
-  { group: 'Karnataka', opts: ['Bengaluru','Mysuru','Hubli','Mangaluru','Belagavi','Davangere'] },
-  { group: 'Kerala', opts: ['Kochi','Thiruvananthapuram','Kozhikode','Thrissur','Kollam','Kannur'] },
+  { group: 'Andhra Pradesh', opts: ['Alluri Sitharama Raju','Anakapalli','Ananthapuramu','Annamayya','Bapatla','Chittoor','Dr. B.R. Ambedkar Konaseema','East Godavari','Eluru','Guntur','Kakinada','Krishna','Kurnool','Nandyal','NTR','Palnadu','Parvathipuram Manyam','Prakasam','Srikakulam','Sri Potti Sriramulu Nellore','Sri Sathya Sai','Tirupati','Visakhapatnam','Vizianagaram','West Godavari','YSR Kadapa'] },
+  { group: 'Telangana', opts: ['Adilabad','Bhadradri Kothagudem','Hanamkonda','Hyderabad','Jagtial','Jangaon','Jayashankar Bhupalpally','Jogulamba Gadwal','Kamareddy','Karimnagar','Khammam','Komaram Bheem','Mahabubabad','Mahabubnagar','Mancherial','Medak','Medchal-Malkajgiri','Mulugu','Nagarkurnool','Nalgonda','Narayanpet','Nirmal','Nizamabad','Peddapalli','Rajanna Sircilla','Ranga Reddy','Sangareddy','Siddipet','Suryapet','Vikarabad','Wanaparthy','Warangal','Yadadri Bhuvanagiri'] },
+  { group: 'Karnataka', opts: ['Bagalkot','Ballari','Belagavi','Bengaluru Rural','Bengaluru Urban','Bidar','Chamarajanagar','Chikkaballapur','Chikkamagaluru','Chitradurga','Dakshina Kannada','Davanagere','Dharwad','Gadag','Hassan','Haveri','Kalaburagi','Kodagu','Kolar','Koppal','Mandya','Mysuru','Raichur','Ramanagara','Shivamogga','Tumakuru','Udupi','Uttara Kannada','Vijayapura','Vijayanagara','Yadgir'] },
+  { group: 'Kerala', opts: ['Thiruvananthapuram','Kollam','Pathanamthitta','Alappuzha','Kottayam','Idukki','Ernakulam','Thrissur','Palakkad','Malappuram','Kozhikode','Wayanad','Kannur','Kasaragod'] },
+  { group: 'Puducherry', opts: ['Puducherry','Karaikal','Mahe','Yanam'] },
   { group: 'Maharashtra', opts: ['Mumbai','Pune','Nagpur','Nashik','Aurangabad'] },
 ];
