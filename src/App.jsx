@@ -224,11 +224,7 @@ function AppRoutes() {
 
             {/* PROTECTED — login required */}
             <Route path="/listing/:id"
-              element={
-                <LoginGuard>
-                  <ListingDetailPage />
-                </LoginGuard>
-              } />
+              element={<ListingDetailPage />} />
             <Route path="/sell"
               element={
                 <LoginGuard>
