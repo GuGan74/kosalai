@@ -86,12 +86,6 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 }
             }}
             onClick={() => {
-                if (!isLoggedIn) {
-                    sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
-                    toast('Sign in to view full listing details 🔐', { icon: '👆', duration: 2500 });
-                    setTimeout(() => navigate('/login'), 800);
-                    return;
-                }
                 navigate(`/listing/${listing.listing_code || id}`);
             }}
         >
