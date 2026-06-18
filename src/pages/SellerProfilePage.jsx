@@ -23,11 +23,18 @@ export default function SellerProfilePage() {
     const { userId } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { currentUser, loading: authLoading } = useAuth();
     const [seller, setSeller] = useState(null);
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!authLoading && !currentUser) {
+            sessionStorage.setItem('pb_redirect_after_login', `/seller/${userId}`);
+            navigate('/login');
+            return;
+        }
+
         async function fetchData() {
             // Demo mode fallback
             if (!userId || userId.startsWith('demo')) {

@@ -126,7 +126,11 @@ export default function ListingDetailPage() {
     }, [fetchAllData]);
 
     async function handleToggleLike() {
-        if (!currentUser) { toast.error('Please log in to like'); return; }
+        if (!currentUser) {
+            sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing?.listing_code || id}`);
+            navigate('/login');
+            return;
+        }
 
         if (isLiked) {
             if (String(id).startsWith('d') && String(id).length < 10) {
@@ -160,7 +164,11 @@ export default function ListingDetailPage() {
     }
 
     async function handleReport() {
-        if (!currentUser) { toast.error('Please log in to report'); return; }
+        if (!currentUser) {
+            sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing?.listing_code || id}`);
+            navigate('/login');
+            return;
+        }
         const reason = window.prompt("Why are you reporting this listing? (e.g. Fake, Spam, Sold)");
         if (!reason) return;
         if (String(id).startsWith('d') && String(id).length < 10) {
@@ -404,18 +412,43 @@ export default function ListingDetailPage() {
                             </div>
                         ) : (
                             <>
-                            <button
-                                className={`btn-wcall${isPet ? ' p' : ''}`}
-                                onClick={() => {
-                                    if (listing.user_id) {
-                                        navigate(`/seller/${listing.user_id}`);
-                                    } else {
-                                        toast.error('Seller profile not available');
-                                    }
-                                }}
-                            >
-                                {t('listingDetail.reachSeller')}
-                            </button>
+                            {currentUser ? (
+                                <>
+                                {sellerPhone && (
+                                    <div style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '12px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>
+                                        📞 {sellerPhone.startsWith('+') ? sellerPhone : `+91 ${sellerPhone}`}
+                                    </div>
+                                )}
+                                <button
+                                    className={`btn-wcall${isPet ? ' p' : ''}`}
+                                    onClick={() => {
+                                        if (listing.user_id) {
+                                            navigate(`/seller/${listing.user_id}`);
+                                        } else {
+                                            toast.error('Seller profile not available');
+                                        }
+                                    }}
+                                >
+                                    {t('listingDetail.reachSeller')}
+                                </button>
+                                </>
+                            ) : (
+                                <>
+                                <div style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '12px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#94a3b8', filter: 'blur(2px)', userSelect: 'none' }}>
+                                    📞 +91 XXXXX XXXXX
+                                </div>
+                                <button
+                                    className={`btn-wcall${isPet ? ' p' : ''}`}
+                                    onClick={() => {
+                                        sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
+                                        navigate('/login');
+                                    }}
+                                    style={{ background: '#475569' }}
+                                >
+                                    🔒 Login to Contact Seller
+                                </button>
+                                </>
+                            )}
                             <button
                                 className="btn-fav-large"
                                 onClick={() => shareListing(listing)}

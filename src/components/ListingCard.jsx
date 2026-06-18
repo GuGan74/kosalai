@@ -50,7 +50,9 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
     async function handleLike(e) {
         e.stopPropagation();
         if (!currentUser) {
-            toast.error('Please log in to like posts');
+            sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
+            toast('Sign in to favorite listings 🔐', { icon: '👆', duration: 2500 });
+            setTimeout(() => navigate('/login'), 800);
             return;
         }
 
