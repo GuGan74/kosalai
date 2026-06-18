@@ -105,7 +105,7 @@ export default function MyListingsPage() {
             setError(null);
         } catch (err) {
             console.error('Error fetching listings:', err);
-            setError('Failed to load your listings. Please try again.');
+            setError(`Supabase Error: ${err.message || JSON.stringify(err)}`);
             setListings([]);
         } finally {
             setLoading(false);
