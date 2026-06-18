@@ -9,7 +9,7 @@ const ADMIN_EMAIL = 'mail.kosalai@gmail.com';
 
 export default function AdminPage() {
     const navigate = useNavigate();
-    const { currentProfile, isLoggedIn, loading: authLoading, signOut } = useAuth();
+    const { currentProfile, currentUser, isLoggedIn, loading: authLoading, signOut } = useAuth();
 
     // Dashboard state
     const [activeTab, setActiveTab] = useState('overview');
@@ -21,8 +21,8 @@ export default function AdminPage() {
     const [loadingData, setLoadingData] = useState(false);
     const [reportFilter, setReportFilter] = useState('all'); // all, pending, resolved
 
-    // Double-layer admin check: role + email
-    const isAdmin = currentProfile?.role === 'admin' && currentProfile?.email === ADMIN_EMAIL;
+    // Double-layer admin check: email
+    const isAdmin = currentProfile?.email === ADMIN_EMAIL || currentUser?.email === ADMIN_EMAIL;
 
     useEffect(() => {
         if (isAdmin) fetchDashboardData();
