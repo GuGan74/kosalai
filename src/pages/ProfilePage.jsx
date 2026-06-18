@@ -71,7 +71,7 @@ export default function ProfilePage() {
             const { data } = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (data) {
-                const list = data.map(item => item.listings).filter(Boolean);
+                const list = data.map(item => item.listings).filter(l => l && l.status === 'active');
                 setLikedListings(list);
             }
         } catch (err) {
@@ -134,6 +134,7 @@ export default function ProfilePage() {
         { icon: '🔔', label: t('profilePage.notifications'), sub: t('profilePage.buyerInquiries'), action: () => navigate('/notifications') },
         { icon: '❓', label: t('profilePage.helpFaq'), sub: t('profilePage.supportGuides'), action: () => toast('Help coming soon!') },
         { icon: '🔐', label: t('profilePage.privacyPolicy'), sub: t('profilePage.termsConditions'), action: () => toast('Privacy policy') },
+        { icon: 'ℹ️', label: t('aboutUs.title', 'About Us'), sub: t('aboutUs.learnMore', 'Learn more about Kosalai'), action: () => navigate('/about-us') },
         // Admin Dashboard — only visible for verified admin
         ...(p.role === 'admin' && p.email === 'mail.kosalai@gmail.com' ? [{
             icon: '🛡️', label: t('manage_admin', { defaultValue: 'Admin Dashboard' }), sub: 'Manage listings, users & reports', action: () => navigate('/admin')

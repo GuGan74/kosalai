@@ -57,6 +57,7 @@ const PaymentPage = React.lazy(() => lazyRetry(() => import('./pages/PaymentPage
 const SuccessPage = React.lazy(() => lazyRetry(() => import('./pages/SuccessPage')));
 const NotFoundPage = React.lazy(() => lazyRetry(() => import('./pages/NotFoundPage')));
 const AdminPage = React.lazy(() => lazyRetry(() => import('./pages/AdminPage')));
+const AboutUsPage = React.lazy(() => lazyRetry(() => import('./pages/AboutUsPage')));
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import loadingGif from './assets/379.gif';
@@ -215,6 +216,8 @@ function AppRoutes() {
               element={<HomePage />} />
             <Route path="/search"
               element={<SearchPage />} />
+            <Route path="/about-us"
+              element={<AboutUsPage />} />
             <Route path="/login"
               element={
                 <AuthGuard>
