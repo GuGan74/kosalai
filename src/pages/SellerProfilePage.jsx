@@ -59,9 +59,8 @@ export default function SellerProfilePage() {
 
                 const { data: listingsData } = await supabase
                     .from('listings')
-                    .select('*')
+                    .select('id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at')
                     .eq('user_id', userId)
-                    .eq('status', 'active')
                     .order('created_at', { ascending: false });
 
                 setListings(listingsData || []);
@@ -97,7 +96,8 @@ export default function SellerProfilePage() {
         ? `https://wa.me/${seller.phone.replace(/\D/g, '').replace(/^0/, '91').replace(/^(?!91)/, '91')}?text=Hi, I saw your listing on Kosalai and I am interested.`
         : null;
 
-    const activeCount = listings.filter(l => l.status === 'active').length;
+    const activeListings = listings.filter(l => l.status === 'active');
+    const activeCount = activeListings.length;
     const soldCount = listings.filter(l => l.status === 'sold').length;
 
     return (
@@ -198,14 +198,14 @@ export default function SellerProfilePage() {
                     🐄 {t('sellerProfile.listingsCount', { count: listings.length })}
                 </h2>
 
-                {listings.length === 0 ? (
+                {activeListings.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: 40, color: '#9CA3AF' }}>
                         <div style={{ fontSize: 48 }}>📭</div>
                         <p>{t('sellerProfile.noListings')}</p>
                     </div>
                 ) : (
                     <div className="seller-listings-grid">
-                        {listings.map(l => <ListingCard key={l.id} listing={l} />)}
+                        {activeListings.map(l => <ListingCard key={l.id} listing={l} />)}
                     </div>
                 )}
             </div>
