@@ -347,12 +347,6 @@ export default function ListingDetailPage() {
                         {t('listingDetail.listedBy')} {sellerName || t('listingDetail.verifiedSeller')}
                         · {t('listingDetail.memberSince', { year: new Date(sellerJoinDate || Date.now()).getFullYear() })}
                     </div>
-                    <div className="det-loc">
-                        📍 {listing.village && <><TranslatedText>{listing.village}</TranslatedText>, </>}
-                        {listing.taluk && <><TranslatedText>{listing.taluk}</TranslatedText>, </>}
-                        <TranslatedText>{listing.location}</TranslatedText>
-                        {listing.state ? `, ` : ''}{listing.state && <TranslatedText>{listing.state}</TranslatedText>}
-                    </div>
 
                     <div className="stats-grid">
                         {listing.age_years != null && <div className="sg"><div className="lb">{t('listingDetail.age')}</div><div className="vl">{listing.age_years} {t('listingDetail.years')}</div></div>}
@@ -361,10 +355,6 @@ export default function ListingDetailPage() {
                         {listing.gender && <div className="sg"><div className="lb">{t('listingDetail.gender')}</div><div className="vl" style={{ textTransform: 'capitalize' }}>{t('listing.' + listing.gender.toLowerCase(), { defaultValue: listing.gender })}</div></div>}
                         <div className="sg"><div className="lb">{t('listingDetail.category')}</div><div className="vl" style={{ textTransform: 'capitalize' }}><TranslatedText>{listing.category}</TranslatedText></div></div>
                         {listing.breed && <div className="sg"><div className="lb">{t('listingDetail.breed')}</div><div className="vl"><TranslatedText>{listing.breed}</TranslatedText></div></div>}
-                        {listing.village && <div className="sg"><div className="lb">{t('sellPage.village', { defaultValue: 'Village' })}</div><div className="vl"><TranslatedText>{listing.village}</TranslatedText></div></div>}
-                        {listing.taluk && <div className="sg"><div className="lb">{t('sellPage.taluk', { defaultValue: 'Taluk' })}</div><div className="vl"><TranslatedText>{listing.taluk}</TranslatedText></div></div>}
-                        <div className="sg"><div className="lb">{t('listingDetail.location')}</div><div className="vl"><TranslatedText>{listing.location}</TranslatedText></div></div>
-                        {listing.landmark && <div className="sg"><div className="lb">{t('sellPage.landmark', { defaultValue: 'Landmark' })}</div><div className="vl"><TranslatedText>{listing.landmark}</TranslatedText></div></div>}
                     </div>
 
                     {listing.description && (
@@ -373,6 +363,52 @@ export default function ListingDetailPage() {
                             <p><TranslatedText>{listing.description}</TranslatedText></p>
                         </div>
                     )}
+
+                    {/* ── Location Details Card ── */}
+                    {(() => {
+                        const parts = [
+                            listing.landmark ? `Near ${listing.landmark}` : null,
+                            listing.village  ? `${listing.village} Village`  : null,
+                            listing.taluk    ? `${listing.taluk} Taluk`    : null,
+                            listing.location ? `${listing.location} City`   : null,
+                            listing.state    ? listing.state               : null,
+                        ].filter(Boolean);
+
+                        if (parts.length === 0) return null;
+
+                        return (
+                            <div style={{
+                                background: 'white',
+                                borderRadius: 16,
+                                border: '1px solid #e8f5e9',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                padding: '16px 18px',
+                                marginTop: 16,
+                            }}>
+                                <div style={{
+                                    display: 'flex', alignItems: 'center', gap: 8,
+                                    marginBottom: 12,
+                                    fontFamily: 'Poppins, sans-serif',
+                                    fontWeight: 700, fontSize: 15, color: '#1a3c28'
+                                }}>
+                                    <span style={{ fontSize: 18 }}>📍</span>
+                                    {t('listingDetail.locationDetails', 'Location Details')}
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                                    {parts.map((line, i) => (
+                                        <div key={i} style={{
+                                            fontSize: 14, fontWeight: 600,
+                                            color: i === parts.length - 1 ? '#1a7a3c' : '#374151',
+                                            fontFamily: 'Nunito, sans-serif',
+                                            lineHeight: 1.6,
+                                        }}>
+                                            <TranslatedText>{line}{i < parts.length - 1 ? ',' : ''}</TranslatedText>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
                 </div>
 
                 {/* RIGHT: Seller Widget */}
