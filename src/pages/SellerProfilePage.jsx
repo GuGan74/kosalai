@@ -118,26 +118,7 @@ export default function SellerProfilePage() {
                 )}
             </div>
 
-            {/* Seller Stats */}
-            <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-                gap: 12, margin: '16px 0',
-                background: 'white', borderRadius: 16,
-                padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-            }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: '#1a7a3c', fontFamily: 'Poppins,sans-serif' }}>{listings.length}</div>
-                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Total</div>
-                </div>
-                <div style={{ textAlign: 'center', borderLeft: '1px solid #f0f0f0', borderRight: '1px solid #f0f0f0' }}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: '#16a34a', fontFamily: 'Poppins,sans-serif' }}>{activeCount}</div>
-                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Active</div>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: 22, fontWeight: 900, color: '#dc2626', fontFamily: 'Poppins,sans-serif' }}>{soldCount}</div>
-                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Sold</div>
-                </div>
-            </div>
+
 
             {/* Contact Info — visible only to logged-in users */}
             <div className="seller-contact-card">
