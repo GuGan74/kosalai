@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import BackButton from '../components/BackButton';
 import ListingCard from '../components/ListingCard';
@@ -23,17 +24,21 @@ export default function SellerProfilePage() {
     const { userId } = useParams();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { currentUser, loading: authLoading } = useAuth();
+    const { currentUser, isLoggedIn } = useAuth();
     const [seller, setSeller] = useState(null);
     const [listings, setListings] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!authLoading && !currentUser) {
+        // Guard: guests cannot view seller profiles
+        if (isLoggedIn === false) {
             sessionStorage.setItem('pb_redirect_after_login', `/seller/${userId}`);
             navigate('/login');
             return;
         }
+
+        // Still resolving auth state — wait
+        if (isLoggedIn === undefined || isLoggedIn === null) return;
 
         async function fetchData() {
             // Demo mode fallback
@@ -69,9 +74,9 @@ export default function SellerProfilePage() {
             }
         }
         fetchData();
-    }, [userId]);
+    }, [userId, isLoggedIn]);
 
-    if (loading) return (
+    if (loading || isLoggedIn === undefined || isLoggedIn === null) return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
             <div className="spinner dark" style={{ margin: '0 auto' }} />
         </div>
@@ -85,6 +90,15 @@ export default function SellerProfilePage() {
 
     const initials = (seller.full_name || seller.phone || 'S').slice(0, 2).toUpperCase();
     const memberYear = new Date(seller.created_at || Date.now()).getFullYear();
+    const displayPhone = seller.phone
+        ? (seller.phone.startsWith('+') ? seller.phone : `+91 ${seller.phone}`)
+        : null;
+    const whatsappUrl = seller.phone
+        ? `https://wa.me/${seller.phone.replace(/\D/g, '').replace(/^0/, '91').replace(/^(?!91)/, '91')}?text=Hi, I saw your listing on Kosalai and I am interested.`
+        : null;
+
+    const activeCount = listings.filter(l => l.status === 'active').length;
+    const soldCount = listings.filter(l => l.status === 'sold').length;
 
     return (
         <div className="seller-profile-page">
@@ -96,38 +110,86 @@ export default function SellerProfilePage() {
                 <h1 style={{ fontSize: 22, fontWeight: 900, margin: '0 0 4px', fontFamily: 'Poppins,sans-serif' }}>
                     {seller.full_name || 'Verified Seller'}
                 </h1>
-                <p style={{ opacity: 0.8, fontSize: 13, margin: 0 }}>
-                    {t('sellerProfile.sellerProfile')} · {t('listing.years', { count: memberYear })} · {t('sellerProfile.listingsCount', { count: listings.length })}
+                <p style={{ opacity: 0.8, fontSize: 13, margin: '0 0 8px' }}>
+                    ✓ {t('listingDetail.verifiedSeller', 'Verified Seller')} · {t('listingDetail.memberSince', { year: memberYear })}
                 </p>
+                {seller.location && (
+                    <p style={{ opacity: 0.7, fontSize: 12, margin: 0 }}>📍 {seller.location}</p>
+                )}
             </div>
 
-            {/* Contact Info */}
+            {/* Seller Stats */}
+            <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: 12, margin: '16px 0',
+                background: 'white', borderRadius: 16,
+                padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: '#1a7a3c', fontFamily: 'Poppins,sans-serif' }}>{listings.length}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Total</div>
+                </div>
+                <div style={{ textAlign: 'center', borderLeft: '1px solid #f0f0f0', borderRight: '1px solid #f0f0f0' }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: '#16a34a', fontFamily: 'Poppins,sans-serif' }}>{activeCount}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Active</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 22, fontWeight: 900, color: '#dc2626', fontFamily: 'Poppins,sans-serif' }}>{soldCount}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600 }}>Sold</div>
+                </div>
+            </div>
+
+            {/* Contact Info — visible only to logged-in users */}
             <div className="seller-contact-card">
-                <h3 style={{ fontFamily: 'Poppins,sans-serif', fontWeight: 800, marginBottom: 8, color: '#1a3c28' }}>
+                <h3 style={{ fontFamily: 'Poppins,sans-serif', fontWeight: 800, marginBottom: 16, color: '#1a3c28' }}>
                     📋 {t('sellerProfile.contactInfo')}
                 </h3>
 
-                {seller.phone && (
-                    <div className="seller-contact-item">
-                        <span>📱</span>
+                {displayPhone && (
+                    <div className="seller-contact-item" style={{ marginBottom: 12 }}>
+                        <span>📞</span>
                         <span style={{ color: '#6B7280', fontWeight: 600 }}>{t('sellerProfile.phoneNumber')}:</span>
                         <a href={`tel:${seller.phone}`} style={{ color: '#1a7a3c', fontWeight: 700, textDecoration: 'none', letterSpacing: '0.02em' }}>
-                            {seller.phone.startsWith('+') ? seller.phone : `+91 ${seller.phone}`}
+                            {displayPhone}
                         </a>
                     </div>
                 )}
 
-
-
-                {seller.location && (
-                    <div className="seller-contact-item">
-                        <span>📍</span>
-                        <span style={{ color: '#6B7280', fontWeight: 600 }}>{t('listing.location')}:</span>
-                        <span style={{ fontWeight: 600, color: '#374151' }}>{seller.location}</span>
-                    </div>
-                )}
-
-
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 8 }}>
+                    {whatsappUrl && (
+                        <a
+                            href={whatsappUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                background: '#25D366', color: 'white', fontWeight: 800,
+                                borderRadius: 12, padding: '14px 16px', textDecoration: 'none',
+                                fontSize: 15, fontFamily: 'Nunito, sans-serif',
+                                boxShadow: '0 4px 12px rgba(37,211,102,0.25)',
+                                transition: 'opacity 0.2s'
+                            }}
+                        >
+                            🟢 {t('listing.whatsappSeller', 'WhatsApp Seller')}
+                        </a>
+                    )}
+                    {displayPhone && (
+                        <a
+                            href={`tel:${seller.phone}`}
+                            style={{
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                background: '#1a7a3c', color: 'white', fontWeight: 800,
+                                borderRadius: 12, padding: '14px 16px', textDecoration: 'none',
+                                fontSize: 15, fontFamily: 'Nunito, sans-serif',
+                                boxShadow: '0 4px 12px rgba(26,122,60,0.2)',
+                                transition: 'opacity 0.2s'
+                            }}
+                        >
+                            📱 {t('listing.callSeller', 'Call Seller')}
+                        </a>
+                    )}
+                </div>
             </div>
 
             {/* Seller Listings */}

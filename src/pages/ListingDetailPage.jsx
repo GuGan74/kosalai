@@ -413,12 +413,7 @@ export default function ListingDetailPage() {
                         ) : (
                             <>
                             {currentUser ? (
-                                <>
-                                {sellerPhone && (
-                                    <div style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '12px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#1e293b' }}>
-                                        📞 {sellerPhone.startsWith('+') ? sellerPhone : `+91 ${sellerPhone}`}
-                                    </div>
-                                )}
+                                /* LOGGED-IN: View Seller Profile CTA — contact info lives on SellerProfilePage */
                                 <button
                                     className={`btn-wcall${isPet ? ' p' : ''}`}
                                     onClick={() => {
@@ -428,13 +423,14 @@ export default function ListingDetailPage() {
                                             toast.error('Seller profile not available');
                                         }
                                     }}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontSize: 16, padding: '16px' }}
                                 >
-                                    {t('listingDetail.reachSeller')}
+                                    👤 {t('listing.viewSeller', 'View Seller Profile')}
                                 </button>
-                                </>
                             ) : (
+                                /* GUEST: blurred phone + login prompt */
                                 <>
-                                <div style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '12px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#94a3b8', filter: 'blur(2px)', userSelect: 'none' }}>
+                                <div style={{ padding: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '12px', textAlign: 'center', fontSize: '18px', fontWeight: '700', color: '#94a3b8', filter: 'blur(4px)', userSelect: 'none', letterSpacing: '0.05em' }}>
                                     📞 +91 XXXXX XXXXX
                                 </div>
                                 <button
@@ -443,12 +439,13 @@ export default function ListingDetailPage() {
                                         sessionStorage.setItem('pb_redirect_after_login', `/listing/${listing.listing_code || id}`);
                                         navigate('/login');
                                     }}
-                                    style={{ background: '#475569' }}
+                                    style={{ background: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                                 >
-                                    🔒 Login to Contact Seller
+                                    🔒 {t('listingDetail.loginToContact', 'Login to Contact Seller')}
                                 </button>
                                 </>
                             )}
+                            {/* Share is always visible */}
                             <button
                                 className="btn-fav-large"
                                 onClick={() => shareListing(listing)}
@@ -464,31 +461,37 @@ export default function ListingDetailPage() {
                             >
                                 📤 {t('listingDetail.shareListing', 'Share Listing')}
                             </button>
-                            <button
-                                className={`btn-fav-large ${isLiked ? 'active' : ''}`}
-                                onClick={handleToggleLike}
-                                style={{
-                                    width: '100%', marginTop: '10px', padding: '14px',
-                                    borderRadius: '12px', background: isLiked ? '#fff0f0' : 'white',
-                                    color: isLiked ? '#e63946' : '#666', fontWeight: 800,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    gap: '8px', cursor: 'pointer',
-                                    border: isLiked ? '1px solid #fecaca' : '1px solid #e5e7eb',
-                                    transition: '0.2s'
-                                }}
-                            >
-                                {isLiked ? t('listingDetail.savedToProfile') : t('listingDetail.addToFavorites')}
-                            </button>
+                            {/* Favorite — only for logged-in users */}
+                            {currentUser && (
+                                <button
+                                    className={`btn-fav-large ${isLiked ? 'active' : ''}`}
+                                    onClick={handleToggleLike}
+                                    style={{
+                                        width: '100%', marginTop: '10px', padding: '14px',
+                                        borderRadius: '12px', background: isLiked ? '#fff0f0' : 'white',
+                                        color: isLiked ? '#e63946' : '#666', fontWeight: 800,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        gap: '8px', cursor: 'pointer',
+                                        border: isLiked ? '1px solid #fecaca' : '1px solid #e5e7eb',
+                                        transition: '0.2s'
+                                    }}
+                                >
+                                    {isLiked ? t('listingDetail.savedToProfile') : t('listingDetail.addToFavorites')}
+                                </button>
+                            )}
                             </>
                         )}
                     </div>
-                    <button
-                        onClick={handleReport}
-                        disabled={reporting}
-                        style={{ width: '100%', marginTop: '12px', padding: '12px', background: 'transparent', border: '1px solid #ff4d4f', color: '#ff4d4f', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontFamily: 'Nunito, sans-serif' }}
-                    >
-                        {reporting ? t('listingDetail.submitting') : t('listingDetail.reportPost')}
-                    </button>
+                    {/* Report — only for logged-in users */}
+                    {currentUser && (
+                        <button
+                            onClick={handleReport}
+                            disabled={reporting}
+                            style={{ width: '100%', marginTop: '12px', padding: '12px', background: 'transparent', border: '1px solid #ff4d4f', color: '#ff4d4f', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontFamily: 'Nunito, sans-serif' }}
+                        >
+                            {reporting ? t('listingDetail.submitting') : t('listingDetail.reportPost')}
+                        </button>
+                    )}
                     <div className="w-safety">{t('listingDetail.safetyTip')}</div>
                 </div>
             </div>
