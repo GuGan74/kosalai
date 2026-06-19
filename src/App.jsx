@@ -205,13 +205,14 @@ function AppRoutes() {
   }
 
   const hideNav = location.pathname === '/login';
+  const hideBottomNav = hideNav || location.pathname.startsWith('/sell');
 
   // ── Guest OR logged-in → full app ─────────────────────
   return (
     <>
       <Toaster position="top-center" />
       {!hideNav && <Navbar />}
-      <div style={{ paddingBottom: hideNav ? 0 : 'var(--bottom-nav-h)' }}>
+      <div style={{ paddingBottom: hideBottomNav ? 0 : 'var(--bottom-nav-h)' }}>
         <Suspense fallback={<LazyFallback />}>
           <Routes>
             {/* FREE — guests browse without login */}
@@ -286,7 +287,7 @@ function AppRoutes() {
           </Routes>
         </Suspense>
       </div>
-      {!hideNav && <BottomNav />}
+      {!hideBottomNav && <BottomNav />}
     </>
   );
 }
