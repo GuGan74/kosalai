@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import cowLogo from '../assets/kosalai-logo-removebg-preview.png';
+import heroBg from '../assets/image.png';
 import LanguageSelector from './LanguageSelector';
 import './Navbar.css';
 
@@ -37,98 +38,86 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="navbar navbar-container">
+            {/* Hero Navbar with background image */}
+            <nav className="navbar navbar-container" style={{ backgroundImage: `url(${heroBg})` }}>
+                {/* Left gradient fade so text stays readable */}
+                <div className="nav-bg-fade" />
+
                 <div className="nav-wrapper">
-                <div className="nav-inner">
-                    <div className="nav-logo" onClick={() => navigate('/')}>
-                        <img src={cowLogo} className="nav-logo-icon" alt="Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
-                        <div className="nav-brand">{t('nav.brand')}</div>
-                    </div>
+                    <div className="nav-inner">
 
-                    <div className="nav-links hide-mobile">
-                        {mainLinks.map(l => (
-                            <button
-                                key={l.path}
-                                className={`nav-link${pathname === l.path ? ' active' : ''}`}
-                                onClick={() => navigate(l.path)}
-                            >
-                                <span style={{ marginRight: '6px' }}>{l.icon}</span>
-                                {l.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="nav-right">
-                        <button
-                            className="hide-mobile"
-                            onClick={handleToggleType}
-                            style={{
-                                background: '#e8f5e9',
-                                color: '#1a7a3c',
-                                border: '1px solid #1a7a3c',
-                                borderRadius: 20,
-                                padding: '4px 12px',
-                                fontWeight: 700,
-                                fontSize: 13,
-                                cursor: 'pointer',
-                                fontFamily: 'Nunito, sans-serif',
-                                marginRight: 8,
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                whiteSpace: 'nowrap'
-                            }}
-                            title={`Switch to ${toggleLabel}`}
-                        >
-                            <span>{toggleIcon}</span>
-                            <span>{toggleLabel}</span>
-                        </button>
-                        <span className="hide-mobile">
-                          <LanguageSelector />
-                        </span>
-                        {/* Show avatar for logged-in, Sign In button for guests */}
-                        {isLoggedIn ? (
-                            <div className="nav-avatar" onClick={() => navigate('/profile')} title={t('navbar.myProfile')}>
-                                {initials}
+                        {/* Logo badge + Brand text */}
+                        <div className="nav-logo" onClick={() => navigate('/')}>
+                            <div className="nav-logo-badge">
+                                <img src={cowLogo} className="nav-logo-icon" alt="Logo" />
                             </div>
-                        ) : (
-                            pathname !== '/login' && (
+                            <div className="nav-brand-group">
+                                <div className="nav-brand">{t('nav.brand')}</div>
+                                <div className="nav-subtitle hide-mobile">Your Trusted Livestock Marketplace</div>
+                            </div>
+                        </div>
+
+                        {/* Desktop nav links */}
+                        <div className="nav-links hide-mobile">
+                            {mainLinks.map(l => (
                                 <button
-                                    onClick={() => navigate('/login')}
-                                    style={{
-                                        background: '#1a7a3c',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: 20,
-                                        padding: '8px 18px',
-                                        fontWeight: 800,
-                                        fontSize: 13,
-                                        cursor: 'pointer',
-                                        fontFamily: 'Nunito, sans-serif',
-                                        whiteSpace: 'nowrap',
-                                    }}
+                                    key={l.path}
+                                    className={`nav-link${pathname === l.path ? ' active' : ''}`}
+                                    onClick={() => navigate(l.path)}
                                 >
-                                    {t('navbar.signIn')}
+                                    <span style={{ marginRight: '6px' }}>{l.icon}</span>
+                                    {l.label}
                                 </button>
-                            )
-                        )}
-                        {isLoggedIn && (
-                            <button className="btn-sell-nav hide-mobile" onClick={() => navigate('/sell')}>
-                                {t('navbar.sellCattle')}
+                            ))}
+                        </div>
+
+                        {/* Right controls */}
+                        <div className="nav-right">
+                            {/* Desktop toggle */}
+                            <button
+                                className="hide-mobile nav-toggle-btn"
+                                onClick={handleToggleType}
+                                title={`Switch to ${toggleLabel}`}
+                            >
+                                <span>{toggleIcon}</span>
+                                <span>{toggleLabel}</span>
                             </button>
-                        )}
-                        {/* Hamburger */}
-                        <button
-                            className="ham-btn hide-tablet-up"
-                            onClick={() => setDrawerOpen(true)}
-                            aria-label="Open menu"
-                        >
-                            <span /><span /><span />
-                        </button>
+
+                            <span className="hide-mobile">
+                                <LanguageSelector />
+                            </span>
+
+                            {/* Avatar / Sign In */}
+                            {isLoggedIn ? (
+                                <div className="nav-avatar" onClick={() => navigate('/profile')} title={t('navbar.myProfile')}>
+                                    {initials}
+                                </div>
+                            ) : (
+                                pathname !== '/login' && (
+                                    <button className="nav-signin-btn" onClick={() => navigate('/login')}>
+                                        {t('navbar.signIn')}
+                                    </button>
+                                )
+                            )}
+
+                            {isLoggedIn && (
+                                <button className="btn-sell-nav hide-mobile" onClick={() => navigate('/sell')}>
+                                    {t('navbar.sellCattle')}
+                                </button>
+                            )}
+
+                            {/* Hamburger — card style */}
+                            <button
+                                className="ham-btn hide-tablet-up"
+                                onClick={() => setDrawerOpen(true)}
+                                aria-label="Open menu"
+                            >
+                                <span /><span /><span />
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
 
         {/* Mobile Drawer */}
             <div
