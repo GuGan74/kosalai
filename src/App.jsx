@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import {
   BrowserRouter, Routes, Route,
   Navigate, useLocation,
@@ -292,9 +292,20 @@ function AppRoutes() {
   );
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <ErrorBoundary>
           <AppRoutes />
