@@ -53,7 +53,7 @@ export default function Navbar() {
                             </div>
                             <div className="nav-brand-group">
                                 <div className="nav-brand">{t('nav.brand')}</div>
-                                <div className="nav-subtitle hide-mobile">Your Trusted Livestock Marketplace</div>
+                                <div className="nav-subtitle">Your Trusted Livestock Marketplace</div>
                             </div>
                         </div>
 
