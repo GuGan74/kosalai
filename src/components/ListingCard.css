@@ -157,6 +157,15 @@
     font-size: 12px;
     color: #6B7280;
     margin-bottom: 16px;
+    min-width: 0; /* allow flex child to shrink */
+}
+
+.lc-location-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
 }
 
 /* STATS GRID */

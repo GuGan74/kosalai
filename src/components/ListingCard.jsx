@@ -178,11 +178,13 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 </div>
 
                 <div className="lc-location">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                         <circle cx="12" cy="10" r="3"></circle>
                     </svg>
-                    <TranslatedText>{loc}</TranslatedText>{state ? `, ` : ''}{state && <TranslatedText>{state}</TranslatedText>}
+                    <span className="lc-location-text">
+                        <TranslatedText>{loc}{state ? `, ${state}` : ''}</TranslatedText>
+                    </span>
                 </div>
 
                 <div className="lc-stats-grid">
