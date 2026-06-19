@@ -25,9 +25,9 @@ export default function Navbar() {
     const toggleIcon = listingType === 'livestock' ? '🐾' : '🐄';
     const toggleLabel = listingType === 'livestock' ? t('nav.buy_pets') : t('nav.buy_cattle');
 
-    const navLinks = [
+    const mainLinks = [
         { icon: '🏠', label: t('nav.home'), path: '/' },
-        { icon: '👤', label: t('nav.profile'), path: '/profile' },
+        ...(isLoggedIn ? [{ icon: '👤', label: t('nav.profile'), path: '/profile' }] : [])
     ];
 
     async function handleSignOut() {
@@ -45,9 +45,8 @@ export default function Navbar() {
                         <div className="nav-brand">{t('nav.brand')}</div>
                     </div>
 
-                    {/* Desktop links */}
                     <div className="nav-links hide-mobile">
-                        {navLinks.map(l => (
+                        {mainLinks.map(l => (
                             <button
                                 key={l.path}
                                 className={`nav-link${pathname === l.path ? ' active' : ''}`}
@@ -143,9 +142,9 @@ export default function Navbar() {
                     <button className="mob-close-btn" onClick={() => setDrawerOpen(false)}>✕</button>
                 </div>
                 <div className="mob-drawer-links">
-                    {navLinks.map(l => (
+                    {mainLinks.map(l => (
                         <button key={l.path} className="mob-dl" onClick={() => { navigate(l.path); setDrawerOpen(false); }}>
-                            {l.label}
+                            {l.icon} {l.label}
                         </button>
                     ))}
                     <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
@@ -160,19 +159,41 @@ export default function Navbar() {
                         </>
                     )}
 
-                    <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '0 0 8px' }} />
-                    <button className="mob-dl" onClick={() => { navigate('/sell'); setDrawerOpen(false); }} style={{ color: 'var(--green)', background: 'var(--green-light)' }}>
-                        {t('navbar.postNewListing')}
-                    </button>
-                    {isLoggedIn ? (
-                        <button className="mob-dl" onClick={handleSignOut} style={{ color: 'var(--red)' }}>{t('navbar.signOut')}</button>
-                    ) : (
-                        <button className="mob-dl" onClick={() => { navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>{t('navbar.signInRegister')}</button>
+                    {isLoggedIn && (
+                        <>
+                            <button className="mob-dl" onClick={() => { navigate('/sell'); setDrawerOpen(false); }} style={{ color: 'var(--green)', background: 'var(--green-light)' }}>
+                                📝 {t('navbar.postNewListing')}
+                            </button>
+                            <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
+                        </>
                     )}
+
+                    <button className="mob-dl" onClick={() => { navigate('/about-us'); setDrawerOpen(false); }}>
+                        ℹ️ {t('aboutUs.title', 'About Us')}
+                    </button>
+                    <button className="mob-dl" onClick={() => { navigate('/privacy'); setDrawerOpen(false); }}>
+                        🔒 {t('profilePage.privacyPolicy', 'Privacy Policy')}
+                    </button>
+                    <button className="mob-dl" onClick={() => { navigate('/terms'); setDrawerOpen(false); }}>
+                        📄 {t('profilePage.termsConditions', 'Terms & Conditions')}
+                    </button>
+                    <button className="mob-dl" onClick={() => { navigate('/help'); setDrawerOpen(false); }}>
+                        ❓ {t('profilePage.helpFaq', 'Help & FAQ')}
+                    </button>
+                    
                     <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
+
                     <div style={{ padding: '8px 4px' }}>
                         <LanguageSelector />
                     </div>
+
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '8px 0' }} />
+
+                    {isLoggedIn ? (
+                        <button className="mob-dl" onClick={handleSignOut} style={{ color: 'var(--red)' }}>🚪 {t('navbar.signOut')}</button>
+                    ) : (
+                        <button className="mob-dl" onClick={() => { navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>🔑 {t('navbar.signInRegister')}</button>
+                    )}
                 </div>
             </div>
         </>

@@ -134,8 +134,8 @@ export default function ProfilePage() {
     const menuItems = [
         { icon: '📋', label: t('profilePage.myListings'), sub: t('profilePage.viewManage'), action: () => navigate('/my-listings') },
         { icon: '🔔', label: t('profilePage.notifications'), sub: t('profilePage.buyerInquiries'), action: () => navigate('/notifications') },
-        { icon: '❓', label: t('profilePage.helpFaq'), sub: t('profilePage.supportGuides'), action: () => toast('Help coming soon!') },
-        { icon: '🔐', label: t('profilePage.privacyPolicy'), sub: t('profilePage.termsConditions'), action: () => toast('Privacy policy') },
+        { icon: '❓', label: t('profilePage.helpFaq'), sub: t('profilePage.supportGuides'), action: () => navigate('/help') },
+        { icon: '🔐', label: t('profilePage.privacyPolicy'), sub: t('profilePage.termsConditions'), action: () => navigate('/privacy') },
         { icon: 'ℹ️', label: t('aboutUs.title', 'About Us'), sub: t('aboutUs.learnMore', 'Learn more about Kosalai'), action: () => navigate('/about-us') },
         // Admin Dashboard — only visible for verified admin email
         ...(isAdminEmail ? [{

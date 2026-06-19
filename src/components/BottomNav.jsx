@@ -8,10 +8,10 @@ export default function BottomNav() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { pathname } = useLocation();
-    const { isGuest, guestPrefs, listingType, setListingType } = useAuth();
-
-    // Hide the Sell button for buyer-guests (they're browsing, not selling)
-    const isBuyer = isGuest && guestPrefs?.role === 'buyer';
+    const { isLoggedIn, isGuest, guestPrefs, listingType, setListingType } = useAuth();
+    
+    // Hide the Sell button for guests (they're browsing, not selling)
+    const isBuyer = !isLoggedIn;
 
     function handleToggleType() {
         const next = listingType === 'livestock' ? 'pets' : 'livestock';
@@ -66,14 +66,25 @@ export default function BottomNav() {
                     <span className="bnav-label">{t('bottomNav.alerts')}</span>
                 </button>
 
-                <button
-                    className={`bnav-btn${pathname === '/profile' ? ' active' : ''}`}
-                    onClick={() => navigate('/profile')}
-                    aria-label="Profile"
-                >
-                    <span className="bnav-icon">👤</span>
-                    <span className="bnav-label">{t('bottomNav.profile')}</span>
-                </button>
+                {isLoggedIn ? (
+                    <button
+                        className={`bnav-btn${pathname === '/profile' ? ' active' : ''}`}
+                        onClick={() => navigate('/profile')}
+                        aria-label="Profile"
+                    >
+                        <span className="bnav-icon">👤</span>
+                        <span className="bnav-label">{t('bottomNav.profile')}</span>
+                    </button>
+                ) : (
+                    <button
+                        className={`bnav-btn${pathname === '/login' ? ' active' : ''}`}
+                        onClick={() => navigate('/login')}
+                        aria-label="Sign In"
+                    >
+                        <span className="bnav-icon">🔑</span>
+                        <span className="bnav-label">{t('navbar.signInRegister', { defaultValue: 'Sign In' })}</span>
+                    </button>
+                )}
             </div>
         </nav>
     );

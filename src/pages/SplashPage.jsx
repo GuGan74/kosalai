@@ -108,17 +108,17 @@ export default function SplashPage() {
 
                     {/* Legal */}
                     <p className="splash-legal hide-mobile">
-                        {t('splash_redesign.legal_agree')} <a href="#">{t('splash_redesign.terms')}</a> {t('splash_redesign.and_ack')} <a href="#">{t('splash_redesign.privacy')}</a>.
+                        {t('splash_redesign.legal_agree')} <a href="/terms" onClick={(e) => { e.preventDefault(); navigate('/terms'); }}>{t('splash_redesign.terms')}</a> {t('splash_redesign.and_ack')} <a href="/privacy" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>{t('splash_redesign.privacy')}</a>.
                     </p>
                 </div>
 
                 {/* Footer */}
                 <footer className="splash-footer">
-                    <a href="#">{t('splash_redesign.privacy')}</a>
+                    <a href="/about-us" onClick={(e) => { e.preventDefault(); navigate('/about-us'); }}>{t('aboutUs.title', 'About Us')}</a>
                     <span className="hide-mobile">•</span>
-                    <a href="#">{t('splash_redesign.terms')}</a>
+                    <a href="/privacy" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>{t('splash_redesign.privacy', 'Privacy Policy')}</a>
                     <span className="hide-mobile">•</span>
-                    <a href="#">{t('splash_redesign.contact')}</a>
+                    <a href="/terms" onClick={(e) => { e.preventDefault(); navigate('/terms'); }}>{t('splash_redesign.terms', 'Terms & Conditions')}</a>
                     <div className="splash-footer-copy">{t('splash_redesign.rights')}</div>
                 </footer>
             </div>

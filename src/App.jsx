@@ -58,6 +58,9 @@ const SuccessPage = React.lazy(() => lazyRetry(() => import('./pages/SuccessPage
 const NotFoundPage = React.lazy(() => lazyRetry(() => import('./pages/NotFoundPage')));
 const AdminPage = React.lazy(() => lazyRetry(() => import('./pages/AdminPage')));
 const AboutUsPage = React.lazy(() => lazyRetry(() => import('./pages/AboutUsPage')));
+const PrivacyPolicyPage = React.lazy(() => lazyRetry(() => import('./pages/PrivacyPolicyPage')));
+const TermsConditionsPage = React.lazy(() => lazyRetry(() => import('./pages/TermsConditionsPage')));
+const HelpFaqPage = React.lazy(() => lazyRetry(() => import('./pages/HelpFaqPage')));
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import loadingGif from './assets/379.gif';
@@ -218,6 +221,12 @@ function AppRoutes() {
               element={<SearchPage />} />
             <Route path="/about-us"
               element={<AboutUsPage />} />
+            <Route path="/privacy"
+              element={<PrivacyPolicyPage />} />
+            <Route path="/terms"
+              element={<TermsConditionsPage />} />
+            <Route path="/help"
+              element={<HelpFaqPage />} />
             <Route path="/login"
               element={
                 <AuthGuard>
