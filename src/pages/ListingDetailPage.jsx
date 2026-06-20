@@ -398,22 +398,21 @@ export default function ListingDetailPage() {
                                     <span style={{ fontSize: 18 }}>📍</span>
                                     {t('listingDetail.locationDetails', 'Location Details')}
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 12px', alignItems: 'start' }}>
                                     {fields.map((field, i) => (
-                                        <div key={i} style={{
-                                            fontSize: 14,
-                                            fontFamily: 'Nunito, sans-serif',
-                                            lineHeight: 1.6,
-                                            display: 'flex',
-                                            flexDirection: 'row',
-                                            gap: '8px',
-                                            minWidth: 0,
-                                            width: '100%'
-                                        }}>
-                                            <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                        <React.Fragment key={i}>
+                                            <div style={{ 
+                                                fontWeight: 700, 
+                                                color: '#4b5563', 
+                                                whiteSpace: 'nowrap',
+                                                fontSize: 14,
+                                                fontFamily: 'Nunito, sans-serif',
+                                                lineHeight: 1.6,
+                                                marginTop: '1px' // slight alignment tweak
+                                            }}>
                                                 {field.label}:
-                                            </span>
-                                            <span 
+                                            </div>
+                                            <div 
                                                 title={field.value}
                                                 style={{ 
                                                 fontWeight: 600, 
@@ -421,16 +420,18 @@ export default function ListingDetailPage() {
                                                 wordBreak: 'break-word',
                                                 overflowWrap: 'anywhere',
                                                 whiteSpace: 'normal',
-                                                minWidth: 0,
-                                                flex: 1,
+                                                fontSize: 14,
+                                                fontFamily: 'Nunito, sans-serif',
+                                                lineHeight: 1.6,
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden'
+                                                overflow: 'hidden',
+                                                minWidth: 0
                                             }}>
                                                 <TranslatedText>{field.value}</TranslatedText>
-                                            </span>
-                                        </div>
+                                            </div>
+                                        </React.Fragment>
                                     ))}
                                 </div>
                             </div>
