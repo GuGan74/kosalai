@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 import logoImg from '../assets/kosalai-logo-removebg-preview.png';
+import LanguageSelector from '../components/LanguageSelector';
 import loadingGif from '../assets/379.gif';
 import { DISTRICTS } from '../constants/locations';
 import { INDIAN_STATES } from '../constants/states';
@@ -104,7 +105,10 @@ export default function ProfileSetupPage() {
       </div>
 
       {/* RIGHT — form panel */}
-      <div className="splash-right-panel">
+      <div className="splash-right-panel" style={{ position: 'relative' }}>
+        <div className="splash-lang-container" style={{ position: 'absolute', top: 24, right: 32, zIndex: 10 }}>
+            <LanguageSelector />
+        </div>
         <div className="splash-right-inner">
           <div className="splash-brand-top" style={{ marginBottom: 16 }}>
             <img src={logoImg} alt="Kosalai" className="splash-logo" style={{ width: 180, height: 180, marginBottom: 0 }} />
