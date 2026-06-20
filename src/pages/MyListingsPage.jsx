@@ -123,7 +123,7 @@ export default function MyListingsPage() {
             <BackButton fallbackPath="/" />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
                 <h2 style={{ fontFamily: 'Poppins,sans-serif', fontSize: 22, fontWeight: 900 }}>📋 {t('myListingsPage.title')}</h2>
-                <button className="btn-primary" onClick={() => navigate('/sell')}>+ Create a New Listing</button>
+                <button className="btn-primary" style={{ padding: '8px 14px', fontSize: 13, borderRadius: 8, flexShrink: 0, width: 'auto' }} onClick={() => navigate('/sell')}>+ New Listing</button>
             </div>
             {error && (
                 <div style={{ background: '#ffebee', color: '#c62828', padding: 12, borderRadius: 8, marginBottom: 16 }}>
