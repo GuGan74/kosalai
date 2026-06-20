@@ -358,9 +358,11 @@ export default function ListingDetailPage() {
                     </div>
 
                     {listing.description && (
-                        <div className="det-desc">
+                        <div className="det-desc" style={{ maxWidth: '100%', overflow: 'hidden' }}>
                             <h4>{t('listingDetail.description', { defaultValue: '📝 Description' })}</h4>
-                            <p><TranslatedText>{listing.description}</TranslatedText></p>
+                            <p style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', whiteSpace: 'normal', margin: 0, marginTop: 8 }}>
+                                <TranslatedText>{listing.description}</TranslatedText>
+                            </p>
                         </div>
                     )}
 
@@ -404,7 +406,9 @@ export default function ListingDetailPage() {
                                             lineHeight: 1.6,
                                             display: 'flex',
                                             flexDirection: 'row',
-                                            gap: '8px'
+                                            gap: '8px',
+                                            minWidth: 0,
+                                            width: '100%'
                                         }}>
                                             <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', flexShrink: 0 }}>
                                                 {field.label}:
@@ -414,7 +418,9 @@ export default function ListingDetailPage() {
                                                 color: i === fields.length - 1 ? '#1a7a3c' : '#111827',
                                                 wordBreak: 'break-word',
                                                 overflowWrap: 'anywhere',
-                                                whiteSpace: 'normal'
+                                                whiteSpace: 'normal',
+                                                minWidth: 0,
+                                                flex: 1
                                             }}>
                                                 <TranslatedText>{field.value}</TranslatedText>
                                             </span>
