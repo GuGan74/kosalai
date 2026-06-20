@@ -478,7 +478,7 @@ export default function SellPage() {
                                 </div>
                             </div>
                             <div className="ff">
-                                <label>{t('sellPage.breed')} *</label>
+                                <label>{t('sellPage.breed')}</label>
                                 <select value={form.breed} onChange={(e) => setF('breed', e.target.value)} style={{ padding: '12px 14px', borderRadius: 8, border: '1.5px solid #ccc', outline: 'none' }}>
                                     <option value="">{t('sellPage.selectBreed')}</option>
                                     {getBreedOptions(form.category).map(b => (
@@ -493,7 +493,7 @@ export default function SellPage() {
                         </div>
 
                         <div className="ff" style={{ marginTop: 15, marginBottom: 15 }}>
-                            <label>{t('sellPage.gender')} *</label>
+                            <label>{t('sellPage.gender')}</label>
                             <div style={{ display: 'flex', gap: 12 }}>
                                 <button
                                     type="button"
