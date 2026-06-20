@@ -83,7 +83,17 @@ export default function NotificationsPage() {
                 <h2>🔔 {t('notificationsPage.title')} {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}</h2>
                 <button className="notif-mark" onClick={markAllRead}>{t('notificationsPage.markAllRead')}</button>
             </div>
-            {unreadCount > 0 && <div className="unrd-banner">{unreadCount} {t('notificationsPage.markAllRead')}</div>}
+            {unreadCount > 0 && (
+                <div 
+                    className="unrd-banner" 
+                    onClick={markAllRead}
+                    role="button"
+                    tabIndex={0}
+                    style={{ cursor: 'pointer' }}
+                >
+                    {unreadCount} {t('notificationsPage.markAllRead')}
+                </div>
+            )}
 
             {loading ? (
                 <div style={{ textAlign: 'center', padding: 40 }}><div className="spinner dark" /></div>
