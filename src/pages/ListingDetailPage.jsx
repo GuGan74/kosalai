@@ -366,15 +366,15 @@ export default function ListingDetailPage() {
 
                     {/* ── Location Details Card ── */}
                     {(() => {
-                        const parts = [
-                            listing.landmark ? `Near ${listing.landmark}` : null,
-                            listing.village  ? `${listing.village} Village`  : null,
-                            listing.taluk    ? `${listing.taluk} Taluk`    : null,
-                            listing.location ? `${listing.location} City`   : null,
-                            listing.state    ? listing.state               : null,
-                        ].filter(Boolean);
+                        const fields = [
+                            { label: t('sellPage.landmark', 'Near Landmark'), value: listing.landmark },
+                            { label: t('sellPage.village', 'Village'), value: listing.village },
+                            { label: t('sellPage.taluk', 'Taluk'), value: listing.taluk },
+                            { label: t('listingDetail.city', 'City'), value: listing.location },
+                            { label: t('listingDetail.state', 'State'), value: listing.state },
+                        ].filter(f => f.value);
 
-                        if (parts.length === 0) return null;
+                        if (fields.length === 0) return null;
 
                         return (
                             <div style={{
@@ -384,6 +384,8 @@ export default function ListingDetailPage() {
                                 boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                                 padding: '16px 18px',
                                 marginTop: 16,
+                                maxWidth: '100%',
+                                overflow: 'hidden'
                             }}>
                                 <div style={{
                                     display: 'flex', alignItems: 'center', gap: 8,
@@ -394,15 +396,28 @@ export default function ListingDetailPage() {
                                     <span style={{ fontSize: 18 }}>📍</span>
                                     {t('listingDetail.locationDetails', 'Location Details')}
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                                    {parts.map((line, i) => (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    {fields.map((field, i) => (
                                         <div key={i} style={{
-                                            fontSize: 14, fontWeight: 600,
-                                            color: i === parts.length - 1 ? '#1a7a3c' : '#374151',
+                                            fontSize: 14,
                                             fontFamily: 'Nunito, sans-serif',
                                             lineHeight: 1.6,
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            gap: '8px'
                                         }}>
-                                            <TranslatedText>{line}{i < parts.length - 1 ? ',' : ''}</TranslatedText>
+                                            <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                                                {field.label}:
+                                            </span>
+                                            <span style={{ 
+                                                fontWeight: 600, 
+                                                color: i === fields.length - 1 ? '#1a7a3c' : '#111827',
+                                                wordBreak: 'break-word',
+                                                overflowWrap: 'anywhere',
+                                                whiteSpace: 'normal'
+                                            }}>
+                                                <TranslatedText>{field.value}</TranslatedText>
+                                            </span>
                                         </div>
                                     ))}
                                 </div>

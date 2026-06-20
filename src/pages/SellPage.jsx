@@ -241,14 +241,24 @@ export default function SellPage() {
         if (!hasRealImage) errs.image = 'Please upload at least 1 photo of your animal';
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
         if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
+        const isSpam = (str) => /(.)\1{4}/.test(str);
+
         if (!form.state) errs.state = 'Please select your state';
+
         if (!form.location.trim()) errs.location = 'Please select or enter your district';
+        else if (form.location.length > 50) errs.location = 'District name too long (max 50 characters)';
+        else if (isSpam(form.location)) errs.location = 'Please enter a valid location';
+
         if (!form.village.trim()) errs.village = 'Please enter your village';
-        else if (form.village.length > 100) errs.village = 'Village name too long (max 100 characters)';
+        else if (form.village.length > 50) errs.village = 'Village name too long (max 50 characters)';
+        else if (isSpam(form.village)) errs.village = 'Please enter a valid location';
 
         if (!form.taluk.trim()) errs.taluk = 'Please enter your taluk';
-        else if (form.taluk.length > 100) errs.taluk = 'Taluk name too long (max 100 characters)';
-        if (form.landmark.length > 150) errs.landmark = 'Landmark too long (max 150 characters)';
+        else if (form.taluk.length > 50) errs.taluk = 'Taluk name too long (max 50 characters)';
+        else if (isSpam(form.taluk)) errs.taluk = 'Please enter a valid location';
+
+        if (form.landmark.length > 100) errs.landmark = 'Landmark too long (max 100 characters)';
+        else if (isSpam(form.landmark)) errs.landmark = 'Please enter a valid location';
         // BUG 7 Fix C — strict trim check for description
         if (form.description.trim().length > 1000) errs.description = 'Description must be under 1000 characters';
         if (form.age_years === '' || form.age_years === null || form.age_years === undefined)
@@ -774,7 +784,7 @@ export default function SellPage() {
                                         placeholder={form.state ? t('profileSetup.enterDistrict', { defaultValue: 'Enter your district' }) : t('profileSetup.selectStateFirst', { defaultValue: 'Select State First' })}
                                         value={form.location}
                                         onChange={e => setF('location', e.target.value)}
-                                        maxLength={100}
+                                        maxLength={50}
                                         disabled={!form.state}
                                         style={{ background: !form.state ? '#f3f4f6' : '#fff', cursor: !form.state ? 'not-allowed' : 'text' }}
                                     />
@@ -786,14 +796,14 @@ export default function SellPage() {
                         <div className="fg">
                             <div className="ff">
                                 <label>{t('sellPage.village')} <span style={{ color: '#e63946' }}>*</span></label>
-                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={100} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/100</small>
+                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={50} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/50</small>
                                 {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
                             </div>
                             <div className="ff">
                                 <label>{t('sellPage.taluk')} <span style={{ color: '#e63946' }}>*</span></label>
-                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={100} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/100</small>
+                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={50} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/50</small>
                                 {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
                             </div>
                         </div>
@@ -801,8 +811,8 @@ export default function SellPage() {
                         <div className="fg">
                             <div className="ff" style={{ width: '100%' }}>
                                 <label>{t('sellPage.landmark')} <span style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.landmarkOptional')}</span></label>
-                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={150} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/150</small>
+                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={100} />
+                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/100</small>
                                 {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
                             </div>
                         </div>
