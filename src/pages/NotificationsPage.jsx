@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { useNotificationBadge } from '../context/NotificationContext';
+import { toast } from 'react-hot-toast';
 import BackButton from '../components/BackButton';
 import './NotificationsPage.css';
 
@@ -67,11 +68,21 @@ export default function NotificationsPage() {
     async function markAllRead() {
         if (!currentUser) return;
         
+        // Save previous state for rollback
+        const prevNotifications = [...notifications];
+        
         // Optimistically update local array
         setNotifications(prev => prev.map(n => ({ ...n, is_read: true, unread: false })));
         
-        await markAllReadGlobally();
-        fetchNotifications();
+        const success = await markAllReadGlobally();
+        
+        if (!success) {
+            // Revert on failure
+            setNotifications(prevNotifications);
+            toast.error("Database update blocked by Supabase RLS! Please run the SQL command.");
+        } else {
+            fetchNotifications();
+        }
     }
 
     const unreadCount = notifications.filter(n => n.unread || !n.is_read).length;

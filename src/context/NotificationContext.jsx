@@ -54,11 +54,28 @@ export function NotificationProvider({ children }) {
     const markAllReadGlobally = useCallback(async () => {
         if (!currentUser || isGuest) return;
         setUnreadCount(0); // Optimistic update
-        await supabase
+        const { data, error, count } = await supabase
             .from('notifications')
             .update({ is_read: true })
-            .eq('user_id', currentUser.id);
+            .eq('user_id', currentUser.id)
+            .eq('is_read', false)
+            .select();
+            
+        console.log('[MarkAllRead] Supabase Response:', { data, error, count });
+        
+        if (error) {
+            console.error('Failed to mark notifications as read in DB:', error);
+            return false;
+        }
+        
+        // If data is empty but we had unread notifications, RLS blocked it!
+        if (data && data.length === 0) {
+            console.warn('0 rows updated! Check your Supabase RLS UPDATE policy!');
+            return false;
+        }
+        
         fetchUnreadCount();
+        return true;
     }, [currentUser, isGuest, fetchUnreadCount]);
 
     return (
