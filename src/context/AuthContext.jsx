@@ -128,40 +128,64 @@ export function AuthProvider({ children }) {
             if (mounted) setLoading(false);
         }, FALLBACK_MS);
 
-        // Initial session check
-        supabase.auth.getSession().then(async ({ data: { session }, error }) => {
-            if (error) console.error("Session error:", error);
-            
-            if (session && mounted) {
-                setCurrentUser(session.user);
-                setIsLoggedIn(true);
-                clearGuestMode();
-                
-                // Fetch profile only AFTER session is confirmed loaded
-                if (!profileFetchStarted.current) {
-                    profileFetchStarted.current = true;
-                    console.log('PROFILE_FETCH_START [getSession]');
-                    await loadProfile(session.user.id);
-                } else {
-                    console.log('PROFILE_FETCH_SKIPPED [getSession]');
+        const initSession = async () => {
+            try {
+                // OPTIMIZATION 1: If there is no local session, they are a guest/new user.
+                // We can instantly hide the loading screen!
+                if (!storedSession && mounted) {
+                    setLoading(false);
+                    setProfileReady(true);
                 }
-            } else if (!session && mounted) {
-                setIsLoggedIn(false);
-                setProfileReady(true);
-            }
 
-            if (mounted) {
-                setLoading(false);
-                clearTimeout(fallbackTimer);
+                // OPTIMIZATION 2: If we have a stored session, fetch BOTH the session and the profile in parallel!
+                // This cuts the perceived loading time in half.
+                let sessionResult = null;
+                
+                if (storedSession?.user?.id && !profileFetchStarted.current) {
+                    profileFetchStarted.current = true;
+                    console.log('PROFILE_FETCH_START [Parallel Init]');
+                    const [sessionResp] = await Promise.all([
+                        supabase.auth.getSession(),
+                        loadProfile(storedSession.user.id)
+                    ]);
+                    sessionResult = sessionResp;
+                } else {
+                    sessionResult = await supabase.auth.getSession();
+                }
+
+                const { data: { session }, error } = sessionResult;
+                if (error) console.error("Session error:", error);
+                
+                if (session && mounted) {
+                    setCurrentUser(session.user);
+                    setIsLoggedIn(true);
+                    clearGuestMode();
+                    
+                    // Fallback in case parallel fetch was skipped
+                    if (!profileFetchStarted.current) {
+                        profileFetchStarted.current = true;
+                        await loadProfile(session.user.id);
+                    }
+                } else if (!session && mounted) {
+                    setIsLoggedIn(false);
+                    setProfileReady(true);
+                }
+
+                if (mounted) {
+                    setLoading(false);
+                    clearTimeout(fallbackTimer);
+                }
+            } catch (err) {
+                console.error("Session fetch rejected:", err);
+                if (mounted) {
+                    setLoading(false);
+                    setProfileReady(true);
+                    clearTimeout(fallbackTimer);
+                }
             }
-        }).catch((err) => {
-            console.error("Session fetch rejected:", err);
-            if (mounted) {
-                setLoading(false);
-                setProfileReady(true);
-                clearTimeout(fallbackTimer);
-            }
-        });
+        };
+        
+        initSession();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
