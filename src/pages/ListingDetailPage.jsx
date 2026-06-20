@@ -305,8 +305,8 @@ export default function ListingDetailPage() {
                             </div>
                         )}
                         <div className="gal-badges">
-                            {listing.is_promoted && <span className="gal-badge o">⚡ Promoted</span>}
-                            {listing.for_adoption && <span className="gal-badge p">💜 Free Adoption</span>}
+                            {listing.is_promoted && <span className="gal-badge o">⚡ <TranslatedText>Promoted</TranslatedText></span>}
+                            {listing.for_adoption && <span className="gal-badge p">💜 <TranslatedText>Free Adoption</TranslatedText></span>}
                         </div>
 
                         {/* SOLD overlay on the detail image */}
@@ -333,17 +333,17 @@ export default function ListingDetailPage() {
                                         background: 'rgba(255,255,255,0.85)',
                                         boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
                                         textTransform: 'uppercase',
-                                    }}>SOLD</span>
+                                    }}><TranslatedText>SOLD</TranslatedText></span>
                                 </div>
                             </>
                         )}
                     </div>
 
                     <div className="det-badges">
-                        {listing.is_vaccinated && <span className="badge g">💉 Vaccinated</span>}
-                        {listing.is_pregnant && <span className="badge g">🤰 Pregnant</span>}
+                        {listing.is_vaccinated && <span className="badge g">💉 <TranslatedText>Vaccinated</TranslatedText></span>}
+                        {listing.is_pregnant && <span className="badge g">🤰 <TranslatedText>Pregnant</TranslatedText></span>}
                         {listing.breed && <span className="badge b"><TranslatedText>{listing.breed}</TranslatedText></span>}
-                        {listing.age_years != null && <span className="badge b">{listing.age_years} Years Old</span>}
+                        {listing.age_years != null && <span className="badge b">{listing.age_years} <TranslatedText>Years Old</TranslatedText></span>}
                     </div>
 
                     <h1 className="det-title"><TranslatedText>{listing.title}</TranslatedText></h1>
@@ -400,7 +400,7 @@ export default function ListingDetailPage() {
                                     fontWeight: 700, fontSize: 15, color: '#1a3c28'
                                 }}>
                                     <span style={{ fontSize: 18 }}>📍</span>
-                                    {t('listingDetail.locationDetails', 'Location Details')}
+                                    <TranslatedText>Location Details</TranslatedText>
                                 </div>
                                 <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 12px', alignItems: 'start' }}>
                                     {fields.map((field, i) => (
