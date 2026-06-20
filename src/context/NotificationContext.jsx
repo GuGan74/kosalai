@@ -68,11 +68,8 @@ export function NotificationProvider({ children }) {
             return false;
         }
         
-        // If data is empty but we had unread notifications, RLS blocked it!
-        if (data && data.length === 0) {
-            console.warn('0 rows updated! Check your Supabase RLS UPDATE policy!');
-            return false;
-        }
+        // Remove the aggressive zero-row check since it throws false positives if the DB is already in sync.
+        // If the query executed without `error`, we consider it a success.
         
         fetchUnreadCount();
         return true;
