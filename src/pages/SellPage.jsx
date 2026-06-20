@@ -809,7 +809,7 @@ export default function SellPage() {
                                     const val = e.target.value;
                                     if (val === '' || /^[a-zA-Z\s]+$/.test(val)) setF('village', val);
                                 }} maxLength={20} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/20</small>
+
                                 {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
                             </div>
                             <div className="ff">
@@ -818,7 +818,7 @@ export default function SellPage() {
                                     const val = e.target.value;
                                     if (val === '' || /^[a-zA-Z\s]+$/.test(val)) setF('taluk', val);
                                 }} maxLength={30} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/30</small>
+
                                 {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
                             </div>
                         </div>
@@ -830,7 +830,7 @@ export default function SellPage() {
                                     const val = e.target.value;
                                     if (val === '' || /^[a-zA-Z0-9\s,\.\-]+$/.test(val)) setF('landmark', val);
                                 }} maxLength={30} />
-                                <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/30</small>
+
                                 {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
                             </div>
                         </div>
