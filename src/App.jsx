@@ -135,7 +135,7 @@ function AppRoutes() {
         background: '#ffffff'
       }}>
         <div style={{ textAlign: 'center' }}>
-          <img src={logoImg} alt="Kosalai Logo" style={{ height: 60, objectFit: 'contain', marginBottom: 8 }} />
+          <img src={logoImg} alt="Kosalai Logo" style={{ height: 180, objectFit: 'contain', marginBottom: 16 }} />
           <div style={{ marginTop: 10 }}>
             <img src={loadingGif} alt="Loading..." style={{ width: 60, height: 60, objectFit: 'contain' }} />
           </div>
