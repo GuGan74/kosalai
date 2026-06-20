@@ -65,6 +65,7 @@ const HelpFaqPage = React.lazy(() => lazyRetry(() => import('./pages/HelpFaqPage
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import loadingGif from './assets/379.gif';
+import logoImg from './assets/kosalai-logo-removebg-preview.png';
 
 import './index.css';
 import './App.css';
@@ -131,15 +132,12 @@ function AppRoutes() {
         flexDirection: 'column', 
         alignItems: 'center', 
         justifyContent: 'center',
-        background: 'linear-gradient(160deg,#0f5228 0%,#1a7a3c 55%,#0d3d1e 100%)'
+        background: '#ffffff'
       }}>
-        <div style={{ textAlign: 'center', color: 'white' }}>
-          <div style={{ fontSize: 64, marginBottom: 16 }}>🐄</div>
-          <div style={{ fontFamily: 'Poppins,sans-serif', fontSize: 28, fontWeight: 900 }}>
-            Kosalai
-          </div>
-          <div style={{ marginTop: 20 }}>
-            <img src={loadingGif} alt="Loading..." style={{ width: 80, height: 80, objectFit: 'contain' }} />
+        <div style={{ textAlign: 'center' }}>
+          <img src={logoImg} alt="Kosalai Logo" style={{ height: 60, objectFit: 'contain', marginBottom: 8 }} />
+          <div style={{ marginTop: 10 }}>
+            <img src={loadingGif} alt="Loading..." style={{ width: 60, height: 60, objectFit: 'contain' }} />
           </div>
         </div>
       </div>
