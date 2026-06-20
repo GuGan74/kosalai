@@ -154,7 +154,7 @@ export default function MyListingsPage() {
             ) : (
                 <div className="myl-grid">
                     {filtered.map(l => (
-                        <div key={l.id} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <div key={l.id} style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
                             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '10px 14px', marginBottom: -4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <span style={{ fontSize: 12, color: 'var(--g3)', fontWeight: 600 }}>Listing ID</span>
                                 <span style={{ fontSize: 14, color: 'var(--blue)', fontWeight: 800 }}>{l.listing_code || 'N/A'}</span>
