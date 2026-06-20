@@ -145,8 +145,18 @@ function AppRoutes() {
   }
 
   // ── Neither logged in NOR guest → Onboarding ──────────
+  // Allow public deep links (listings, sellers, static pages) to bypass onboarding.
+  const isPublicRoute = 
+      location.pathname === '/' ||
+      location.pathname.startsWith('/listing/') ||
+      location.pathname.startsWith('/seller/') ||
+      location.pathname === '/about-us' ||
+      location.pathname === '/privacy' ||
+      location.pathname === '/terms' ||
+      location.pathname === '/help';
+
   // Save current deep link so we can return here after login
-  if (!isLoggedIn && !isGuestNow) {
+  if (!isLoggedIn && !isGuestNow && !isPublicRoute) {
     const currentPath = location.pathname + location.search;
     if (currentPath !== '/' && currentPath !== '/login') {
       sessionStorage.setItem('pb_redirect_after_login', currentPath);
