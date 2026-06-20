@@ -413,14 +413,20 @@ export default function ListingDetailPage() {
                                             <span style={{ fontWeight: 700, color: '#4b5563', whiteSpace: 'nowrap', flexShrink: 0 }}>
                                                 {field.label}:
                                             </span>
-                                            <span style={{ 
+                                            <span 
+                                                title={field.value}
+                                                style={{ 
                                                 fontWeight: 600, 
                                                 color: i === fields.length - 1 ? '#1a7a3c' : '#111827',
                                                 wordBreak: 'break-word',
                                                 overflowWrap: 'anywhere',
                                                 whiteSpace: 'normal',
                                                 minWidth: 0,
-                                                flex: 1
+                                                flex: 1,
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden'
                                             }}>
                                                 <TranslatedText>{field.value}</TranslatedText>
                                             </span>

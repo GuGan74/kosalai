@@ -241,7 +241,7 @@ export default function SellPage() {
         if (!hasRealImage) errs.image = 'Please upload at least 1 photo of your animal';
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
         if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
-        const isSpam = (str) => /(.)\1{4}/.test(str);
+        const isSpam = (str) => /(.)\1{7}/i.test(str);
 
         if (!form.state) errs.state = 'Please select your state';
 
