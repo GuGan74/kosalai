@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useNotificationBadge } from '../context/NotificationContext';
 import BackButton from '../components/BackButton';
 import './NotificationsPage.css';
 
@@ -18,6 +19,7 @@ export default function NotificationsPage() {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { currentUser } = useAuth();
+    const { markAllReadGlobally } = useNotificationBadge();
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -64,10 +66,11 @@ export default function NotificationsPage() {
 
     async function markAllRead() {
         if (!currentUser) return;
-        await supabase
-            .from('notifications')
-            .update({ is_read: true })
-            .eq('user_id', currentUser.id);
+        
+        // Optimistically update local array
+        setNotifications(prev => prev.map(n => ({ ...n, is_read: true, unread: false })));
+        
+        await markAllReadGlobally();
         fetchNotifications();
     }
 
@@ -77,7 +80,7 @@ export default function NotificationsPage() {
         <div className="notif-wrap">
             <BackButton fallbackPath="/" />
             <div className="notif-hd">
-                <h2>{t('notificationsPage.title')} {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}</h2>
+                <h2>🔔 {t('notificationsPage.title')} {unreadCount > 0 && <span className="notif-badge">{unreadCount}</span>}</h2>
                 <button className="notif-mark" onClick={markAllRead}>{t('notificationsPage.markAllRead')}</button>
             </div>
             {unreadCount > 0 && <div className="unrd-banner">{unreadCount} {t('notificationsPage.markAllRead')}</div>}

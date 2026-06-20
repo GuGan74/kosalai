@@ -158,6 +158,10 @@ export default function ListingDetailPage() {
                     title: 'New Like on your post!',
                     message: `${currentProfile?.full_name || 'Someone'} liked your ${listing.title}.`,
                     metadata: { listing_id: id }
+                }).then(({ error: notifError }) => {
+                    if (notifError) {
+                        toast.error(`Notification Error: ${notifError.message}`);
+                    }
                 });
             }
         }
@@ -359,7 +363,7 @@ export default function ListingDetailPage() {
 
                     {listing.description && (
                         <div className="det-desc" style={{ maxWidth: '100%', overflow: 'hidden' }}>
-                            <h4>{t('listingDetail.description', { defaultValue: '📝 Description' })}</h4>
+                            <h4>{t('listingDetail.description', { defaultValue: 'Description' })}</h4>
                             <p style={{ wordBreak: 'break-word', overflowWrap: 'anywhere', whiteSpace: 'normal', margin: 0, marginTop: 8 }}>
                                 <TranslatedText>{listing.description}</TranslatedText>
                             </p>
@@ -453,7 +457,7 @@ export default function ListingDetailPage() {
                     </div>
                     <div className="price-w">
                         {listing.for_adoption ? (
-                            <div className="price-big p" style={{ fontSize: 24 }}>💜 Free Adoption</div>
+                            <div className="price-big p" style={{ fontSize: 24 }}>💜 {t('listingDetail.freeAdoption', 'Free Adoption')}</div>
                         ) : (
                             <div className={`price-big${isPet ? ' p' : ''}`}>₹{Number(listing.price).toLocaleString('en-IN')}</div>
                         )}
@@ -505,7 +509,7 @@ export default function ListingDetailPage() {
                                     }}
                                     style={{ background: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                                 >
-                                    🔒 {t('listingDetail.loginToContact', 'Login to Contact Seller')}
+                                    {t('listingDetail.loginToContact', 'Login to Contact Seller')}
                                 </button>
                                 </>
                             )}
@@ -523,7 +527,7 @@ export default function ListingDetailPage() {
                                     transition: '0.2s'
                                 }}
                             >
-                                📤 {t('listingDetail.shareListing', 'Share Listing')}
+                                {t('listingDetail.shareListing', 'Share Listing')}
                             </button>
                             {/* Favorite — only for logged-in users */}
                             {currentUser && (
@@ -540,7 +544,7 @@ export default function ListingDetailPage() {
                                         transition: '0.2s'
                                     }}
                                 >
-                                    {isLiked ? t('listingDetail.savedToProfile') : t('listingDetail.addToFavorites')}
+                                    {isLiked ? '❤️ ' + t('listingDetail.savedToProfile') : '🤍 ' + t('listingDetail.addToFavorites')}
                                 </button>
                             )}
                             </>
@@ -553,7 +557,7 @@ export default function ListingDetailPage() {
                             disabled={reporting}
                             style={{ width: '100%', marginTop: '12px', padding: '12px', background: 'transparent', border: '1px solid #ff4d4f', color: '#ff4d4f', borderRadius: '10px', cursor: 'pointer', fontWeight: 700, fontFamily: 'Nunito, sans-serif' }}
                         >
-                            {reporting ? t('listingDetail.submitting') : t('listingDetail.reportPost')}
+                            {reporting ? t('listingDetail.submitting') : '🚩 ' + t('listingDetail.reportPost')}
                         </button>
                     )}
                     <div className="w-safety">{t('listingDetail.safetyTip')}</div>

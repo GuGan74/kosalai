@@ -396,7 +396,7 @@ export default function SellPage() {
                 <button className="btn-back" onClick={() => step > 1 ? setStep(s => s - 1) : navigate(isEditing ? '/my-listings' : '/')}>←</button>
                 <div>
                     <div className="sell-ttl">
-                        {isEditing ? t('sellPage.editListing') : (listingType === 'livestock' ? t('sellPage.sellCattle') : t('sellPage.sellPet'))}
+                        {isEditing ? '✏️ ' + t('sellPage.editListing') : (listingType === 'livestock' ? '🐄 ' + t('sellPage.sellCattle') : '🐾 ' + t('sellPage.sellPet'))}
                     </div>
                     <div className="sell-sub">
                         {t('sellPage.stepOf', { step, total: STEPS.length })}:{' '}
@@ -599,7 +599,7 @@ export default function SellPage() {
             {step === 3 && (
                 <div className="animate-fadeIn">
                     <div className="fs ba">
-                        <h3>{t('sellPage.addPhotos')}</h3>
+                        <h3>📸 {t('sellPage.addPhotos')}</h3>
                         <p style={{ fontSize: 13, color: 'var(--g3)', marginBottom: 16 }}>
                             {t('sellPage.photoSubtitle')}
                         </p>
@@ -729,7 +729,7 @@ export default function SellPage() {
                         <div style={{ marginBottom: 14 }}>
                             <label className="fopt" style={{ display: 'flex', gap: 10, cursor: 'pointer' }}>
                                 <input type="checkbox" checked={form.for_adoption} onChange={e => setF('for_adoption', e.target.checked)} style={{ width: 17, height: 17, accentColor: 'var(--purple)' }} />
-                                <span style={{ fontWeight: 700, color: 'var(--purple)' }}>{t('sellPage.listForFreeAdoption', { defaultValue: '💜 List for Free Adoption' })}</span>
+                                <span style={{ fontWeight: 700, color: 'var(--purple)' }}>💜 {t('sellPage.listForFreeAdoption', { defaultValue: 'List for Free Adoption' })}</span>
                             </label>
                         </div>
                         {!form.for_adoption && (
@@ -751,7 +751,7 @@ export default function SellPage() {
                         )}
                     </div>
                     <div className="fs oa">
-                        <h3>{t('sellPage.locationDetails')}</h3>
+                        <h3>📍 {t('sellPage.locationDetails')}</h3>
                         
                         <div className="fg">
                             <div className="ff">
@@ -875,7 +875,7 @@ export default function SellPage() {
                         {submitting ? (
                             <><span className="spinner" /> {isEditing ? t('sellPage.updatingListing') : t('sellPage.submitting')}</>
                         ) : (
-                            isEditing ? t('sellPage.updateListing', { defaultValue: '🚀 Update Listing' }) : t('sellPage.publishListing', { defaultValue: '🚀 Publish Listing' })
+                            isEditing ? t('sellPage.updateListing', { defaultValue: 'Update Listing' }) : t('sellPage.publishListing', { defaultValue: 'Publish Listing' })
                         )}
                     </button>
                 )}

@@ -53,6 +53,11 @@ export function useFavorites(userId, listingIds = []) {
                         title: 'New Like on your listing!',
                         message: `${currentProfile?.full_name || 'Someone'} liked your ${listing.title}.`,
                         metadata: { listing_id: listingId }
+                    }).then(({ error: notifError }) => {
+                        if (notifError) {
+                            console.error("Notification Insert Error:", notifError);
+                            // We don't want to break the UI, but it's good for debugging
+                        }
                     });
                 }
             }

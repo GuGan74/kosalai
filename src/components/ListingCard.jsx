@@ -173,7 +173,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 <div className="lc-header-row">
                     <div className="lc-title"><TranslatedText>{title}</TranslatedText></div>
                     <div className="lc-price" style={for_adoption ? { color: 'var(--purple)' } : {}}>
-                        {for_adoption ? t('listingDetail.freeAdoption', 'Free Adoption').replace('💜 ', '') : `₹${Number(price).toLocaleString('en-IN')}`}
+                        {for_adoption ? '💜 ' + t('listingDetail.freeAdoption', 'Free Adoption') : `₹${Number(price).toLocaleString('en-IN')}`}
                     </div>
                 </div>
 

@@ -52,7 +52,7 @@ export default function Navbar() {
                                 <img src={cowLogo} className="nav-logo-icon" alt="Logo" />
                             </div>
                             <div className="nav-brand-group">
-                                <div className="nav-brand">{t('nav.brand')}</div>
+                                <div className="nav-brand">Kosalai</div>
                                 <div className="nav-subtitle">Your Trusted Livestock Marketplace</div>
                             </div>
                         </div>
@@ -127,7 +127,7 @@ export default function Navbar() {
             <div className={`mob-drawer${drawerOpen ? ' open' : ''}`}>
                 <div className="mob-drawer-hd">
                     <img src={cowLogo} className="nav-logo-icon" alt="Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
-                    <div className="nav-brand" style={{ fontSize: 16 }}>{t('nav.brand')}</div>
+                    <div className="nav-brand" style={{ fontSize: 16 }}>Kosalai</div>
                     <button className="mob-close-btn" onClick={() => setDrawerOpen(false)}>✕</button>
                 </div>
                 <div className="mob-drawer-links">

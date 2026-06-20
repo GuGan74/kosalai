@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import ErrorBoundary from './components/ErrorBoundary';
 
 import SplashPage from './pages/SplashPage';
@@ -307,9 +308,11 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
-        <ErrorBoundary>
-          <AppRoutes />
-        </ErrorBoundary>
+        <NotificationProvider>
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
+        </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>
   );

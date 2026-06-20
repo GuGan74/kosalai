@@ -94,12 +94,41 @@ _petsPromise.then(({ data }) => {
  */
 export async function getPrefetchedListings(type = 'livestock') {
     if (type === 'livestock') {
-        if (_livestockCache) return _livestockCache;
-        const { data } = await _livestockPromise;
+        if (_livestockCache && _livestockCache.length > 0) return _livestockCache;
+        const { data, error } = await _livestockPromise;
+        if (error || !data || data.length === 0) {
+            // Retry fresh
+            const retry = await supabase
+                .from('listings')
+                .select(SELECTED_COLS)
+                .eq('status', 'active')
+                .in('category', LIVESTOCK_CATEGORIES)
+                .order('created_at', { ascending: false })
+                .limit(1000);
+            if (retry.data && retry.data.length > 0) {
+                _livestockCache = retry.data;
+                return retry.data;
+            }
+            return [];
+        }
         return data || [];
     } else {
-        if (_petsCache) return _petsCache;
-        const { data } = await _petsPromise;
+        if (_petsCache && _petsCache.length > 0) return _petsCache;
+        const { data, error } = await _petsPromise;
+        if (error || !data || data.length === 0) {
+            const retry = await supabase
+                .from('listings')
+                .select(SELECTED_COLS)
+                .eq('status', 'active')
+                .in('category', PET_CATEGORIES)
+                .order('created_at', { ascending: false })
+                .limit(1000);
+            if (retry.data && retry.data.length > 0) {
+                _petsCache = retry.data;
+                return retry.data;
+            }
+            return [];
+        }
         return data || [];
     }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useNotificationBadge } from '../context/NotificationContext';
 import { useTranslation } from 'react-i18next';
 import './BottomNav.css';
 
@@ -9,6 +10,7 @@ export default function BottomNav() {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const { isLoggedIn, isGuest, guestPrefs, listingType, setListingType } = useAuth();
+    const { unreadCount } = useNotificationBadge();
     
     // Hide the Sell button for guests (they're browsing, not selling)
     const isBuyer = !isLoggedIn;
@@ -62,7 +64,27 @@ export default function BottomNav() {
                     onClick={() => navigate('/notifications')}
                     aria-label="Alerts"
                 >
-                    <span className="bnav-icon">🔔</span>
+                    <span className="bnav-icon" style={{ position: 'relative' }}>
+                        🔔
+                        {unreadCount > 0 && (
+                            <span className="bnav-badge" style={{
+                                position: 'absolute',
+                                top: -4,
+                                right: -8,
+                                background: '#ef4444',
+                                color: 'white',
+                                fontSize: 10,
+                                fontWeight: 'bold',
+                                padding: '2px 5px',
+                                borderRadius: '10px',
+                                minWidth: 16,
+                                textAlign: 'center',
+                                border: '2px solid white'
+                            }}>
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </span>
                     <span className="bnav-label">{t('bottomNav.alerts')}</span>
                 </button>
 

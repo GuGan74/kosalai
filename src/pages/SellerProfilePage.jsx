@@ -123,7 +123,7 @@ export default function SellerProfilePage() {
             {/* Contact Info — visible only to logged-in users */}
             <div className="seller-contact-card">
                 <h3 style={{ fontFamily: 'Poppins,sans-serif', fontWeight: 800, marginBottom: 16, color: '#1a3c28' }}>
-                    📋 {t('sellerProfile.contactInfo')}
+                    {t('sellerProfile.contactInfo')}
                 </h3>
 
                 {displayPhone && (
@@ -152,7 +152,7 @@ export default function SellerProfilePage() {
                                 transition: 'opacity 0.2s'
                             }}
                         >
-                            🟢 {t('listing.whatsappSeller', 'WhatsApp Seller')}
+                            {t('listing.whatsappSeller', 'WhatsApp Seller')}
                         </a>
                     )}
                     {displayPhone && (
@@ -167,7 +167,7 @@ export default function SellerProfilePage() {
                                 transition: 'opacity 0.2s'
                             }}
                         >
-                            📱 {t('listing.callSeller', 'Call Seller')}
+                            📞 {t('listing.callSeller', 'Call Seller')}
                         </a>
                     )}
                 </div>
@@ -176,7 +176,7 @@ export default function SellerProfilePage() {
             {/* Seller Listings */}
             <div>
                 <h2 style={{ fontFamily: 'Poppins,sans-serif', fontWeight: 800, marginBottom: 16, color: '#1a3c28', fontSize: 18 }}>
-                    🐄 {t('sellerProfile.listingsCount', { count: listings.length })}
+                    {t('sellerProfile.listingsCount', { count: listings.length })}
                 </h2>
 
                 {activeListings.length === 0 ? (
