@@ -242,23 +242,29 @@ export default function SellPage() {
         if (!form.for_adoption && Number(form.price) <= 0) errs.price = 'Please enter an asking price';
         if (!form.for_adoption && Number(form.price) > 9999999) errs.price = 'Price cannot exceed ₹99,99,999';
         const isSpam = (str) => /(.)\1{7}/i.test(str);
+        const validNameRegex = /^[a-zA-Z\s]+$/;
+        const validLandmarkRegex = /^[a-zA-Z0-9\s,\.\-]+$/;
 
         if (!form.state) errs.state = 'Please select your state';
 
         if (!form.location.trim()) errs.location = 'Please select or enter your district';
         else if (form.location.length > 50) errs.location = 'District name too long (max 50 characters)';
-        else if (isSpam(form.location)) errs.location = 'Please enter a valid location';
+        else if (!validNameRegex.test(form.location)) errs.location = 'Please enter a valid district name';
+        else if (isSpam(form.location)) errs.location = 'Please enter a valid district name';
 
         if (!form.village.trim()) errs.village = 'Please enter your village';
         else if (form.village.length > 50) errs.village = 'Village name too long (max 50 characters)';
-        else if (isSpam(form.village)) errs.village = 'Please enter a valid location';
+        else if (!validNameRegex.test(form.village)) errs.village = 'Please enter a valid village name';
+        else if (isSpam(form.village)) errs.village = 'Please enter a valid village name';
 
         if (!form.taluk.trim()) errs.taluk = 'Please enter your taluk';
         else if (form.taluk.length > 50) errs.taluk = 'Taluk name too long (max 50 characters)';
-        else if (isSpam(form.taluk)) errs.taluk = 'Please enter a valid location';
+        else if (!validNameRegex.test(form.taluk)) errs.taluk = 'Please enter a valid taluk name';
+        else if (isSpam(form.taluk)) errs.taluk = 'Please enter a valid taluk name';
 
         if (form.landmark.length > 100) errs.landmark = 'Landmark too long (max 100 characters)';
-        else if (isSpam(form.landmark)) errs.landmark = 'Please enter a valid location';
+        else if (form.landmark && !validLandmarkRegex.test(form.landmark)) errs.landmark = 'Please enter a valid landmark';
+        else if (isSpam(form.landmark)) errs.landmark = 'Please enter a valid landmark';
         // BUG 7 Fix C — strict trim check for description
         if (form.description.trim().length > 1000) errs.description = 'Description must be under 1000 characters';
         if (form.age_years === '' || form.age_years === null || form.age_years === undefined)
@@ -783,7 +789,10 @@ export default function SellPage() {
                                         type="text"
                                         placeholder={form.state ? t('profileSetup.enterDistrict', { defaultValue: 'Enter your district' }) : t('profileSetup.selectStateFirst', { defaultValue: 'Select State First' })}
                                         value={form.location}
-                                        onChange={e => setF('location', e.target.value)}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (val === '' || /^[a-zA-Z\s]+$/.test(val)) setF('location', val);
+                                        }}
                                         maxLength={50}
                                         disabled={!form.state}
                                         style={{ background: !form.state ? '#f3f4f6' : '#fff', cursor: !form.state ? 'not-allowed' : 'text' }}
@@ -796,13 +805,19 @@ export default function SellPage() {
                         <div className="fg">
                             <div className="ff">
                                 <label>{t('sellPage.village')} <span style={{ color: '#e63946' }}>*</span></label>
-                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => setF('village', e.target.value)} maxLength={50} />
+                                <input placeholder={t('sellPage.villagePlaceholder', { defaultValue: "e.g. Vadavalli" })} value={form.village} onChange={e => {
+                                    const val = e.target.value;
+                                    if (val === '' || /^[a-zA-Z\s]+$/.test(val)) setF('village', val);
+                                }} maxLength={50} />
                                 <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.village.length}/50</small>
                                 {fieldErrors.village && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.village}</div>}
                             </div>
                             <div className="ff">
                                 <label>{t('sellPage.taluk')} <span style={{ color: '#e63946' }}>*</span></label>
-                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => setF('taluk', e.target.value)} maxLength={50} />
+                                <input placeholder={t('sellPage.talukPlaceholder', { defaultValue: "e.g. Coimbatore North" })} value={form.taluk} onChange={e => {
+                                    const val = e.target.value;
+                                    if (val === '' || /^[a-zA-Z\s]+$/.test(val)) setF('taluk', val);
+                                }} maxLength={50} />
                                 <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.taluk.length}/50</small>
                                 {fieldErrors.taluk && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.taluk}</div>}
                             </div>
@@ -811,7 +826,10 @@ export default function SellPage() {
                         <div className="fg">
                             <div className="ff" style={{ width: '100%' }}>
                                 <label>{t('sellPage.landmark')} <span style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.landmarkOptional')}</span></label>
-                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => setF('landmark', e.target.value)} maxLength={100} />
+                                <input placeholder={t('sellPage.landmarkPlaceholder', { defaultValue: "e.g. Near bus stand" })} value={form.landmark} onChange={e => {
+                                    const val = e.target.value;
+                                    if (val === '' || /^[a-zA-Z0-9\s,\.\-]+$/.test(val)) setF('landmark', val);
+                                }} maxLength={100} />
                                 <small style={{fontSize:11, color:'var(--g3)', textAlign:'right', display:'block'}}>{form.landmark.length}/100</small>
                                 {fieldErrors.landmark && <div style={{color:'#e63946',fontSize:12,marginTop:4}}>⚠️ {fieldErrors.landmark}</div>}
                             </div>
