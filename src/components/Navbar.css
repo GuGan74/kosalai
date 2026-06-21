@@ -405,6 +405,10 @@
     .nav-brand {
         font-size: 22px;
     }
+
+    .nav-subtitle {
+        display: none !important;
+    }
 }
 
 @media (min-width: 768px) {

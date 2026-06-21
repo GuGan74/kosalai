@@ -94,7 +94,7 @@ export default function Navbar() {
                                 </div>
                             ) : (
                                 pathname !== '/login' && (
-                                    <button className="nav-signin-btn" onClick={() => navigate('/login')}>
+                                    <button className="nav-signin-btn hide-mobile" onClick={() => navigate('/login')}>
                                         {t('navbar.signIn')}
                                     </button>
                                 )
