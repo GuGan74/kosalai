@@ -15,6 +15,11 @@ export default class ErrorBoundary extends React.Component {
     }
 
     handleRetry = () => {
+        const errMsg = this.state.error?.message || '';
+        if (errMsg.includes('dynamically imported module') || errMsg.includes('ChunkLoadError')) {
+            window.location.reload(true);
+            return;
+        }
         this.setState({ hasError: false, error: null });
     };
 

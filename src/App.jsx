@@ -39,9 +39,11 @@ const lazyRetry = function(componentImport) {
                     error.message.includes('Importing a module script failed') ||
                     error.message.includes('ChunkLoadError') ||
                     error.message.includes('Unable to preload CSS')) {
-                    const hasRetried = sessionStorage.getItem('chunk-retry');
-                    if (!hasRetried) {
-                        sessionStorage.setItem('chunk-retry', 'true');
+                    const retryTimestamp = sessionStorage.getItem('chunk-retry');
+                    const now = Date.now();
+                    // Only prevent reload if we already retried in the last 10 seconds
+                    if (!retryTimestamp || (now - parseInt(retryTimestamp)) > 10000) {
+                        sessionStorage.setItem('chunk-retry', now.toString());
                         window.location.reload(true);
                     } else {
                         reject(error);
