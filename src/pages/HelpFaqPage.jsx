@@ -1,45 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { supabase } from '../lib/supabase';
+import emailjs from '@emailjs/browser';
 import SEOHead from '../components/SEOHead';
 import BackButton from '../components/BackButton';
 import './HelpFaqPage.css';
 
-const faqs = [
-    {
-        question: 'How do I create a listing?',
-        answer: 'To create a listing, you must first log in. Once logged in, click the "Sell" button in the bottom navigation menu or "Post a New Listing" from your profile. Fill out the required details including photos, description, and price, then click submit.'
-    },
-    {
-        question: 'Is posting a listing free?',
-        answer: 'Yes, posting a basic listing on Kosalai is completely free for all users.'
-    },
-    {
-        question: 'How do I contact a seller?',
-        answer: 'To contact a seller, open their listing and click either "Call Seller" or "WhatsApp Seller". You must be logged in to view seller contact details to protect user privacy.'
-    },
-    {
-        question: 'How do I edit my listing?',
-        answer: 'Go to "My Profile", then select "My Listings". Find the listing you want to edit and click the edit icon. You can update photos, price, or description.'
-    },
-    {
-        question: 'How do I report a suspicious listing?',
-        answer: 'If you find a listing that violates our terms or appears fraudulent, click the "Report" flag icon on the listing page. Our moderation team will investigate it promptly.'
-    },
-    {
-        question: 'How do I delete my account?',
-        answer: 'To delete your account and all associated data, please contact our support team using the form below. We will process your deletion request within 7 business days.'
-    },
-    {
-        question: 'How do I contact Kosalai support?',
-        answer: 'You can contact our support team by filling out the Contact Support form below or by emailing us directly at support@kosalai.in.'
-    }
-];
-
 export default function HelpFaqPage() {
     const navigate = useNavigate();
-    const [openFaqIndex, setOpenFaqIndex] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -51,10 +19,6 @@ export default function HelpFaqPage() {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
-
-    const toggleFaq = (index) => {
-        setOpenFaqIndex(openFaqIndex === index ? null : index);
-    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -87,23 +51,26 @@ export default function HelpFaqPage() {
         setIsSubmitting(true);
 
         try {
-            const { error } = await supabase
-                .from('support_requests')
-                .insert([{
-                    name: formData.name.trim(),
-                    email: formData.email.trim(),
-                    subject: formData.subject.trim(),
-                    message: formData.message.trim(),
-                    status: 'pending'
-                }]);
+            // EmailJS configuration variables
+            // These should be configured in your Vercel Environment Variables
+            const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_kosalai';
+            const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_kosalai_support';
+            const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY_HERE';
 
-            if (error) throw error;
+            const templateParams = {
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                subject: formData.subject.trim(),
+                message: formData.message.trim()
+            };
 
-            toast.success('Your support request has been submitted successfully. Our team will contact you soon.');
+            await emailjs.send(serviceId, templateId, templateParams, publicKey);
+
+            toast.success('Support request sent successfully.');
             setFormData({ name: '', email: '', subject: '', message: '' });
         } catch (error) {
-            console.error('Error submitting support request:', error);
-            toast.error('Unable to submit request. Please try again.');
+            console.error('Error sending support request:', error);
+            toast.error('Unable to send support request.');
         } finally {
             setIsSubmitting(false);
         }
@@ -112,37 +79,19 @@ export default function HelpFaqPage() {
     return (
         <div className="help-faq-page">
             <SEOHead
-                title="Kosalai - Help & Support"
-                description="Need assistance? Find answers to common questions or contact the Kosalai support team."
+                title="Kosalai - Contact Support"
+                description="Need assistance? Contact the Kosalai support team directly."
             />
             
             <div className="help-header">
                 <BackButton fallbackPath="/" />
                 <h1 className="help-title">Help &amp; Support</h1>
                 <p className="help-subtitle">
-                    Need assistance? Find answers to common questions or contact the Kosalai support team.
+                    Need assistance? Send us a message and our support team will get back to you.
                 </p>
             </div>
 
             <div className="help-content-container">
-                {/* FAQ Section */}
-                <div className="help-card">
-                    <h2>Frequently Asked Questions</h2>
-                    <div className="faq-list">
-                        {faqs.map((faq, index) => (
-                            <div key={index} className={`faq-item ${openFaqIndex === index ? 'open' : ''}`}>
-                                <button className="faq-question" onClick={() => toggleFaq(index)}>
-                                    <span>{faq.question}</span>
-                                    <span className="faq-icon">▼</span>
-                                </button>
-                                <div className="faq-answer">
-                                    {faq.answer}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Contact Form Section */}
                 <div className="help-card">
                     <h2>Contact Support</h2>
