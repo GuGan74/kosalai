@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import cowLogo from '../assets/kosalai-logo-removebg-preview.png';
 import heroBg from '../assets/image.png';
+import { FaInstagram } from 'react-icons/fa';
 import LanguageSelector from './LanguageSelector';
 import './Navbar.css';
 
@@ -186,6 +187,50 @@ export default function Navbar() {
                     ) : (
                         <button className="mob-dl" onClick={() => { sessionStorage.setItem('pb_redirect_after_login', window.location.pathname); navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>🔑 {t('navbar.signInRegister')}</button>
                     )}
+
+                    <hr style={{ border: 'none', borderTop: '1px solid var(--g5)', margin: '24px 0 12px 0' }} />
+
+                    {/* Instagram Follow Card */}
+                    <div 
+                        style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '12px', 
+                            padding: '12px 16px', 
+                            background: '#f8fafc', 
+                            borderRadius: '12px', 
+                            margin: '0 16px 24px', 
+                            cursor: 'pointer',
+                            border: '1px solid #e2e8f0',
+                            transition: 'background 0.2s'
+                        }}
+                        onClick={() => {
+                            window.open('https://www.instagram.com/kosalai.in/?hl=en', '_blank', 'noopener,noreferrer');
+                            setDrawerOpen(false);
+                        }}
+                        aria-label="Follow Kosalai on Instagram"
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#f1f5f9'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#f8fafc'}
+                    >
+                        <div style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '10px',
+                            background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '24px'
+                        }}>
+                            <FaInstagram />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, lineHeight: 1 }}>Follow Us</span>
+                            <span style={{ fontSize: '15px', color: '#0f172a', fontWeight: 800, lineHeight: 1.2, marginTop: '2px' }}>Instagram</span>
+                            <span style={{ fontSize: '13px', color: '#1a7a3c', fontWeight: 700, lineHeight: 1, marginTop: '2px' }}>@kosalai.in</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>
