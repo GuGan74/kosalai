@@ -8,7 +8,8 @@ import logoImg from '../assets/kosalai-logo-removebg-preview.png';
 export default function OnboardingPage() {
     const navigate = useNavigate();
     const { enterGuestMode, setListingType } = useAuth();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const isEn = i18n.language === 'en';
 
     function go(role, category) {
         // 1. Sync the app mode (Cattle vs Pets) immediately
@@ -40,36 +41,52 @@ export default function OnboardingPage() {
         <button
             onClick={onClick}
             style={{
-                display: 'grid',
-                gridTemplateRows: '50px 32px 30px', // Strict row heights
+                display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                padding: '12px', borderRadius: 16,
-                border: `2.5px solid ${border}`, background: bg,
-                cursor: 'pointer', transition: 'transform 0.18s',
+                justifyContent: 'center',
+                padding: '16px 8px', 
+                borderRadius: 16,
+                border: `2.5px solid ${border}`, 
+                background: bg,
+                cursor: 'pointer', 
+                transition: 'transform 0.18s',
                 width: '100%',
-                height: '160px',
-                overflow: 'hidden'
+                minHeight: '160px',
+                gap: '8px'
             }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'none'}
         >
-            <span style={{ fontSize: 32 }}>{icon}</span>
+            <span style={{ fontSize: 32, lineHeight: 1 }}>{icon}</span>
             <span style={{
-                fontSize: 14, fontWeight: 900,
-                color: accent, fontFamily: 'Poppins,sans-serif',
+                fontSize: isEn ? '1.2rem' : '1rem', 
+                fontWeight: 900,
+                color: accent, 
+                fontFamily: 'Poppins,sans-serif',
                 textAlign: 'center',
-                lineHeight: 1.1,
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                overflow: 'hidden'
+                lineHeight: isEn ? 1.2 : 1.4,
+                display: '-webkit-box', 
+                WebkitLineClamp: 2, 
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                wordBreak: 'break-word',
+                overflowWrap: 'anywhere',
+                width: '100%'
             }}>
                 {label}
             </span>
             <span style={{
-                fontSize: 10, color: '#888',
-                textAlign: 'center', lineHeight: 1.2,
-                marginTop: 4,
+                fontSize: isEn ? '0.85rem' : '0.8rem', 
+                color: '#888',
+                textAlign: 'center', 
+                lineHeight: 1.3,
+                display: '-webkit-box', 
+                WebkitLineClamp: 3, 
+                WebkitBoxOrient: 'vertical',
                 overflow: 'hidden',
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                wordBreak: 'break-word',
+                overflowWrap: 'anywhere',
                 width: '100%'
             }}>
                 {sub}
