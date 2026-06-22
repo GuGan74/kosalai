@@ -100,7 +100,10 @@ export default function BottomNav() {
                 ) : (
                     <button
                         className={`bnav-btn${pathname === '/login' ? ' active' : ''}`}
-                        onClick={() => navigate('/login')}
+                        onClick={() => {
+                            sessionStorage.setItem('pb_redirect_after_login', window.location.pathname);
+                            navigate('/login');
+                        }}
                         aria-label="Sign In"
                     >
                         <span className="bnav-icon">🔑</span>

@@ -94,7 +94,10 @@ export default function Navbar() {
                                 </div>
                             ) : (
                                 pathname !== '/login' && (
-                                    <button className="nav-signin-btn hide-mobile" onClick={() => navigate('/login')}>
+                                    <button className="nav-signin-btn hide-mobile" onClick={() => {
+                                        sessionStorage.setItem('pb_redirect_after_login', window.location.pathname);
+                                        navigate('/login');
+                                    }}>
                                         {t('navbar.signIn')}
                                     </button>
                                 )
@@ -181,7 +184,7 @@ export default function Navbar() {
                     {isLoggedIn ? (
                         <button className="mob-dl" onClick={handleSignOut} style={{ color: 'var(--red)' }}>🚪 {t('navbar.signOut')}</button>
                     ) : (
-                        <button className="mob-dl" onClick={() => { navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>🔑 {t('navbar.signInRegister')}</button>
+                        <button className="mob-dl" onClick={() => { sessionStorage.setItem('pb_redirect_after_login', window.location.pathname); navigate('/login'); setDrawerOpen(false); }} style={{ color: 'var(--green)', fontWeight: 800 }}>🔑 {t('navbar.signInRegister')}</button>
                     )}
                 </div>
             </div>
