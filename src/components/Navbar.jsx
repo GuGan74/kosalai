@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import cowLogo from '../assets/kosalai-logo-removebg-preview.png';
+import wordmarkLogo from '../assets/image copy.png';
 import heroBg from '../assets/image.png';
 import { FaInstagram } from 'react-icons/fa';
 import LanguageSelector from './LanguageSelector';
@@ -52,10 +53,7 @@ export default function Navbar() {
                             <div className="nav-logo-badge">
                                 <img src={cowLogo} className="nav-logo-icon" alt="Logo" />
                             </div>
-                            <div className="nav-brand-group">
-                                <div className="nav-brand">Kosalai</div>
-                                <div className="nav-subtitle">Your Trusted Livestock Marketplace</div>
-                            </div>
+                            <img src={wordmarkLogo} className="nav-wordmark" alt="Kosalai" />
                         </div>
 
                         {/* Desktop nav links */}
@@ -131,7 +129,7 @@ export default function Navbar() {
             <div className={`mob-drawer${drawerOpen ? ' open' : ''}`}>
                 <div className="mob-drawer-hd">
                     <img src={cowLogo} className="nav-logo-icon" alt="Logo" style={{ height: 40, width: 'auto', objectFit: 'contain' }} />
-                    <div className="nav-brand" style={{ fontSize: 16 }}>Kosalai</div>
+                    <img src={wordmarkLogo} alt="Kosalai" style={{ height: '30px', width: 'auto', objectFit: 'contain', display: 'block' }} />
                     <button className="mob-close-btn" onClick={() => setDrawerOpen(false)}>✕</button>
                 </div>
                 <div className="mob-drawer-links">
