@@ -59,7 +59,7 @@
 .nav-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
     cursor: pointer;
     margin-right: 12px;
     flex-shrink: 0;
@@ -424,20 +424,25 @@
    ══════════════════════════════════════ */
 .nav-wordmark {
     display: block;
+    height: 75px;
+    width: auto;
     object-fit: contain;
-    max-width: 100%;
-    height: 60px; /* Desktop */
-    margin-left: 4px;
+    margin-left: 0;
 }
 
 @media (max-width: 1024px) {
     .nav-wordmark {
-        height: 50px; /* Tablet */
+        height: 65px;
     }
 }
 
 @media (max-width: 767px) {
+    .nav-logo {
+        gap: 4px;
+    }
+
     .nav-wordmark {
-        height: 45px; /* Mobile */
+        height: 55px;
+        max-width: 140px;
     }
 }
