@@ -196,14 +196,25 @@ export default function HomePage() {
     const filteredListings = useMemo(() => {
         let result = [...listings];
         // NOTE: No category filter needed here — the DB query already scoped by activeTab
-        if (filterBy === 'verified') result = result.filter(l => l.is_verified);
-        else if (filterBy === 'with_images') result = result.filter(l => l.image_url);
-        else if (filterBy === 'high_yield') result = result.filter(l => l.milk_yield_liters > 10);
-        else if (filterBy === 'pregnant') result = result.filter(l => l.is_pregnant);
-        else if (filterBy === 'vaccinated') result = result.filter(l => l.is_vaccinated);
-        else if (filterBy === 'young') result = result.filter(l => l.age_years && l.age_years <= 1);
-        else if (filterBy === 'male') result = result.filter(l => l.gender && l.gender.toLowerCase() === 'male');
+        if (filterBy === 'male') result = result.filter(l => l.gender && l.gender.toLowerCase() === 'male');
         else if (filterBy === 'female') result = result.filter(l => l.gender && l.gender.toLowerCase() === 'female');
+        else if (filterBy === 'vaccinated') result = result.filter(l => l.is_vaccinated);
+        else if (filterBy === 'pregnant') result = result.filter(l => l.is_pregnant);
+        else if (filterBy === 'free_adoption') result = result.filter(l => l.for_adoption);
+        else if (filterBy === 'young') result = result.filter(l => l.age_years && l.age_years <= 1);
+        else if (filterBy === 'posted_today') {
+            const today = new Date();
+            result = result.filter(l => {
+                const created = new Date(l.created_at);
+                return created.toDateString() === today.toDateString();
+            });
+        }
+        else if (filterBy === 'posted_this_week') {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            result = result.filter(l => new Date(l.created_at) >= oneWeekAgo);
+        }
+
         if (searchQuery.trim()) {
             const q = searchQuery.toLowerCase();
             result = result.filter(l =>
@@ -289,21 +300,15 @@ export default function HomePage() {
                     <div className="hp-sort-group">
                         <span className="hp-sort-label">{t('homePage.filterLabel')}</span>
                         <select value={filterBy} onChange={e => setFilterBy(e.target.value)} className="hp-sort-select">
-                            <option value="all">{t('homePage.allListings')}</option>
-                            <option value="with_images">{t('homePage.withPhotos')}</option>
-                            <option value="male">{t('homePage.male')}</option>
-                            <option value="female">{t('homePage.female')}</option>
-                            {listingType === 'livestock' ? (
-                                <>
-                                    <option value="high_yield">{t('homePage.highMilkYield')}</option>
-                                    <option value="pregnant">{t('homePage.pregnantOnly')}</option>
-                                </>
-                            ) : (
-                                <>
-                                    <option value="vaccinated">{t('homePage.vaccinatedOnly')}</option>
-                                    <option value="young">{t('homePage.youngPets')}</option>
-                                </>
-                            )}
+                            <option value="all">{t('homePage.allListings', { defaultValue: 'All Listings' })}</option>
+                            <option value="male">{t('homePage.male', { defaultValue: 'Male' })}</option>
+                            <option value="female">{t('homePage.female', { defaultValue: 'Female' })}</option>
+                            <option value="vaccinated">{t('homePage.vaccinated', { defaultValue: 'Vaccinated' })}</option>
+                            <option value="pregnant">{t('homePage.pregnant', { defaultValue: 'Pregnant' })}</option>
+                            <option value="free_adoption">{t('homePage.freeAdoption', { defaultValue: 'Free Adoption' })}</option>
+                            <option value="young">{t('homePage.youngAnimals', { defaultValue: 'Young Animals (≤1 Year)' })}</option>
+                            <option value="posted_today">{t('homePage.postedToday', { defaultValue: 'Posted Today' })}</option>
+                            <option value="posted_this_week">{t('homePage.postedThisWeek', { defaultValue: 'Posted This Week' })}</option>
                         </select>
                     </div>
                     <div className="hp-sort-group">
