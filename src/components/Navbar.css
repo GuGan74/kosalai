@@ -424,7 +424,7 @@
    ══════════════════════════════════════ */
 .nav-wordmark {
     display: block;
-    height: 75px;
+    height: 85px;
     width: auto;
     object-fit: contain;
     margin-left: 0;
@@ -432,7 +432,7 @@
 
 @media (max-width: 1024px) {
     .nav-wordmark {
-        height: 65px;
+        height: 75px;
     }
 }
 
@@ -442,7 +442,7 @@
     }
 
     .nav-wordmark {
-        height: 55px;
-        max-width: 140px;
+        height: 70px;
+        max-width: 180px;
     }
 }
