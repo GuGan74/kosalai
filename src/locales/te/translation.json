@@ -310,6 +310,7 @@
     "horses": "గుర్రాలు",
     "poultry": "కోళ్లు",
     "sheep": "గొర్రెలు",
+    "pigs": "పందులు",
     "dogs": "కుక్కలు",
     "cats": "పిల్లులు",
     "birds": "పక్షులు",
@@ -459,7 +460,8 @@
     "resultsFoundPlural": "{{count}} ఫలితాలు కనుగొనబడ్డాయి",
     "noResults": "ఫలితాలు కనుగొనబడలేదు",
     "tryDifferent": "వేరే కీవర్డ్ ప్రయత్నించండి",
-    "searchPlaceholder": "ఆవు, గేదె, మేక, లాబ్రడార్ వెతకండి…"
+    "searchPlaceholder": "ఆవు, గేదె, మేక, లాబ్రడార్ వెతకండి…",
+    "pig": "పంది"
   },
   "paymentPage": {
     "completeYourListing": "మీ జాబితా పూర్తి చేయండి",

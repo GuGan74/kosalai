@@ -10,7 +10,7 @@
 
 import { supabase } from './supabase';
 
-const LIVESTOCK_CATEGORIES = ['cow', 'buffalo', 'goat', 'horse', 'poultry', 'sheep', 'other'];
+const LIVESTOCK_CATEGORIES = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'pig', 'other'];
 const PET_CATEGORIES = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
 const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at';
 

@@ -310,6 +310,7 @@
     "horses": "குதிரைகள்",
     "poultry": "கோழிகள்",
     "sheep": "ஆட்டினம்",
+    "pigs": "பன்றிகள்",
     "dogs": "நாய்கள்",
     "cats": "பூனைகள்",
     "birds": "பறவைகள்",
@@ -461,7 +462,8 @@
     "resultsFoundPlural": "{{count}} முடிவுகள் கிடைத்தன",
     "noResults": "முடிவுகள் எதுவும் இல்லை",
     "tryDifferent": "வேறு சொல் முயற்சிக்கவும்",
-    "searchPlaceholder": "மாடு, எருமை, ஆடு, லாப்ரடார் தேடுங்கள்…"
+    "searchPlaceholder": "மாடு, எருமை, ஆடு, லாப்ரடார் தேடுங்கள்…",
+    "pig": "பன்றி"
   },
   "paymentPage": {
     "completeYourListing": "பட்டியலை முடிக்கவும்",

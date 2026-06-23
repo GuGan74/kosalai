@@ -310,6 +310,7 @@
     "horses": "കുതിരകൾ",
     "poultry": "കോഴികൾ",
     "sheep": "ചെമ്മരിയാടുകൾ",
+    "pigs": "പന്നികൾ",
     "dogs": "നായ്ക്കൾ",
     "cats": "പൂച്ചകൾ",
     "birds": "പക്ഷികൾ",
@@ -459,7 +460,8 @@
     "resultsFoundPlural": "{{count}} ഫലങ്ങൾ കണ്ടെത്തി",
     "noResults": "ഫലങ്ങൾ കണ്ടെത്തിയില്ല",
     "tryDifferent": "മറ്റൊരു കീവേഡ് പരീക്ഷിക്കൂ",
-    "searchPlaceholder": "പശു, എരുമ, ആട്, ലാബ്രഡോർ തിരയൂ…"
+    "searchPlaceholder": "പശു, എരുമ, ആട്, ലാബ്രഡോർ തിരയൂ…",
+    "pig": "പന്നി"
   },
   "paymentPage": {
     "completeYourListing": "ലിസ്റ്റിംഗ് പൂർത്തിയാക്കൂ",

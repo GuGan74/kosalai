@@ -298,9 +298,10 @@ export default function ListingDetailPage() {
                                         listing.category === 'buffalo' ? '🦬' :
                                             listing.category === 'goat' ? '🐐' :
                                                 listing.category === 'horse' ? '🐎' :
-                                                    listing.category === 'dog' ? '🐕' :
-                                                        listing.category === 'cat' ? '🐈' :
-                                                            listing.category === 'bird' ? '🦜' : '🐾'}
+                                                    listing.category === 'pig' ? '🐖' :
+                                                        listing.category === 'dog' ? '🐕' :
+                                                            listing.category === 'cat' ? '🐈' :
+                                                                listing.category === 'bird' ? '🦜' : '🐾'}
                                 </span>
                             </div>
                         )}

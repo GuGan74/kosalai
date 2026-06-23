@@ -310,6 +310,7 @@
     "horses": "ಕುದುರೆಗಳು",
     "poultry": "ಕೋಳಿ",
     "sheep": "ಕುರಿಗಳು",
+    "pigs": "ಹಂದಿಗಳು",
     "dogs": "ನಾಯಿಗಳು",
     "cats": "ಬೆಕ್ಕುಗಳು",
     "birds": "ಹಕ್ಕಿಗಳು",
@@ -459,7 +460,8 @@
     "resultsFoundPlural": "{{count}} ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿವೆ",
     "noResults": "ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
     "tryDifferent": "ಬೇರೆ ಕೀವರ್ಡ್ ಪ್ರಯತ್ನಿಸಿ",
-    "searchPlaceholder": "ಹಸು, ಎಮ್ಮೆ, ಮೇಕೆ, ಲ್ಯಾಬ್ರಡಾರ್ ಹುಡುಕಿ…"
+    "searchPlaceholder": "ಹಸು, ಎಮ್ಮೆ, ಮೇಕೆ, ಲ್ಯಾಬ್ರಡಾರ್ ಹುಡುಕಿ…",
+    "pig": "ಹಂದಿ"
   },
   "paymentPage": {
     "completeYourListing": "ನಿಮ್ಮ ಪಟ್ಟಿ ಪೂರ್ಣಗೊಳಿಸಿ",

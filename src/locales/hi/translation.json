@@ -310,6 +310,7 @@
     "horses": "घोड़े",
     "poultry": "मुर्गी",
     "sheep": "भेड़ें",
+    "pigs": "सूअर",
     "dogs": "कुत्ते",
     "cats": "बिल्लियां",
     "birds": "पक्षी",
@@ -459,7 +460,8 @@
     "resultsFoundPlural": "{{count}} परिणाम मिले",
     "noResults": "कोई परिणाम नहीं मिला",
     "tryDifferent": "अलग कीवर्ड आज़माएं",
-    "searchPlaceholder": "गाय, भैंस, बकरी, लैब्राडोर खोजें…"
+    "searchPlaceholder": "गाय, भैंस, बकरी, लैब्राडोर खोजें…",
+    "pig": "सूअर"
   },
   "paymentPage": {
     "completeYourListing": "अपनी लिस्टिंग पूरी करें",

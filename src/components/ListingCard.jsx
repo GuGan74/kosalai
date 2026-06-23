@@ -13,6 +13,7 @@ import { getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 const BG_MAP = {
     cow: '#fffde7', buffalo: '#e8edf5', goat: '#f0fff4', horse: '#fff8e1',
     poultry: '#fff3e8', dog: '#f0ebff', cat: '#fff0f6', bird: '#e3f8ff',
+    pig: '#fdf2f8',
 };
 
 const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedProp = false, onToggleFavorite }) {
@@ -41,7 +42,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
 
     const emoji = {
         cow: '🐄', buffalo: '🦬', goat: '🐐', horse: '🐎',
-        poultry: '🐓', sheep: '🐑', other: '🐾',
+        poultry: '🐓', sheep: '🐑', pig: '🐖', other: '🐾',
         dog: '🐕', cat: '🐈', bird: '🦜', fish: '🐠', rabbit: '🐇', 'other-pet': '🐾',
     }[category] || '🐾';
 

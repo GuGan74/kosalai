@@ -13,7 +13,7 @@ import './HomePage.css';
 
 const PAGE_SIZE = 16;
 const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
-const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
+const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'pig', 'other'];
 const SELECTED_COLS = 'id,title,category,breed,location,state,price,milk_yield_liters,age_years,for_adoption,image_url,image_urls,user_id,status,gender,created_at';
 
 // INDIAN_STATES imported from constants
@@ -81,9 +81,10 @@ export default function HomePage() {
         { id: 'cow', emoji: '🐄', label: t('homePage.cows') },
         { id: 'buffalo', emoji: '🦬', label: t('homePage.buffalos') },
         { id: 'goat', emoji: '🐐', label: t('homePage.goats') },
+        { id: 'sheep', emoji: '🐑', label: t('homePage.sheep') },
         { id: 'horse', emoji: '🐎', label: t('homePage.horses') },
         { id: 'poultry', emoji: '🐓', label: t('homePage.poultry') },
-        { id: 'sheep', emoji: '🐑', label: t('homePage.sheep') },
+        { id: 'pig', emoji: '🐖', label: t('homePage.pigs', 'Pigs') },
     ];
 
     const PET_CATEGORIES = [

@@ -59,10 +59,11 @@ export default function TermsConditionsPage() {
                             <li>Buffaloes</li>
                             <li>Goats</li>
                             <li>Sheep</li>
+                            <li>Horses</li>
                             <li>Poultry</li>
+                            <li>Pigs</li>
                             <li>Birds</li>
-                            <li>Pets</li>
-                            <li>Livestock</li>
+                            <li>Pets and other livestock</li>
                             <li>Other animals permitted under applicable law</li>
                         </ul>
                         <p style={{ marginTop: '8px' }}>Kosalai acts solely as a technology platform and intermediary for communication and discovery.</p>

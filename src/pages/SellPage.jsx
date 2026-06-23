@@ -35,13 +35,14 @@ const BREED_OPTIONS = {
     bird: ['Parrot', 'Cockatiel', 'Budgerigar (Budgie)', 'Lovebird', 'Canary', 'Finch', 'Pigeon', 'Dove', 'Other'],
     fish: ['Goldfish', 'Koi', 'Betta (Fighting Fish)', 'Guppy', 'Molly', 'Angelfish', 'Oscar', 'Tetra', 'Catfish', 'Other'],
     rabbit: ['Dutch', 'Flemish Giant', 'Lionhead', 'Mini Lop', 'English Angora', 'Indian White', 'Other'],
+    pig: ['Large White Yorkshire', 'Landrace', 'Duroc', 'Hampshire', 'Berkshire', 'Local Breed', 'Other'],
 };
 function getBreedOptions(category) {
     return BREED_OPTIONS[category] || ['Other'];
 }
 
 // Fix #5 Helpers
-function isLivestock(category) { return ['cow', 'buffalo', 'goat', 'sheep', 'horse'].includes(category); }
+function isLivestock(category) { return ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'pig'].includes(category); }
 function isPet(category) { return ['dog', 'cat', 'bird', 'fish', 'rabbit'].includes(category); }
 function showsMilkYield(category, gender) {
     // Only show milk yield for female cows & buffaloes
@@ -57,6 +58,7 @@ function getTitlePlaceholder(category) {
         sheep: 'e.g. Deccani Sheep — 2 Years Old',
         horse: 'e.g. Marwari Horse — Well Trained',
         poultry: 'e.g. Country Hens — Batch of 10',
+        pig: 'e.g. Healthy Yorkshire Pig for Sale',
         other: 'e.g. Healthy Animal for Sale',
         dog: 'e.g. Labrador Puppy — Vaccinated',
         cat: 'e.g. Persian Cat — 1 Year Old',
@@ -76,6 +78,7 @@ function getDescriptionPlaceholder(category) {
         sheep: 'Describe wool quality, weight, health, breeding history...',
         horse: 'Describe training level, temperament, health, riding experience...',
         poultry: 'Describe breed, quantity, age, egg production, feeding...',
+        pig: 'Describe breed, weight, age, health, diet, breeding history...',
         dog: 'Describe breed, temperament, training, vaccinations, diet...',
         cat: 'Describe breed, personality, vaccinations, indoor/outdoor...',
         bird: 'Describe talking ability, age, diet, cage included or not...',

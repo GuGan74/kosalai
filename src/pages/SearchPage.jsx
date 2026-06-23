@@ -13,7 +13,9 @@ const CATTLE_PILLS = [
     { label: '🦬', key: 'buffalo', cat: 'buffalo' },
     { label: '🐐', key: 'goat', cat: 'goat' },
     { label: '🐑', key: 'sheep', cat: 'sheep' },
+    { label: '🐎', key: 'horse', cat: 'horse' },
     { label: '🐔', key: 'poultry', cat: 'poultry' },
+    { label: '🐖', key: 'pig', cat: 'pig' },
 ];
 
 const PETS_PILLS = [
@@ -29,7 +31,7 @@ const COMMON_PILLS = [
     { label: '✅', key: 'verified', prop: 'verified' },
 ];
 
-const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'other'];
+const LIVESTOCK_IDS = ['cow', 'buffalo', 'goat', 'sheep', 'horse', 'poultry', 'pig', 'other'];
 const PET_IDS = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'];
 
 const DEMO_DATA = [
@@ -60,7 +62,9 @@ export default function SearchPage() {
         setLoading(true);
         try {
             let q = supabase.from('listings').select('*').eq('status', 'active');
-            if (query) q = q.ilike('title', `%${query}%`);
+            if (query) {
+                q = q.or(`title.ilike.%${query}%,category.ilike.%${query}%,breed.ilike.%${query}%`);
+            }
             
             const activeCats = activePills.filter(p => p.cat).map(p => p.cat);
             const finalCats = activeCats.length > 0 ? activeCats.filter(c => allowedCats.includes(c)) : allowedCats;
@@ -81,7 +85,14 @@ export default function SearchPage() {
             
             const fallbackFilter = (d) => {
                 if (!allowedCats.includes(d.category)) return false;
-                if (query && !d.title.toLowerCase().includes(query.toLowerCase())) return false;
+                if (query) {
+                    const qLower = query.toLowerCase();
+                    if (!d.title?.toLowerCase().includes(qLower) && 
+                        !d.category?.toLowerCase().includes(qLower) &&
+                        !d.breed?.toLowerCase().includes(qLower)) {
+                        return false;
+                    }
+                }
                 return true;
             };
 
@@ -90,7 +101,14 @@ export default function SearchPage() {
         } catch {
             const fallbackFilter = (d) => {
                 if (!allowedCats.includes(d.category)) return false;
-                if (query && !d.title.toLowerCase().includes(query.toLowerCase())) return false;
+                if (query) {
+                    const qLower = query.toLowerCase();
+                    if (!d.title?.toLowerCase().includes(qLower) && 
+                        !d.category?.toLowerCase().includes(qLower) &&
+                        !d.breed?.toLowerCase().includes(qLower)) {
+                        return false;
+                    }
+                }
                 return true;
             };
             let fallback = DEMO_DATA.filter(fallbackFilter);
