@@ -147,6 +147,10 @@ export default function SellPage() {
     }
 
     useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, [step]);
+
+    useEffect(() => {
         if (isEditing) return;
         // Sync with global toggle on mount
         startTransition(() => {
