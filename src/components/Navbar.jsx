@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import cowLogo from '../assets/kosalai-logo-removebg-preview.png';
 import wordmarkLogo from '../assets/kosalai-wordmark.png';
-import heroBg from '../assets/image.png';
+import heroBg from '../assets/hero-bg.png';
 import { FaInstagram } from 'react-icons/fa';
 import LanguageSelector from './LanguageSelector';
 import './Navbar.css';
