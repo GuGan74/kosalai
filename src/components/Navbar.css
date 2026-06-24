@@ -13,7 +13,7 @@
     z-index: 200;
     background-color: #e8f5e9;
     background-size: cover;
-    background-position: right center;
+    background-position: left center;
     background-repeat: no-repeat;
     /* Rounded bottom corners like the design */
     border-radius: 0 0 24px 24px;
@@ -34,6 +34,7 @@
     );
     pointer-events: none;
     z-index: 1;
+    display: none; /* Temporarily disabled for testing */
 }
 
 .nav-wrapper {
