@@ -573,7 +573,7 @@ export default function SellPage() {
                                     </select>
                                 </div>
                                 <small style={{ fontSize: 11, color: 'var(--g3)' }}>
-                                    {form.age_unit === 'months' ? 'Max 300 months' : t('sellPage.maxYears')}
+                                    {form.age_unit === 'years' && t('sellPage.maxYears')}
                                 </small>
                                 {fieldErrors.age && <div style={{ color: '#e63946', fontSize: 12, marginTop: 2 }}>⚠️ {fieldErrors.age}</div>}
                             </div>
