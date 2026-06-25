@@ -119,6 +119,7 @@ export default function SellPage() {
         age_years: '',
         age_unit: 'years',
         weight_kg: '',
+        weight_unit: 'kg',
         milk_yield_liters: '',
         is_vaccinated: false,
         is_pregnant: false,
@@ -138,13 +139,22 @@ export default function SellPage() {
         boostPlanName: 'Premium',
     });
 
-    function getWeightLimits(cat) {
+    function getWeightLimits(cat, unit) {
+        const isGram = unit === 'gram';
         if (['cow', 'buffalo'].includes(cat)) return { min: 50, max: 1500 };
-        if (['goat', 'sheep'].includes(cat)) return { min: 1, max: 150 };  // min 1kg (young kids)
+        if (['goat', 'sheep'].includes(cat)) return { min: 1, max: 150 };
         if (cat === 'horse') return { min: 100, max: 1000 };
         if (cat === 'dog') return { min: 1, max: 100 };
         if (cat === 'cat') return { min: 0.5, max: 15 };
+        if (['bird', 'poultry'].includes(cat)) return isGram ? { min: 1, max: 20000 } : { min: 0.01, max: 20 };
+        if (cat === 'fish') return isGram ? { min: 1, max: 50000 } : { min: 0.01, max: 50 };
+        if (cat === 'rabbit') return { min: 0.1, max: 10 };
         return { min: 0.1, max: 1500 };
+    }
+
+    function getDefaultWeightUnit(cat) {
+        if (['bird', 'poultry', 'fish'].includes(cat)) return 'gram';
+        return 'kg';
     }
 
     useEffect(() => {
@@ -188,7 +198,8 @@ export default function SellPage() {
                 is_neutered: l.is_neutered || false,
                 age_years: l.age_years != null ? (l.age_years < 1 && l.age_years > 0 ? Math.round(l.age_years * 12) : l.age_years) : '',
                 age_unit: l.age_years != null && l.age_years > 0 && l.age_years < 1 ? 'months' : 'years',
-                weight_kg: l.weight_kg || '',
+                weight_kg: l.weight_unit === 'gram' && l.weight_kg ? Math.round(l.weight_kg * 1000) : (l.weight_kg || ''),
+                weight_unit: l.weight_unit || getDefaultWeightUnit(l.category || ''),
                 milk_yield_liters: l.milk_yield_liters || '',
                 is_vaccinated: l.is_vaccinated || false,
                 is_pregnant: l.is_pregnant || false,
@@ -218,6 +229,14 @@ export default function SellPage() {
             setF('milk_yield_liters', '');
         }
     }, [form.gender]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Auto-switch weight unit when category changes
+    useEffect(() => {
+        if (!form.category) return;
+        const defaultUnit = getDefaultWeightUnit(form.category);
+        setF('weight_unit', defaultUnit);
+        setF('weight_kg', ''); // clear weight when category changes
+    }, [form.category]); // eslint-disable-line react-hooks/exhaustive-deps
 
     async function uploadImage(file) {
         try {
@@ -284,11 +303,11 @@ export default function SellPage() {
                 errs.age = `Age must be ${maxAge} ${form.age_unit} or less`;
         }
         if (form.weight_kg === '' || form.weight_kg === null || form.weight_kg === undefined)
-            errs.weight = 'Please enter the weight (in kg)';
+            errs.weight = `Please enter the weight (in ${form.weight_unit === 'gram' ? 'grams' : 'kg'})`;
         else {
-            const { min, max } = getWeightLimits(form.category);
+            const { min, max } = getWeightLimits(form.category, form.weight_unit);
             if (Number(form.weight_kg) < min || Number(form.weight_kg) > max)
-                errs.weight = `Weight must be ${min}–${max} kg for this animal`;
+                errs.weight = `Weight must be ${min}–${max} ${form.weight_unit === 'gram' ? 'g' : 'kg'} for this animal`;
         }
         setFieldErrors(errs);
         const firstErr = Object.values(errs)[0] || null;
@@ -352,7 +371,10 @@ export default function SellPage() {
                 age_years: form.age_unit === 'months'
                     ? (Number(form.age_years) / 12) || null
                     : Number(form.age_years) || null,
-                weight_kg: Number(form.weight_kg) || null,
+                weight_kg: form.weight_unit === 'gram'
+                    ? (Number(form.weight_kg) / 1000) || null
+                    : Number(form.weight_kg) || null,
+                weight_unit: form.weight_unit || 'kg',
                 milk_yield_liters: Number(form.milk_yield_liters) || null,
                 is_vaccinated: form.is_vaccinated,
                 is_pregnant: form.is_pregnant,
@@ -579,9 +601,43 @@ export default function SellPage() {
                             </div>
                             <div className="ff">
                                 <label>{t('sellPage.weightKg')} *</label>
-                                <input type="number" placeholder="0" step="0.1" value={form.weight_kg} onChange={e => { const lim = getWeightLimits(form.category); const v = Math.min(lim.max, Math.max(0, parseFloat(e.target.value) || 0)); setF('weight_kg', v || ''); }} min={0} max={getWeightLimits(form.category).max} />
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <input
+                                        type="number"
+                                        placeholder="0"
+                                        step={form.weight_unit === 'gram' ? '1' : '0.1'}
+                                        value={form.weight_kg}
+                                        onChange={e => {
+                                            const lim = getWeightLimits(form.category, form.weight_unit);
+                                            const v = Math.min(lim.max, Math.max(0, parseFloat(e.target.value) || 0));
+                                            setF('weight_kg', v || '');
+                                        }}
+                                        min={0}
+                                        max={getWeightLimits(form.category, form.weight_unit).max}
+                                        style={{ flex: 1 }}
+                                    />
+                                    <select
+                                        value={form.weight_unit}
+                                        onChange={e => { setF('weight_unit', e.target.value); setF('weight_kg', ''); }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px 8px',
+                                            borderRadius: 10,
+                                            border: '1.5px solid #d1d5db',
+                                            fontSize: 14,
+                                            fontFamily: 'inherit',
+                                            background: '#fff',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        <option value="kg">Kg</option>
+                                        <option value="gram">Gram</option>
+                                    </select>
+                                </div>
                                 <small style={{ fontSize: 11, color: 'var(--g3)' }}>
-                                    {isLivestock(form.category) ? `${t('sellPage.range')}: ${getWeightLimits(form.category).min}–${getWeightLimits(form.category).max} kg` : t('sellPage.enterApprox')}
+                                    {isLivestock(form.category)
+                                        ? `${t('sellPage.range')}: ${getWeightLimits(form.category, form.weight_unit).min}–${getWeightLimits(form.category, form.weight_unit).max} ${form.weight_unit === 'gram' ? 'g' : 'kg'}`
+                                        : t('sellPage.enterApprox')}
                                 </small>
                                 {fieldErrors.weight && <div style={{ color: '#e63946', fontSize: 12, marginTop: 2 }}>⚠️ {fieldErrors.weight}</div>}
                             </div>
