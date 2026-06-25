@@ -36,6 +36,7 @@ const BREED_OPTIONS = {
     fish: ['Goldfish', 'Koi', 'Betta (Fighting Fish)', 'Guppy', 'Molly', 'Angelfish', 'Oscar', 'Tetra', 'Catfish', 'Other'],
     rabbit: ['Dutch', 'Flemish Giant', 'Lionhead', 'Mini Lop', 'English Angora', 'Indian White', 'Other'],
     pig: ['Large White Yorkshire', 'Landrace', 'Duroc', 'Hampshire', 'Berkshire', 'Local Breed', 'Other'],
+    poultry: ['Country Hen (Naatu Kozhi)', 'Aseel', 'Kadaknath', 'Vanaraja', 'Gramapriya', 'Giriraja', 'Kuroiler', 'White Leghorn', 'Rhode Island Red', 'Plymouth Rock', 'Cornish', 'Broiler Chicken', 'Country Rooster', 'Turkey', 'Duck', 'Goose', 'Quail', 'Guinea Fowl', 'Emu', 'Ostrich', 'Other'],
 };
 function getBreedOptions(category) {
     return BREED_OPTIONS[category] || ['Other'];
