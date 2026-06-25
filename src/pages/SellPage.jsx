@@ -230,9 +230,9 @@ export default function SellPage() {
         }
     }, [form.gender]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Auto-switch weight unit when category changes
+    // Auto-switch weight unit when category changes (new listings only)
     useEffect(() => {
-        if (!form.category) return;
+        if (!form.category || isEditing) return; // skip in edit mode to preserve loaded weight
         const defaultUnit = getDefaultWeightUnit(form.category);
         setF('weight_unit', defaultUnit);
         setF('weight_kg', ''); // clear weight when category changes
