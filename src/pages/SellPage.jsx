@@ -117,6 +117,7 @@ export default function SellPage() {
         is_trained: false,  // NEW
         is_neutered: false, // NEW
         age_years: '',
+        age_unit: 'years',
         weight_kg: '',
         milk_yield_liters: '',
         is_vaccinated: false,
@@ -185,7 +186,8 @@ export default function SellPage() {
                 gender: l.gender || '',
                 is_trained: l.is_trained || false,
                 is_neutered: l.is_neutered || false,
-                age_years: l.age_years || '',
+                age_years: l.age_years != null ? (l.age_years < 1 && l.age_years > 0 ? Math.round(l.age_years * 12) : l.age_years) : '',
+                age_unit: l.age_years != null && l.age_years > 0 && l.age_years < 1 ? 'months' : 'years',
                 weight_kg: l.weight_kg || '',
                 milk_yield_liters: l.milk_yield_liters || '',
                 is_vaccinated: l.is_vaccinated || false,
@@ -275,9 +277,12 @@ export default function SellPage() {
         // BUG 7 Fix C — strict trim check for description
         if (form.description.trim().length > 1000) errs.description = 'Description must be under 1000 characters';
         if (form.age_years === '' || form.age_years === null || form.age_years === undefined)
-            errs.age = 'Please enter the age (in years)';
-        else if (Number(form.age_years) > 25)
-            errs.age = 'Age must be 25 years or less';
+            errs.age = form.age_unit === 'months' ? 'Please enter the age (in months)' : 'Please enter the age (in years)';
+        else {
+            const maxAge = form.age_unit === 'months' ? 300 : 25;
+            if (Number(form.age_years) > maxAge)
+                errs.age = `Age must be ${maxAge} ${form.age_unit} or less`;
+        }
         if (form.weight_kg === '' || form.weight_kg === null || form.weight_kg === undefined)
             errs.weight = 'Please enter the weight (in kg)';
         else {
@@ -344,7 +349,9 @@ export default function SellPage() {
                 gender: form.gender,
                 is_trained: form.is_trained,
                 is_neutered: form.is_neutered,
-                age_years: Number(form.age_years) || null,
+                age_years: form.age_unit === 'months'
+                    ? (Number(form.age_years) / 12) || null
+                    : Number(form.age_years) || null,
                 weight_kg: Number(form.weight_kg) || null,
                 milk_yield_liters: Number(form.milk_yield_liters) || null,
                 is_vaccinated: form.is_vaccinated,
@@ -533,8 +540,41 @@ export default function SellPage() {
                         <div className="fg3">
                             <div className="ff">
                                 <label>{t('sellPage.ageYears')} *</label>
-                                <input type="number" placeholder="0" value={form.age_years} onChange={e => { const v = Math.min(25, Math.max(0, Number(e.target.value))); setF('age_years', v || ''); }} min={0} max={25} />
-                                <small style={{ fontSize: 11, color: 'var(--g3)' }}>{t('sellPage.maxYears')}</small>
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <input
+                                        type="number"
+                                        placeholder="0"
+                                        value={form.age_years}
+                                        onChange={e => {
+                                            const max = form.age_unit === 'months' ? 300 : 25;
+                                            const v = Math.min(max, Math.max(0, Number(e.target.value)));
+                                            setF('age_years', v || '');
+                                        }}
+                                        min={0}
+                                        max={form.age_unit === 'months' ? 300 : 25}
+                                        style={{ flex: 1 }}
+                                    />
+                                    <select
+                                        value={form.age_unit}
+                                        onChange={e => { setF('age_unit', e.target.value); setF('age_years', ''); }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px 8px',
+                                            borderRadius: 10,
+                                            border: '1.5px solid #d1d5db',
+                                            fontSize: 14,
+                                            fontFamily: 'inherit',
+                                            background: '#fff',
+                                            cursor: 'pointer',
+                                        }}
+                                    >
+                                        <option value="years">Years</option>
+                                        <option value="months">Months</option>
+                                    </select>
+                                </div>
+                                <small style={{ fontSize: 11, color: 'var(--g3)' }}>
+                                    {form.age_unit === 'months' ? 'Max 300 months' : t('sellPage.maxYears')}
+                                </small>
                                 {fieldErrors.age && <div style={{ color: '#e63946', fontSize: 12, marginTop: 2 }}>⚠️ {fieldErrors.age}</div>}
                             </div>
                             <div className="ff">
