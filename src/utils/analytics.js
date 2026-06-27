@@ -7,8 +7,14 @@ function sendGaEvent(eventName, eventParams = {}) {
     return; // Block analytics on localhost/preview
   }
 
+  // Inject central metadata
+  const finalParams = {
+    ...eventParams,
+    event_version: 1
+  };
+
   if (typeof window.gtag === 'function') {
-    window.gtag('event', eventName, eventParams);
+    window.gtag('event', eventName, finalParams);
   }
 }
 
