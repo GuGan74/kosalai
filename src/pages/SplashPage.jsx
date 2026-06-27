@@ -16,6 +16,8 @@ export default function SplashPage() {
     const { signInWithGoogle } = useAuth();
 
     async function handleGoogleLogin() {
+        // Analytics: Mark intention to log in so we don't track restored sessions
+        sessionStorage.setItem('ks_login_intent', 'true');
         const { error } = await signInWithGoogle();
         if (error) {
             toast.error('Google sign-in failed: ' + error.message);

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { trackLogin } from '../utils/analytics';
 
 const AuthContext = createContext(null);
 
@@ -193,6 +194,10 @@ export function AuthProvider({ children }) {
                     if (session?.user) {
                         setCurrentUser(session.user);
                         if (event === 'SIGNED_IN') {
+                            if (sessionStorage.getItem('ks_login_intent') === 'true') {
+                                trackLogin('google');
+                                sessionStorage.removeItem('ks_login_intent');
+                            }
                             if (!profileFetchStarted.current) {
                                 profileFetchStarted.current = true;
                                 console.log('PROFILE_FETCH_START [onAuthStateChange]', event);

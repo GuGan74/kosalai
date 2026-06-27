@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import ListingCard from '../components/ListingCard';
 import BackButton from '../components/BackButton';
 import SEOHead from '../components/SEOHead';
+import { trackSearch } from '../utils/analytics';
 import './SearchPage.css';
 
 const CATTLE_PILLS = [
@@ -54,6 +55,20 @@ export default function SearchPage() {
     useEffect(() => {
         setActivePills([]);
     }, [listingType]);
+
+    // Analytics: Debounced search tracking
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (query.trim().length >= 2 || activePills.length > 0) {
+                const category = activePills.length > 0 
+                    ? activePills.map(p => p.cat || p.key).join(',') 
+                    : 'all';
+                trackSearch(query.trim(), category);
+            }
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [query, activePills]);
 
     const activePillsList = listingType === 'livestock' ? [...CATTLE_PILLS, ...COMMON_PILLS] : [...PETS_PILLS, ...COMMON_PILLS];
     const allowedCats = listingType === 'livestock' ? LIVESTOCK_IDS : PET_IDS;

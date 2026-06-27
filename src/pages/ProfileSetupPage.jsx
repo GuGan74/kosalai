@@ -9,6 +9,7 @@ import loadingGif from '../assets/379.gif';
 import { DISTRICTS } from '../constants/locations';
 import { INDIAN_STATES } from '../constants/states';
 import { useTranslation } from 'react-i18next';
+import { trackSignUp } from '../utils/analytics';
 import './SplashPage.css';
 
 export default function ProfileSetupPage() {
@@ -84,6 +85,10 @@ export default function ProfileSetupPage() {
       setLoading(false);
       return;
     }
+    
+    // Analytics: Record sign up after profile is successfully completed
+    trackSignUp('google');
+
     await loadProfile(currentUser.id);
     toast.success(t('profileSetup.welcomeMessage', { defaultValue: 'Welcome to Kosalai! 🎉' }));
     // Small delay so AuthContext re-renders with new profile before navigation

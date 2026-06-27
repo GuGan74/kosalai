@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import BackButton from '../components/BackButton';
 import ListingCard from '../components/ListingCard';
+import { trackContactSeller } from '../utils/analytics';
 
 const DEMO_SELLER = {
     id: 'demo-seller',
@@ -143,6 +144,7 @@ export default function SellerProfilePage() {
                             href={whatsappUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => trackContactSeller(seller.id, 'whatsapp')}
                             style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                                 background: '#25D366', color: 'white', fontWeight: 800,
@@ -158,6 +160,7 @@ export default function SellerProfilePage() {
                     {displayPhone && (
                         <a
                             href={`tel:${seller.phone}`}
+                            onClick={() => trackContactSeller(seller.id, 'phone')}
                             style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                                 background: '#1a7a3c', color: 'white', fontWeight: 800,

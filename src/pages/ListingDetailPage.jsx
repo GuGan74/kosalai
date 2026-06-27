@@ -12,6 +12,7 @@ import TranslatedText from '../components/TranslatedText';
 import { shareListing } from '../utils/shareListing';
 import { getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 import { parseImageUrls } from '../utils/helpers';
+import { trackViewItem } from '../utils/analytics';
 import './ListingDetailPage.css';
 
 export default function ListingDetailPage() {
@@ -26,6 +27,14 @@ export default function ListingDetailPage() {
     const [loading, setLoading] = useState(true);
     const [reporting, setReporting] = useState(false);
     const [activeImgIndex, setActiveImgIndex] = useState(0);
+
+    const trackedViewRef = React.useRef(null);
+    useEffect(() => {
+        if (listing && trackedViewRef.current !== listing.id) {
+            trackViewItem(listing);
+            trackedViewRef.current = listing.id;
+        }
+    }, [listing]);
 
     const [isLiked, setIsLiked] = useState(false);
 

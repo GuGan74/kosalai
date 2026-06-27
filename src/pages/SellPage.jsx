@@ -7,8 +7,8 @@ import { LIVESTOCK_CATS, PET_CATS } from '../constants/index';
 import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryUrl } from '../lib/cloudinary';
 import { parseImageUrls } from '../utils/helpers';
 import toast from 'react-hot-toast';
-import { INDIAN_STATES } from '../constants/states';
 import { DISTRICTS } from '../constants/locations';
+import { trackListingCreated } from '../utils/analytics';
 import './SellPage.css';
 
 // Boost tiers moved to constants if needed, otherwise kept here as comments
@@ -410,6 +410,7 @@ export default function SellPage() {
                     .select()
                     .single();
                 if (error) throw error;
+                trackListingCreated(payload.category, payload.price);
                 navigate('/success', {
                     state: {
                         listingId: data.id,

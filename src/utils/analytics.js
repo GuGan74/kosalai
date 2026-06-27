@@ -35,11 +35,15 @@ export function trackSearch(searchTerm, category = 'all') {
   });
 }
 
-export function trackContactSeller(listingId, sellerId) {
-  sendGaEvent('generate_lead', {
-    item_id: listingId,
-    seller_id: sellerId
-  });
+export function trackContactSeller(sellerId, method, category = null) {
+  const params = {
+    seller_id: sellerId,
+    method: method
+  };
+  if (category) {
+    params.item_category = category;
+  }
+  sendGaEvent('generate_lead', params);
 }
 
 export function trackViewItem(listing) {
