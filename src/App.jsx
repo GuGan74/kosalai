@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import ErrorBoundary from './components/ErrorBoundary';
+import AnalyticsTracker from './components/AnalyticsTracker';
 
 import SplashPage from './pages/SplashPage';
 import OnboardingPage from './pages/OnboardingPage';
@@ -292,6 +293,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <AnalyticsTracker />
       <AuthProvider>
         <NotificationProvider>
           <ErrorBoundary>
