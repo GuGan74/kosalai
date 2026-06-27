@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const GA_MEASUREMENT_ID = 'G-CC5K91MZGQ';
-
 export default function AnalyticsTracker() {
   const location = useLocation();
 
