@@ -8,6 +8,7 @@ import { uploadToCloudinary, uploadMultipleToCloudinary, getOptimizedCloudinaryU
 import { parseImageUrls } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { DISTRICTS } from '../constants/locations';
+import { INDIAN_STATES } from '../constants/states';
 import { trackListingCreated } from '../utils/analytics';
 import './SellPage.css';
 

@@ -28,3 +28,8 @@ export const INDIAN_STATES = [
     "Uttarakhand",
     "West Bengal"
 ];
+
+if (typeof window !== 'undefined') {
+    window.INDIAN_STATES = INDIAN_STATES;
+}
+
