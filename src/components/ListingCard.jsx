@@ -48,6 +48,18 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
 
     const isPet = ['dog', 'cat', 'bird', 'fish', 'rabbit', 'other-pet'].includes(category);
 
+    // Converts decimal age_years (e.g. 0.9166...) to "11 Months" or "1 Year 2 Months"
+    const formatAge = (ageYears) => {
+        if (!ageYears && ageYears !== 0) return t('listingCard.unknown');
+        const totalMonths = Math.round(ageYears * 12);
+        if (totalMonths === 0) return t('listingCard.unknown');
+        const years = Math.floor(totalMonths / 12);
+        const months = totalMonths % 12;
+        if (years === 0) return `${months} ${months === 1 ? 'Month' : 'Months'}`;
+        if (months === 0) return `${years} ${years === 1 ? 'Year' : 'Years'}`;
+        return `${years} ${years === 1 ? 'Year' : 'Years'} ${months} ${months === 1 ? 'Month' : 'Months'}`;
+    };
+
     async function handleLike(e) {
         e.stopPropagation();
         if (!currentUser) {
@@ -205,7 +217,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                             )}
                             <div className="stat-col">
                                 <div className="stat-lbl">{t('listingCard.age')}</div>
-                                <div className="stat-val">{age_years ? `${age_years} ${t('listingCard.years')}` : t('listingCard.unknown')}</div>
+                                <div className="stat-val">{formatAge(age_years)}</div>
                             </div>
                             <div className="stat-col">
                                 <div className="stat-lbl">{t('listingCard.gender')}</div>
@@ -216,7 +228,7 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                         <>
                             <div className="stat-col">
                                 <div className="stat-lbl">{t('listingCard.age')}</div>
-                                <div className="stat-val">{age_years ? `${age_years} ${t('listingCard.years')}` : t('listingCard.unknown')}</div>
+                                <div className="stat-val">{formatAge(age_years)}</div>
                             </div>
                             <div className="stat-col">
                                 <div className="stat-lbl">{t('listingCard.gender')}</div>
