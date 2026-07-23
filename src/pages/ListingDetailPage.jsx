@@ -353,7 +353,7 @@ export default function ListingDetailPage() {
                         {listing.is_vaccinated && <span className="badge g">💉 <TranslatedText>Vaccinated</TranslatedText></span>}
                         {listing.is_pregnant && <span className="badge g">🤰 <TranslatedText>Pregnant</TranslatedText></span>}
                         {listing.breed && <span className="badge b"><TranslatedText>{listing.breed}</TranslatedText></span>}
-                        {listing.age_years != null && <span className="badge b">{listing.age_years < 1 && listing.age_years > 0 ? `${Math.round(listing.age_years * 12)} Months Old` : `${listing.age_years} Years Old`}</span>}
+                        {listing.age_years != null && (() => { const totalMonths = Math.round(listing.age_years * 12); if (!totalMonths) return null; const yrs = Math.floor(totalMonths / 12); const mos = totalMonths % 12; const label = yrs === 0 ? `${mos} ${mos === 1 ? 'Month' : 'Months'}` : mos === 0 ? `${yrs} ${yrs === 1 ? 'Year' : 'Years'}` : `${yrs} ${yrs === 1 ? 'Year' : 'Years'} ${mos} ${mos === 1 ? 'Month' : 'Months'}`; return <span className="badge b">{label} Old</span>; })()}
                     </div>
 
                     <h1 className="det-title"><TranslatedText>{listing.title}</TranslatedText></h1>
@@ -363,7 +363,7 @@ export default function ListingDetailPage() {
                     </div>
 
                     <div className="stats-grid">
-                        {listing.age_years != null && <div className="sg"><div className="lb">{t('listingDetail.age')}</div><div className="vl">{listing.age_years < 1 && listing.age_years > 0 ? `${Math.round(listing.age_years * 12)} ${t('listingDetail.months', { defaultValue: 'Months' })}` : `${listing.age_years} ${t('listingDetail.years')}`}</div></div>}
+                        {listing.age_years != null && (() => { const totalMonths = Math.round(listing.age_years * 12); if (!totalMonths) return null; const yrs = Math.floor(totalMonths / 12); const mos = totalMonths % 12; const label = yrs === 0 ? `${mos} ${mos === 1 ? 'Month' : 'Months'}` : mos === 0 ? `${yrs} ${yrs === 1 ? 'Year' : 'Years'}` : `${yrs} ${yrs === 1 ? 'Year' : 'Years'} ${mos} ${mos === 1 ? 'Month' : 'Months'}`; return <div className="sg"><div className="lb">{t('listingDetail.age')}</div><div className="vl">{label}</div></div>; })()}
                         {['cow', 'buffalo', 'goat', 'sheep'].includes(listing.category) && listing.gender?.toLowerCase() !== 'male' && listing.milk_yield_liters && <div className="sg"><div className="lb">{t('listingDetail.milkYield')}</div><div className="vl">{listing.milk_yield_liters}{t('listingDetail.perDay')}</div></div>}
                         {listing.weight_kg && <div className="sg"><div className="lb">{t('listingDetail.weight')}</div><div className="vl">{listing.weight_unit?.toLowerCase() === 'gram' && listing.weight_kg < 1 ? `${Math.round(listing.weight_kg * 1000)} g` : `${listing.weight_kg} ${t('listingDetail.kg')}`}</div></div>}
                         {listing.gender && <div className="sg"><div className="lb">{t('listingDetail.gender')}</div><div className="vl" style={{ textTransform: 'capitalize' }}>{t('listing.' + listing.gender.toLowerCase(), { defaultValue: listing.gender })}</div></div>}
