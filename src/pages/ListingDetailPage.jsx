@@ -272,10 +272,14 @@ export default function ListingDetailPage() {
                         {displayImages.length > 0 ? (
                             <>
                                 <div style={{
-                                    position: 'absolute', inset: -10,
+                                    position: 'absolute', inset: -20,
                                     backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 100)})`,
                                     backgroundSize: 'cover', backgroundPosition: 'center',
-                                    filter: 'blur(10px)', opacity: 0.5, zIndex: 0
+                                    filter: 'blur(20px)', opacity: 0.9, zIndex: 0
+                                }} />
+                                <div style={{
+                                    position: 'absolute', inset: 0,
+                                    backgroundColor: 'rgba(0,0,0,0.1)', zIndex: 0
                                 }} />
                                 <img
                                     src={getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 900)}
