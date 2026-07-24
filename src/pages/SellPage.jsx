@@ -716,7 +716,7 @@ export default function SellPage() {
                                 <div style={{display:'flex', gap:10, overflowX:'auto', paddingBottom:10}}>
                                     {(form.image_urls?.length > 0 ? form.image_urls : [form.image_url]).map((u, i) => (
                                         <div key={i} style={{ position: 'relative', flexShrink: 0 }}>
-                                            <img src={getOptimizedCloudinaryUrl(u, 200)} alt={`Preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'cover', borderRadius: 8}} />
+                                            <img src={getOptimizedCloudinaryUrl(u, 200)} alt={`Preview ${i+1}`} className="photo-preview-img" style={{width: 150, height: 150, objectFit: 'contain', background: '#f8fafc', borderRadius: 8}} />
                                             <button 
                                                 type="button"
                                                 onClick={(e) => {

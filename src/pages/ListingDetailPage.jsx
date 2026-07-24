@@ -275,7 +275,7 @@ export default function ListingDetailPage() {
                                     src={getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 900)}
                                     alt={`${listing.title} - ${activeImgIndex + 1}`}
                                     className="det-img"
-                                    style={{ objectFit: 'cover', objectPosition: 'center', width: '100%' }}
+                                    style={{ objectFit: 'contain', objectPosition: 'center', width: '100%' }}
                                     onError={e => {
                                         e.target.style.display = 'none';
                                     }}
