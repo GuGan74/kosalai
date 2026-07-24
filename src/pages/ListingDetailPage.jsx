@@ -271,11 +271,17 @@ export default function ListingDetailPage() {
                     >
                         {displayImages.length > 0 ? (
                             <>
+                                <div style={{
+                                    position: 'absolute', inset: -10,
+                                    backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 100)})`,
+                                    backgroundSize: 'cover', backgroundPosition: 'center',
+                                    filter: 'blur(10px)', opacity: 0.5, zIndex: 0
+                                }} />
                                 <img
                                     src={getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 900)}
                                     alt={`${listing.title} - ${activeImgIndex + 1}`}
                                     className="det-img"
-                                    style={{ objectFit: 'contain', objectPosition: 'center', width: '100%' }}
+                                    style={{ objectFit: 'contain', objectPosition: 'center', width: '100%', position: 'relative', zIndex: 1 }}
                                     onError={e => {
                                         e.target.style.display = 'none';
                                     }}

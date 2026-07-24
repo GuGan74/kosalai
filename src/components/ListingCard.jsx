@@ -134,18 +134,27 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 </div>
 
                 {displayImage ? (
-                    <img
-                        src={getOptimizedCloudinaryUrl(displayImage, 400)}
-                        alt={title}
-                        className="lc-img-actual"
-                        loading="lazy"
-                        width={480}
-                        height={320}
-                        onError={e => {
-                            e.target.style.display = 'none';
-                            e.target.parentElement.classList.add('show-emoji');
-                        }}
-                    />
+                    <>
+                        <div style={{
+                            position: 'absolute', inset: -10,
+                            backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImage, 100)})`,
+                            backgroundSize: 'cover', backgroundPosition: 'center',
+                            filter: 'blur(10px)', opacity: 0.5, zIndex: 0
+                        }} />
+                        <img
+                            src={getOptimizedCloudinaryUrl(displayImage, 400)}
+                            alt={title}
+                            className="lc-img-actual"
+                            style={{ position: 'relative', zIndex: 1 }}
+                            loading="lazy"
+                            width={480}
+                            height={320}
+                            onError={e => {
+                                e.target.style.display = 'none';
+                                e.target.parentElement.classList.add('show-emoji');
+                            }}
+                        />
+                    </>
                 ) : null}
                 <div className="lc-emoji">{emoji}</div>
 
