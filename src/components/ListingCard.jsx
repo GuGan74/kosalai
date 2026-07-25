@@ -134,31 +134,17 @@ const ListingCard = React.memo(function ListingCard({ listing, isLiked: isLikedP
                 </div>
 
                 {displayImage ? (
-                    <>
-                        <div style={{
-                            position: 'absolute', inset: -20,
-                            backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImage, 100)})`,
-                            backgroundSize: 'cover', backgroundPosition: 'center',
-                            filter: 'blur(20px)', opacity: 0.9, zIndex: 0
-                        }} />
-                        <div style={{
-                            position: 'absolute', inset: 0,
-                            backgroundColor: 'rgba(0,0,0,0.1)', zIndex: 0
-                        }} />
-                        <img
-                            src={getOptimizedCloudinaryUrl(displayImage, 400)}
-                            alt={title}
-                            className="lc-img-actual"
-                            style={{ position: 'relative', zIndex: 1 }}
-                            loading="lazy"
-                            width={480}
-                            height={320}
-                            onError={e => {
-                                e.target.style.display = 'none';
-                                e.target.parentElement.classList.add('show-emoji');
-                            }}
-                        />
-                    </>
+                    <img
+                        src={getOptimizedCloudinaryUrl(displayImage, 400)}
+                        alt={title}
+                        className="lc-img-actual"
+                        style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
+                        loading="lazy"
+                        onError={e => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.classList.add('show-emoji');
+                        }}
+                    />
                 ) : null}
                 <div className="lc-emoji">{emoji}</div>
 
