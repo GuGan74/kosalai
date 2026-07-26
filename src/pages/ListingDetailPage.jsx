@@ -272,20 +272,20 @@ export default function ListingDetailPage() {
                         {displayImages.length > 0 ? (
                             <>
                                 <div style={{
-                                    position: 'absolute', inset: -20,
-                                    backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 100)})`,
-                                    backgroundSize: 'cover', backgroundPosition: 'center',
-                                    filter: 'blur(20px)', opacity: 0.9, zIndex: 0
-                                }} />
-                                <div style={{
-                                    position: 'absolute', inset: 0,
-                                    backgroundColor: 'rgba(0,0,0,0.1)', zIndex: 0
+                                    position: 'absolute',
+                                    inset: -20,
+                                    backgroundImage: `url(${getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 400)})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    filter: 'blur(20px)',
+                                    opacity: 0.5,
+                                    zIndex: 0
                                 }} />
                                 <img
                                     src={getOptimizedCloudinaryUrl(displayImages[activeImgIndex], 900)}
                                     alt={`${listing.title} - ${activeImgIndex + 1}`}
                                     className="det-img"
-                                    style={{ objectFit: 'contain', objectPosition: 'center', width: '100%', position: 'relative', zIndex: 1 }}
+                                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', zIndex: 1, backgroundColor: 'transparent' }}
                                     onError={e => {
                                         e.target.style.display = 'none';
                                     }}
@@ -294,15 +294,15 @@ export default function ListingDetailPage() {
                                     <>
                                         <button 
                                             onClick={() => setActiveImgIndex(i => i === 0 ? displayImages.length - 1 : i - 1)}
-                                            style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+                                            style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)', zIndex: 2 }}>
                                             ❮
                                         </button>
                                         <button 
                                             onClick={() => setActiveImgIndex(i => i === displayImages.length - 1 ? 0 : i + 1)}
-                                            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}>
+                                            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer', fontSize: 20, boxShadow: '0 2px 5px rgba(0,0,0,0.2)', zIndex: 2 }}>
                                             ❯
                                         </button>
-                                        <div style={{ position: 'absolute', bottom: 15, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6 }}>
+                                        <div style={{ position: 'absolute', bottom: 15, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 6, zIndex: 2 }}>
                                             {displayImages.map((_, idx) => (
                                                 <div key={idx} onClick={() => setActiveImgIndex(idx)} style={{ width: 8, height: 8, borderRadius: '50%', background: activeImgIndex === idx ? 'white' : 'rgba(255,255,255,0.5)', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.3)' }} />
                                             ))}
