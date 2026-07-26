@@ -49,7 +49,7 @@
     width: 100%;
     height: 100%;
     max-height: 480px;
-    object-fit: cover;
+    object-fit: contain;
     background-color: transparent;
     object-position: center;
     border-radius: 16px;
@@ -70,12 +70,13 @@
 /* Mobile — shorter image on small screens */
 @media (max-width: 600px) {
     .det-img-wrap {
-        max-height: 280px;
+        aspect-ratio: 4 / 5;
+        max-height: none;
     }
 
     .det-img,
     .det-img-placeholder {
-        height: 280px;
+        height: 100%;
     }
 }
 
@@ -320,10 +321,6 @@
         position: static;
         width: 100%;
         box-sizing: border-box;
-    }
-
-    .det-img-wrap {
-        height: 260px;
     }
 }
 
